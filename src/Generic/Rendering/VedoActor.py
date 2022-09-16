@@ -1,0 +1,180 @@
+from numpy import array, tile
+from vedo import Mesh, Points, Arrows, Marker, Glyph
+
+
+class VedoActor:
+
+    def __init__(self,
+                 visualizer,
+                 actor_type: str,
+                 window: int):
+        # Actor information
+        self.visualizer = visualizer
+        self.at = window
+        self.actor_type = actor_type
+        self.actor_data = None
+        self.cmap_data = None
+        self.instance = None
+
+        # Select the goo method according to the Actor type
+        create = {'Mesh': self.__create_mesh,
+                  'Points': self.__create_points,
+                  'Arrows': self.__create_arrows,
+                  'Markers': self.__create_markers,
+                  'Symbols': self.__create_symbols}
+        update = {'Mesh': self.__update_mesh,
+                  'Points': self.__update_points,
+                  'Arrows': self.__update_arrows,
+                  'Markers': self.__update_markers,
+                  'Symbols': self.__update_symbols}
+        self.create = create[self.actor_type]
+        self.update = update[self.actor_type]
+
+    def apply_cmap(self, data):
+        if self.cmap_data is None:
+            self.cmap_data = data
+        for key, value in data.items():
+            if value is not None:
+                self.cmap_data[key] = value
+        if len(self.cmap_data['scalar_field']) > 0:
+            self.instance.cmap(cname=self.cmap_data['colormap'],
+                               input_array=self.cmap_data['scalar_field'][0]).addScalarBar()
+        return self.instance
+
+    ##################
+    # CREATE METHODS #
+    ##################
+
+    def __create_mesh(self, data):
+        self.actor_data = data
+        self.instance = Mesh(inputobj=[data['positions'], data['cells']],
+                             c=data['c'],
+                             alpha=data['alpha'])
+        self.instance.computeNormals(data['compute_normals']).lw(data['line_width']).wireframe(data['wireframe'])
+        return self
+
+    def __create_points(self, data):
+        self.actor_data = data
+        self.instance = Points(inputobj=data['positions'],
+                               r=data['point_size'],
+                               c=data['c'],
+                               alpha=data['alpha'])
+        return self
+
+    def __create_arrows(self, data):
+        self.actor_data = data
+        self.instance = Arrows(startPoints=data['positions'],
+                               endPoints=data['positions'] + data['vectors'],
+                               res=data['res'],
+                               c=data['c'],
+                               alpha=data['alpha'])
+        return self
+
+    def __create_markers(self, data):
+        self.actor_data = data
+        normal_to = self.visualizer.get_actor(data['normal_to']).instance
+        positions = normal_to.points()[data['indices']][0]
+        orientations = normal_to.normals()[data['indices']][0]
+
+        marker = Marker(symbol=data['symbol'],
+                        s=data['size'],
+                        filled=data['filled']).orientation(newaxis=[1, 0, 0], rotation=90, rad=False)
+        self.instance = Glyph(mesh=positions,
+                              glyphObj=marker,
+                              orientationArray=orientations,
+                              c=data['c'],
+                              alpha=data['alpha'])
+        return self
+
+    def __create_symbols(self, data):
+
+        if data['orientations'].shape == (1, 3):
+            data['orientations'] = tile(data['orientations'][0], (len(data['positions']), 1))
+        else:
+            data['orientations'] = tile(array([1, 0, 0]), (len(data['positions']), 1))
+
+        self.actor_data = data
+
+        marker = Marker(symbol=data['symbol'],
+                        s=data['size'],
+                        filled=data['filled']).orientation(newaxis=[1, 0, 0], rotation=90, rad=False)
+        self.instance = Glyph(mesh=data['positions'],
+                              glyphObj=marker,
+                              orientationArray=data['orientations'],
+                              c=data['c'],
+                              alpha=data['alpha'])
+        return self
+
+    ##################
+    # UPDATE METHODS #
+    ##################
+
+    def __update_mesh(self, data):
+        for key, value in data.items():
+            if value is not None:
+                self.actor_data[key] = value
+        self.instance.points(self.actor_data['positions']).lw(self.actor_data['line_width'])\
+            .wireframe(self.actor_data['wireframe']).alpha(self.actor_data['alpha']).c(self.actor_data['c'])
+        return self
+
+    def __update_points(self, data):
+        for key, value in data.items():
+            if value is not None:
+                self.actor_data[key] = value
+        self.instance.points(self.actor_data['positions']).ps(self.actor_data['point_size'])\
+            .alpha(self.actor_data['alpha']).c(self.actor_data['c'])
+        return self
+
+    def __update_arrows(self, data):
+        for key, value in data.items():
+            if value is not None:
+                self.actor_data[key] = value
+        self.instance = Arrows(startPoints=self.actor_data['positions'],
+                               endPoints=self.actor_data['positions'] + self.actor_data['vectors'],
+                               res=self.actor_data['res'],
+                               c=self.actor_data['c'],
+                               alpha=self.actor_data['alpha'])
+        return self
+
+    def __update_markers(self, data):
+
+        for key, value in data.items():
+            if value is not None:
+                self.actor_data[key] = value
+
+        normal_to = self.visualizer.get_actor(self.actor_data['normal_to']).instance
+        positions = normal_to.points()[self.actor_data['indices']][0]
+        orientations = normal_to.normals()[self.actor_data['indices']][0]
+
+        marker = Marker(symbol=self.actor_data['symbol'],
+                        s=self.actor_data['size'],
+                        filled=self.actor_data['filled']).orientation(newaxis=[1, 0, 0], rotation=90, rad=False)
+        self.instance = Glyph(mesh=positions,
+                              glyphObj=marker,
+                              orientationArray=orientations,
+                              c=self.actor_data['c'],
+                              alpha=self.actor_data['alpha'])
+        return self
+
+    def __update_symbols(self, data):
+
+        if 'orientations' in data:
+            pos = data['positions'] if 'positions' in data else self.actor_data['positions']
+            if data['orientations'].shape == (1, 3):
+                data['orientations'] = tile(data['orientations'][0], (len(pos), 1))
+            else:
+                data['orientations'] = tile(array([1, 0, 0]), (len(pos), 1))
+
+        for key, value in data.items():
+            if value is not None:
+                self.actor_data[key] = value
+
+        marker = Marker(symbol=self.actor_data['symbol'],
+                        s=self.actor_data['size'],
+                        filled=self.actor_data['filled']).orientation(newaxis=[1, 0, 0], rotation=90, rad=False)
+        self.instance = Glyph(mesh=self.actor_data['positions'],
+                              glyphObj=marker,
+                              orientationArray=self.actor_data['orientations'],
+                              c=self.actor_data['c'],
+                              alpha=self.actor_data['alpha'])
+        return self
