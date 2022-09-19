@@ -28,9 +28,22 @@ class VedoFactory:
         VedoTable(db=self.__database,
                   table_name='Visual').create_columns()
 
+        # ExchangeTable to synchronize Factory and Visualizer
+        self.__database.create_table(table_name='Sync',
+                                     storing_table=False,
+                                     fields=('step', int))
+        self.__database.register_post_save_signal(table_name='Sync',
+                                                  handler=self.sync_visualizer)
+        self.__update: Dict[int, bool] = {}
+
     def get_database(self):
 
         return self.__database
+
+    def sync_visualizer(self, table_name, data_dict):
+
+        for i in self.__update.keys():
+            self.__update[i] = False
 
     def __add_object(self,
                      object_type: str,
@@ -41,12 +54,13 @@ class VedoFactory:
 
         # Define Table name
         table_name = object_type + f'_{self.__current_id}'
+        self.__update[self.__current_id] = False
         self.__current_id += 1
 
         # Create Table and register object
         factory = VedoTable(db=self.__database,
                             table_name=table_name).create_columns(visual_table='Visual')
-        factory.send_data(data_dict)
+        factory.send_data(data_dict=data_dict, update=False)
         self.__tables.append(factory)
         return self.__current_id - 1
 
@@ -58,7 +72,9 @@ class VedoFactory:
         del data_dict['self'], data_dict['object_id']
 
         # Update object data in Database
-        self.__tables[object_id].send_data(data_dict)
+        self.__tables[object_id].send_data(data_dict=data_dict, update=self.__update[object_id])
+        if not self.__update[object_id]:
+            self.__update[object_id] = True
 
     def __check_id(self,
                    object_id: int,

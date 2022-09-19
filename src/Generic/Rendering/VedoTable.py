@@ -31,10 +31,14 @@ class VedoTable:
         self.create_columns = create_columns[self.table_type]
         self.format_data = format_data[self.table_type]
 
-    def send_data(self, data_dict: Dict[str, Any]):
+    def send_data(self, data_dict: Dict[str, Any], update: bool):
 
-        self.database.add_data(table_name=self.table_name,
-                               data=self.format_data(data_dict=data_dict))
+        if update:
+            self.database.update(table_name=self.table_name,
+                                 data=self.format_data(data_dict=data_dict))
+        else:
+            self.database.add_data(table_name=self.table_name,
+                                   data=self.format_data(data_dict=data_dict))
 
     ##########################
     # CREATE COLUMNS METHODS #

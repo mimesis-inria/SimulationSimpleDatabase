@@ -1,4 +1,4 @@
-from typing import Dict, Optional
+from typing import Dict, Optional, Any
 from numpy import array
 from SSD.Generic.Storage.Database import Database
 
@@ -25,6 +25,7 @@ class VedoVisualizer:
         # Information about all Factories / Actors
         self.__actors: Dict[int, Dict[int, VedoActor]] = {}
         self.__all_actors: Dict[str, VedoActor] = {}
+        self.__updated_actors: Dict[str, bool] = {}
         self.__plotter: Optional[Plotter] = None
 
     def get_database(self):
@@ -38,6 +39,7 @@ class VedoVisualizer:
         # 1. Connect DB save signals between the VedoFactory and the Visualizer
         table_names = self.__database.get_tables()
         table_names.remove('Visual')
+        table_names.remove('Sync')
         for table_name in table_names:
             if table_name != 'Visual':
                 self.__database.register_post_save_signal(table_name=table_name,
@@ -65,6 +67,7 @@ class VedoVisualizer:
             # Create Actor
             self.__actors[at][actor_id] = VedoActor(self, actor_type, at)
             self.__all_actors[actor_id] = self.__actors[at][actor_id]
+            self.__updated_actors[actor_id] = False
             instances[at].append(self.__actors[at][actor_id].create(data_dict).apply_cmap(cmap_dict))
 
         # 3. Create Plotter
@@ -90,17 +93,35 @@ class VedoVisualizer:
                               axes=plt.axes,
                               camera=camera)
 
-    def update_instance(self, table_name, data_dict):
+    def update_instance(self,
+                        table_name: str,
+                        data_dict: Dict[str, Any]):
 
-        # Sort data
-        cmap_dict = {'scalar_field': data_dict.pop('scalar_field')} if 'scalar_field' in data_dict else {}
+        if len(data_dict.keys()) > 1:
 
-        actor = self.__all_actors[table_name.split('_')[1]]
-        if actor.actor_type in ['Arrows', 'Markers', 'Symbols']:
-            self.__plotter.remove(actor.instance, at=actor.at)
-        actor.update(data_dict).apply_cmap(cmap_dict)
-        if actor.actor_type in ['Arrows', 'Markers', 'Symbols']:
-            self.__plotter.add(actor.instance, at=actor.at)
+            # Sort data
+            cmap_dict = {'scalar_field': data_dict.pop('scalar_field')} if 'scalar_field' in data_dict else {}
+
+            actor = self.__all_actors[table_name.split('_')[1]]
+            if actor.actor_type in ['Arrows', 'Markers', 'Symbols']:
+                self.__plotter.remove(actor.instance, at=actor.at)
+            actor.update(data_dict).apply_cmap(cmap_dict)
+            if actor.actor_type in ['Arrows', 'Markers', 'Symbols']:
+                self.__plotter.add(actor.instance, at=actor.at)
+            self.__updated_actors[table_name.split('_')[1]] = True
 
     def render(self):
+
+        self.__database.add_data(table_name='Sync',
+                                 data={'step': 1})
         self.__plotter.render()
+        table_names = self.__database.get_tables()
+        table_names.remove('Visual')
+        table_names.remove('Sync')
+        for table_name in table_names:
+            actor_id = table_name.split('_')[1]
+            if self.__updated_actors[actor_id]:
+                self.__updated_actors[actor_id] = False
+            else:
+                self.__database.add_data(table_name=table_name,
+                                         data={})
