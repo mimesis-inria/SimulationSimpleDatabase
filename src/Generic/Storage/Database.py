@@ -86,7 +86,15 @@ class Database:
         self.__database = SqliteDatabase(database_path)
         models, database_descr = generate_models(self.__database)
         for table_name, model in models.items():
-            table_name = database_descr.model_names[table_name]
+            # Loading removes the '_' symbol in desc.model_names
+            table_name_parts = table_name.split('_')
+            loaded_name = database_descr.model_names[table_name]
+            real_name = ''
+            for i, table_name_part in enumerate(table_name_parts):
+                real_name += loaded_name[:len(table_name_part)] if i == 0 else f'_{loaded_name[:len(table_name_part)]}'
+                loaded_name = loaded_name[len(table_name_part):]
+            # Register name
+            table_name = self.make_name(real_name)
             self.__tables[table_name] = model
             self.__tables[table_name]._meta.name = table_name
 

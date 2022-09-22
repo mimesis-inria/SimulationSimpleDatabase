@@ -1,8 +1,8 @@
 from typing import List, Tuple, Union, Optional
 from os.path import exists
 
-from AdaptiveDB.Database import Database
-from AdaptiveDB.AdaptiveTable import AdaptiveTable
+from SSD.Generic.Storage.Database import Database
+from SSD.Generic.Storage.AdaptiveTable import AdaptiveTable
 
 
 def merge(database_names: List[str],

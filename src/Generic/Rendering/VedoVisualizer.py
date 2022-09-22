@@ -78,9 +78,11 @@ class VedoVisualizer:
                    new=True,
                    N=len(actors),
                    sharecam=True,
-                   interactive=True,
+                   interactive=False,
                    title='SofaVedo',
                    axes=4)
+        plt.addButton(plt.interactor.TerminateApp, states=["start"])
+        plt.interactor.Start()
         # Once the user closed the window, recreate a new Plotter
         camera = {'pos': plt.camera.GetPosition(),
                   'focalPoint': plt.camera.GetFocalPoint()}
