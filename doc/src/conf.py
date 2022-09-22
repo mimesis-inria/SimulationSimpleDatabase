@@ -13,16 +13,16 @@
 from os.path import abspath, join, pardir
 import sys
 
-# AdaptiveDB modules import
-root = abspath(join(abspath(__file__), pardir, pardir, pardir, 'AdaptiveDB'))
-all_modules = ['AdaptiveTable', 'Database', 'Exporter', 'utils']
+# Generic.Rendering modules import
+root = abspath(join(abspath(__file__), pardir, pardir, pardir, 'src', 'Generic', 'Storage'))
 sys.path.append(root)
-for module in all_modules:
-    sys.path.append(join(root, module))
+# all_modules = ['Database', 'utils']
+# for module in all_modules:
+#     sys.path.append(join(root, module))
 
 # -- Project information -----------------------------------------------------
 
-project = 'AdaptiveDB'
+project = 'SimulationSimpleDatabase'
 copyright = '2022, Mimesis, Inria'
 author = 'Robin ENJALBERT, Alban ODOT'
 
@@ -69,6 +69,9 @@ master_doc = "index"
 extlinks = {'Peewee': ('https://docs.peewee-orm.com/en/latest/', None),
             'DeepPhysX': ('https://deepphysx.readthedocs.io/en/latest/', None),
             'SOFA': ('https://www.sofa-framework.org/%s', None),
+            'SP3': ('https://sofapython3.readthedocs.io/en/latest/', None),
+            'SP3I': ('https://sofapython3.readthedocs.io/en/latest/menu/Compilation.html', None),
             'Numpy': ('https://numpy.org/', None),
-            'PyPi': ('https://pypi.org/project/AdaptiveDB', None)
+            'PyPi': ('https://pypi.org/project/SimulationSimpleDatabase', None),
+            'Vedo': ('https://vedo.embl.es/', None)
             }

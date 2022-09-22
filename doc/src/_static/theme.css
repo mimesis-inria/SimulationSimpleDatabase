@@ -6,17 +6,12 @@
     caption-side: bottom;
 }
 
-.core {
-    color: #0097a7ff;
-    font-weight: bold;
+div.leftside {
+    width: 45%;
+    margin-left: 2%;
+    float: left;
 }
 
-.simu {
-    color: #ffab40ff;
-    font-weight: bold;
-}
-
-.ai {
-    color: #a64d79ff;
-    font-weight: bold;
+div.rightside {
+    margin-left: 48%;
 }
