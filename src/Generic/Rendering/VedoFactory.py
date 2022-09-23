@@ -45,6 +45,11 @@ class VedoFactory:
         for i in self.__update.keys():
             self.__update[i] = False
 
+    def render(self):
+
+        self.__database.add_data(table_name='Sync',
+                                 data={'step': 1})
+
     def __add_object(self,
                      object_type: str,
                      data_dict: Dict[str, Any]):

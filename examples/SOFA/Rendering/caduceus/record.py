@@ -1,7 +1,6 @@
 import Sofa
 import os
 
-from SSD.Generic.Rendering.VedoFactory import VedoFactory
 from SSD.Generic.Rendering.VedoVisualizer import VedoVisualizer
 from Caduceus import Caduceus
 
@@ -17,8 +16,7 @@ def createScene(node):
 
     else:
         visualizer = VedoVisualizer(database_name='caduceus', remove_existing=True)
-        factory = VedoFactory(database=visualizer.get_database())
-        node.addObject(Caduceus(node, factory, name='Controller'))
+        node.addObject(Caduceus(node, database=visualizer.get_database(), name='Controller'))
         return visualizer
 
 

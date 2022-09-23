@@ -72,14 +72,14 @@ class ReplayVisualizer:
                               title='SofaVedo',
                               axes=4)
         self.__plotter.timerCallback('create')
-        self.__plotter.addCallback('Timer', self.mainloop)
+        self.__plotter.addCallback('Timer', self.update)
         self.__plotter.addButton(self.start, states=['start'])
         self.__plotter.interactive()
 
     def start(self):
         self.step = 1
 
-    def mainloop(self, event):
+    def update(self, _):
 
         self.step += 1
         if self.step < self.__nb_sample:

@@ -1,20 +1,19 @@
+from typing import Optional
 import Sofa
 
-from SSD.Generic.Rendering.VedoFactory import VedoFactory
+from SSD.SOFA.Rendering.VedoFactory import VedoFactory
 
 
 class Caduceus(Sofa.Core.Controller):
 
-    def __init__(self, root, factory=None, *args, **kwargs):
+    def __init__(self, root, database=None, *args, **kwargs):
         Sofa.Core.Controller.__init__(self, *args, **kwargs)
+
         self.root: Sofa.Core.Node = root
-        self.factory: VedoFactory = factory
-        self.step = 0
-        self.create()
+        self.factory: Optional[VedoFactory] = self.root.addObject(VedoFactory(self.root, database=database)) \
+            if database is not None else None
 
-    def create(self):
-
-        # Root node
+        # Root
         self.root.gravity.value = [0, -1000, 0]
         self.root.dt.value = 0.04
         required_plugins = ['CImgPlugin', 'SofaOpenglVisual', 'SofaNonUniformFem', 'SofaConstraint', 'SofaLoader',
@@ -36,7 +35,7 @@ class Caduceus(Sofa.Core.Controller):
         self.root.addObject('SpotLight', position=[0, 80, 25], direction=[0, -1, -0.8], cutoff=30, exponent=1)
         self.root.addObject('SpotLight', position=[0, 40, 100], direction=[0, 0, -1], cutoff=30, exponent=1)
 
-        # Snake
+        # Snake.Physics
         self.root.addChild('snake')
         self.root.snake.addObject('MeshOBJLoader', name='Snake', filename='mesh/snake_body.obj')
         self.root.snake.addObject('EulerImplicitSolver', rayleighMass=1, rayleighStiffness=0.03)
@@ -76,7 +75,7 @@ class Caduceus(Sofa.Core.Controller):
         self.root.snake.visual.cornea.addObject('OglModel', name='OglCornea', src='@SnakeCornea')
         self.root.snake.visual.cornea.addObject('BarycentricMapping', input='@../..', output='@.')
 
-        # Base
+        # Base.Collision
         self.root.addChild('base')
         self.root.base.addChild('stick')
         self.root.base.stick.addObject('MeshOBJLoader', name='Stick', filename='mesh/collision_batons.obj')
@@ -108,68 +107,35 @@ class Caduceus(Sofa.Core.Controller):
 
         if self.factory is not None:
 
-            # Snake elements
-            snake_body_ogl = self.root.snake.visual.body.getObject('OglBody')
-            self.factory.add_mesh(positions=snake_body_ogl.position.value,
-                                  cells=snake_body_ogl.quads.value,
-                                  at=0,
-                                  c='grey4')
-            snake_eye_ogl = self.root.snake.visual.eye.getObject('OglEye')
-            self.factory.add_mesh(positions=snake_eye_ogl.position.value,
-                                  cells=snake_eye_ogl.quads.value,
-                                  at=0,
-                                  c='yellow')
+            # Snake visual meshes (body + eyes)
+            self.factory.add_mesh(record_object=self.root.snake.visual.body.getObject('OglBody'),
+                                  cell_type='quads', animated=True,
+                                  at=0, c='indigo7')
+            self.factory.add_mesh(record_object=self.root.snake.visual.eye.getObject('OglEye'),
+                                  cell_type='quads', animated=True,
+                                  at=0, c='yellow5')
 
-            # Base elements
-            base_ogl = self.root.base.visual.getObject('OglBase')
-            self.factory.add_mesh(positions=base_ogl.position.value,
-                                  cells=base_ogl.quads.value,
-                                  at=0,
-                                  c='orange3')
-            self.factory.add_mesh(positions=base_ogl.position.value,
-                                  cells=base_ogl.triangles.value,
-                                  at=0,
-                                  c='orange3')
+            # Base visual meshes (quads + triangles cells)
+            self.factory.add_mesh(record_object=self.root.base.visual.getObject('OglBase'),
+                                  cell_type='quads', animated=False,
+                                  at=0, c='orange4')
+            self.factory.add_mesh(record_object=self.root.base.visual.getObject('OglBase'),
+                                  cell_type='triangles', animated=False,
+                                  at=0, c='orange4')
 
-            # Collision elements
-            snake_coll_topo = self.root.snake.collision.getObject('SnakeCollTopo')
-            self.factory.add_mesh(positions=snake_coll_topo.position.value,
-                                  cells=snake_coll_topo.triangles.value,
-                                  at=1,
-                                  c='orange7', wireframe=True)
-            stick_coll_topo = self.root.base.stick.getObject('StickCollTopo')
-            self.factory.add_mesh(positions=stick_coll_topo.position.value,
-                                  cells=stick_coll_topo.edges.value,
-                                  at=1,
-                                  c='orange7', wireframe=True)
-            blobs_coll_topo = self.root.base.blobs.getObject('BlobsCollTopo')
-            self.factory.add_mesh(positions=blobs_coll_topo.position.value,
-                                  cells=blobs_coll_topo.edges.value,
-                                  at=1,
-                                  c='orange7', wireframe=True)
-            stick_coll_topo = self.root.base.stick.getObject('StickCollTopo')
-            self.factory.add_mesh(positions=stick_coll_topo.position.value,
-                                  cells=stick_coll_topo.triangles.value,
-                                  at=1,
-                                  c='orange7', wireframe=True)
-            foot_coll_topo = self.root.base.foot.getObject('FootCollTopo')
-            self.factory.add_mesh(positions=foot_coll_topo.position.value,
-                                  cells=foot_coll_topo.triangles.value,
-                                  at=1,
-                                  c='orange7', wireframe=True)
+            # Snake collision mesh
+            self.factory.add_mesh(record_object=self.root.snake.collision.getObject('SnakeCollMo'),
+                                  topology_object=self.root.snake.collision.getObject('SnakeCollTopo'),
+                                  cell_type='triangles', animated=True,
+                                  at=1, c='orange7', wireframe=True, line_width=2)
 
-    def onAnimateEndEvent(self, _):
-
-        if self.step % 2 == 0 and self.factory is not None:
-
-            snake_ogl = self.root.snake.visual.body.getObject('OglBody')
-            self.factory.update_mesh(object_id=0,
-                                     positions=snake_ogl.position.value)
-            snake_eye_ogl = self.root.snake.visual.eye.getObject('OglEye')
-            self.factory.update_mesh(object_id=1,
-                                     positions=snake_eye_ogl.position.value)
-            snake_coll_mo = self.root.snake.collision.getObject('SnakeCollMo')
-            self.factory.update_mesh(object_id=4,
-                                     positions=snake_coll_mo.position.value)
-
-        self.step += 1
+            # Base Collision meshes (stick + blobs + foot)
+            self.factory.add_mesh(record_object=self.root.base.stick.getObject('StickCollTopo'),
+                                  cell_type='edges', animated=False,
+                                  at=1, c='orange7', wireframe=True, line_width=2)
+            self.factory.add_mesh(record_object=self.root.base.blobs.getObject('BlobsCollTopo'),
+                                  cell_type='triangles', animated=False,
+                                  at=1, c='orange7', wireframe=True, line_width=2)
+            self.factory.add_mesh(record_object=self.root.base.foot.getObject('FootCollTopo'),
+                                  cell_type='triangles', animated=False,
+                                  at=1, c='orange7', wireframe=True, line_width=2)

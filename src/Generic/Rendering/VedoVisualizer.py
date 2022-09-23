@@ -38,12 +38,14 @@ class VedoVisualizer:
 
         # 1. Connect DB save signals between the VedoFactory and the Visualizer
         table_names = self.__database.get_tables()
+        self.__database.register_pre_save_signal(table_name='Sync',
+                                                 handler=self.sync_visualizer)
         table_names.remove('Visual')
         table_names.remove('Sync')
-        for table_name in table_names:
-            if table_name != 'Visual':
-                self.__database.register_post_save_signal(table_name=table_name,
-                                                          handler=self.update_instance)
+        # for table_name in table_names:
+        #     if table_name != 'Visual':
+        #         self.__database.register_post_save_signal(table_name=table_name,
+        #                                                   handler=self.update_instance)
         self.__database.connect_signals()
 
         # 2. Retrieve visual data and create Actors (one Table per Actor)
@@ -82,7 +84,7 @@ class VedoVisualizer:
                    title='SofaVedo',
                    axes=4)
         plt.addButton(plt.interactor.TerminateApp, states=["start"])
-        plt.interactor.Start()
+        plt.interactive()
         # Once the user closed the window, recreate a new Plotter
         camera = {'pos': plt.camera.GetPosition(),
                   'focalPoint': plt.camera.GetFocalPoint()}
@@ -105,6 +107,8 @@ class VedoVisualizer:
             cmap_dict = {'scalar_field': data_dict.pop('scalar_field')} if 'scalar_field' in data_dict else {}
 
             actor = self.__all_actors[table_name.split('_')[1]]
+            if table_name == 'mesh_4':
+                print(cmap_dict)
             if actor.actor_type in ['Arrows', 'Markers', 'Symbols']:
                 self.__plotter.remove(actor.instance, at=actor.at)
             actor.update(data_dict).apply_cmap(cmap_dict)
@@ -116,11 +120,20 @@ class VedoVisualizer:
 
         self.__database.add_data(table_name='Sync',
                                  data={'step': 1})
+
+    def sync_visualizer(self, table_name, data_dict):
         self.__plotter.render()
         table_names = self.__database.get_tables()
         table_names.remove('Visual')
         table_names.remove('Sync')
         for table_name in table_names:
+
+            data_dict = self.__database.get_line(table_name=table_name,
+                                                 line_id=-1)
+            data_dict.pop('id')
+            self.update_instance(table_name=table_name,
+                                 data_dict=data_dict)
+
             actor_id = table_name.split('_')[1]
             if self.__updated_actors[actor_id]:
                 self.__updated_actors[actor_id] = False
