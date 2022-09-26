@@ -1,5 +1,5 @@
 from typing import Optional
-from numpy import array, ndarray
+from numpy import array, ndarray, tile
 import Sofa
 
 from SSD.Generic.Storage.Database import Database
@@ -7,6 +7,14 @@ from SSD.Generic.Rendering.VedoFactory import VedoFactory as _VedoFactory
 
 
 class VedoFactory(Sofa.Core.Controller):
+    accessor = {'position': lambda o: o.position.value,
+                'positions': lambda o: o.positions.value,
+                'edges': lambda o: o.egdes.value,
+                'triangles': lambda o: o.triangles.value,
+                'quads': lambda o: o.quads.value,
+                'tetrahedra': lambda o: o.tetrahedra.value,
+                'hexahedra': lambda o: o.hexahedra.value,
+                'forces': lambda o: o.forces.value}
 
     def __init__(self,
                  root: Sofa.Core.Node,
@@ -22,13 +30,13 @@ class VedoFactory(Sofa.Core.Controller):
 
     @classmethod
     def __get_position_data(cls,
-                            record_object) -> ndarray:
+                            position_object: Sofa.Core.Base) -> ndarray:
 
         try:
-            positions = record_object.positions.value
+            positions = cls.accessor['positions'](position_object)
         except:
             try:
-                positions = record_object.position.value
+                positions = cls.accessor['position'](position_object)
             except:
                 positions = None
         if positions is None or len(positions) == 0:
@@ -38,65 +46,72 @@ class VedoFactory(Sofa.Core.Controller):
         return positions
 
     @classmethod
-    def __get_topology_data(cls,
-                            topology_object,
-                            cell_type) -> ndarray:
+    def __get_force_data(cls,
+                         force_object: Sofa.Core.Base) -> ndarray:
 
-        cells = None
-        if cell_type == 'edges':
-            try:
-                cells = topology_object.edges.value
-            except:
-                pass
-        elif cell_type == 'triangles':
-            try:
-                cells = topology_object.triangles.value
-            except:
-                pass
-        elif cell_type == 'quads':
-            try:
-                cells = topology_object.quads.value
-            except:
-                pass
-        elif cell_type == 'tetrahedra':
-            try:
-                cells = topology_object.tetrahedra.value
-            except:
-                pass
-        elif cell_type == 'hexahedra':
-            try:
-                cells = topology_object.hexahedra.value
-            except:
-                pass
-        else:
+        try:
+            forces = cls.accessor['forces'](force_object)
+        except:
+            forces = None
+        if forces is None or len(forces) == 0:
+            print("[ERROR] The given 'record_object' does not contain any force information or contains empty forces")
+            quit()
+        return forces
+
+    @classmethod
+    def __get_topology_data(cls,
+                            topology_object: Sofa.Core.Base,
+                            cell_type: str) -> ndarray:
+
+        if cell_type not in cls.accessor.keys():
             print("[ERROR] The 'cell_type' must be in ['edges', 'triangles', 'quads', 'tetrahedra', 'hexahedra'].")
             quit()
+        try:
+            cells = cls.accessor[cell_type](topology_object)
+        except:
+            cells = None
         if cells is None or len(cells) == 0:
-            print(cells, cell_type)
-            print(topology_object.triangles.value)
-            print("[ERROR] The given 'topology_object' does not contain any topology information or contains empty "
-                  "topology.")
+            print(f"[ERROR] The given 'topology_object' does not contain any topology information or contains empty "
+                  f"topology with cell type = {cell_type}.")
             quit()
         return cells
 
     def onAnimateEndEvent(self, _):
 
-        for object_id, (object_type, record_object) in self.__updates.items():
+        for object_id, (object_type, object_data) in self.__updates.items():
+
             if object_type == 'Mesh':
                 self.__factory.update_mesh(object_id=object_id,
-                                           positions=self.__get_position_data(record_object=record_object))
+                                           positions=self.__get_position_data(position_object=object_data))
+
             elif object_type == 'Points':
+                positions = self.__get_position_data(position_object=object_data[0])
+                positions = positions[object_data[1]] if object_data[1] is not None else positions
                 self.__factory.update_points(object_id=object_id,
-                                             positions=self.__get_position_data(record_object=record_object))
+                                             positions=positions)
+
+            elif object_type == 'Arrows':
+                positions = self.__get_position_data(position_object=object_data[1])
+                positions = positions[object_data[2]] if object_data[2] is not None else positions
+                if object_data[0] == 'vec':
+                    vectors = self.__get_force_data(object_data[3])
+                else:
+                    vectors = self.__get_position_data(object_data[3]) - positions
+                vectors = vectors[object_data[4]] if object_data[4] is not None else vectors
+                if len(vectors) == 1:
+                    vectors = tile(vectors, (len(positions), 1))
+                self.__factory.update_arrows(object_id=object_id,
+                                             positions=positions,
+                                             vectors=vectors * object_data[5])
 
     ########
     # MESH #
     ########
 
     def add_mesh(self,
-                 record_object: Sofa.Core.Base,
-                 cell_type: str,
+                 position_object: Sofa.Core.Base,
                  topology_object: Optional[Sofa.Core.Base] = None,
+                 cell_type: str = 'triangles',
                  animated=True,
                  at: int = -1,
                  alpha: float = 1.,
@@ -109,7 +124,7 @@ class VedoFactory(Sofa.Core.Controller):
         """
         Add a new Mesh to the Factory.
 
-        :param record_object:
+        :param position_object:
         :param cell_type:
         :param topology_object:
         :param animated: If True, the object will be automatically updated at each step.
@@ -124,10 +139,11 @@ class VedoFactory(Sofa.Core.Controller):
         """
 
         # Get the cells
-        cells = self.__get_topology_data(topology_object=record_object if topology_object is None else topology_object,
-                                         cell_type=cell_type)
+        cells = self.__get_topology_data(
+            topology_object=position_object if topology_object is None else topology_object,
+            cell_type=cell_type)
         # Get the positions
-        positions = self.__get_position_data(record_object=record_object)
+        positions = self.__get_position_data(position_object=position_object)
 
         # Add object
         idx = self.__factory.add_mesh(positions=positions,
@@ -143,7 +159,7 @@ class VedoFactory(Sofa.Core.Controller):
 
         # Register object
         if animated:
-            self.__updates[idx] = ('Mesh', record_object)
+            self.__updates[idx] = ('Mesh', position_object)
         return idx
 
     def update_mesh(self,
@@ -176,7 +192,8 @@ class VedoFactory(Sofa.Core.Controller):
     ##########
 
     def add_points(self,
-                   record_object: Sofa.Core.Base,
+                   position_object: Sofa.Core.Base,
+                   position_indices: Optional[ndarray] = None,
                    animated=True,
                    at: int = -1,
                    alpha: float = 1.,
@@ -187,7 +204,8 @@ class VedoFactory(Sofa.Core.Controller):
         """
         Add a new Mesh to the Factory.
 
-        :param record_object:
+        :param position_object:
+        :param position_indices:
         :param animated: If True, the object will be automatically updated at each step.
         :param at: Index of the window in which to Mesh will be rendered.
         :param alpha: Mesh opacity.
@@ -198,7 +216,8 @@ class VedoFactory(Sofa.Core.Controller):
         """
 
         # Get the positions
-        positions = self.__get_position_data(record_object=record_object)
+        positions = self.__get_position_data(position_object=position_object)
+        positions = positions[position_indices] if position_indices is not None else positions
 
         # Add object
         idx = self.__factory.add_points(positions=positions,
@@ -211,5 +230,127 @@ class VedoFactory(Sofa.Core.Controller):
 
         # Register object
         if animated:
-            self.__updates[idx] = ('Points', record_object)
+            self.__updates[idx] = ('Points', (position_object, position_indices))
         return idx
+
+    def update_points(self,
+                      object_id: int,
+                      positions: Optional[ndarray] = None,
+                      alpha: Optional[float] = None,
+                      c: Optional[str] = None,
+                      scalar_field: Optional[ndarray] = None,
+                      point_size: Optional[int] = None):
+        """
+        Update an existing Point Cloud in the Factory.
+
+        :param object_id: Index of the object (follows the global order of creation).
+        :param positions: Positions of the Point Cloud DOFs.
+        :param alpha: Point Cloud opacity.
+        :param c: Point Cloud color.
+        :param scalar_field: Scalar values used to color the Point Cloud regarding the colormap.
+        :param point_size: Size of the points.
+        """
+
+        self.__factory.update_points(object_id=object_id,
+                                     positions=positions,
+                                     alpha=alpha,
+                                     c=c,
+                                     scalar_field=scalar_field,
+                                     point_size=point_size)
+
+    ###########
+    # VECTORS #
+    ###########
+
+    def add_vectors(self,
+                    position_object: Sofa.Core.Base,
+                    vector_object: Optional[Sofa.Core.Base] = None,
+                    dest_object: Optional[Sofa.Core.Base] = None,
+                    start_indices: Optional[ndarray] = None,
+                    end_indices: Optional[ndarray] = None,
+                    scale: float = 1.,
+                    animated: bool = True,
+                    at: int = -1,
+                    alpha: float = 1.,
+                    c: str = 'green',
+                    res: int = 12):
+        """
+        Add new Arrows to the Factory.
+
+        :param position_object:
+        :param vector_object:
+        :param dest_object:
+        :param start_indices:
+        :param end_indices:
+        :param scale:
+        :param animated:
+        :param at: Index of the window in which to Mesh will be rendered.
+        :param alpha: Arrows opacity.
+        :param c: Arrows color.
+        :param res: Circular resolution of the arrows.
+        """
+
+        # Get the positions
+        positions = self.__get_position_data(position_object=position_object)
+        positions = positions[start_indices] if start_indices is not None else positions
+
+        # Get the orientation vector
+        if vector_object is None and dest_object is None:
+            print("[ERROR] You must specify an object containing vector data to create arrows (either using "
+                  "'vector_object' either using 'dest_object' variables).")
+            quit()
+        if vector_object is not None:
+            vectors = self.__get_force_data(vector_object)
+        else:
+            dest = self.__get_position_data(position_object=dest_object)
+            vectors = dest - positions
+        vectors = vectors[end_indices] if end_indices is not None else vectors
+        if len(vectors) != 1 and len(vectors) != len(positions):
+            print("[ERROR] There must be a vector per DOF.")
+            quit()
+
+        if len(vectors) == 1:
+            vectors = tile(vectors, (len(positions), 1))
+
+        # Add object
+        idx = self.__factory.add_arrows(positions=positions,
+                                        vectors=vectors * scale,
+                                        at=at,
+                                        alpha=alpha,
+                                        c=c,
+                                        res=res)
+
+        # Register object
+        if animated:
+            if vector_object is not None:
+                self.__updates[idx] = ('Arrows', ('vec', position_object, start_indices, vector_object,
+                                                  end_indices, scale))
+            else:
+                self.__updates[idx] = ('Arrows', ('dst', position_object, start_indices, dest_object,
+                                                  end_indices, scale))
+        return idx
+
+    def update_arrows(self,
+                      object_id: int,
+                      positions: Optional[ndarray] = None,
+                      vectors: Optional[ndarray] = None,
+                      alpha: Optional[float] = None,
+                      c: Optional[str] = None,
+                      res: Optional[int] = None):
+        """
+        Update existing Arrows in the Factory.
+
+        :param object_id: Index of the object (follows the global order of creation).
+        :param positions: Positions of the Arrows DOFs.
+        :param vectors: Vectors of the Arrows.
+        :param alpha: Arrows opacity.
+        :param c: Arrows color.
+        :param res: Circular resolution of the arrows.
+        """
+
+        self.__factory.update_arrows(object_id=object_id,
+                                     positions=positions,
+                                     vectors=vectors,
+                                     alpha=alpha,
+                                     c=c,
+                                     res=res)

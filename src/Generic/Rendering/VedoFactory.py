@@ -220,7 +220,6 @@ class VedoFactory:
         :param colormap: Colormap scheme name.
         :param scalar_field: Scalar values used to color the Point Cloud regarding the colormap.
         :param res: Circular resolution of the arrows.
-        :return:
         """
 
         # TODO: study colormap / scalar_field use

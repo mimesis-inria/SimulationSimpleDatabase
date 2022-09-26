@@ -38,7 +38,7 @@ class VedoActor:
                 self.cmap_data[key] = value
         if len(self.cmap_data['scalar_field']) > 0:
             self.instance.cmap(cname=self.cmap_data['colormap'],
-                               input_array=self.cmap_data['scalar_field'][0]).addScalarBar()
+                               input_array=self.cmap_data['scalar_field'][0])
         return self.instance
 
     ##################

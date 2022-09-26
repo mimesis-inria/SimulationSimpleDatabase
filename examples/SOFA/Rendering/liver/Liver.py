@@ -1,7 +1,7 @@
 from typing import Optional
 from numpy.random import uniform, randint
 from numpy.linalg import norm
-from numpy import zeros
+from numpy import zeros, array
 import Sofa
 
 from SSD.SOFA.Rendering.VedoFactory import VedoFactory
@@ -48,8 +48,8 @@ class Liver(Sofa.Core.Controller):
         self.root.liver.surface.addObject('MechanicalObject', name='SurfaceMO', position='@Spheres.position')
         self.root.liver.surface.addObject('SphereCollisionModel', listRadius='@Spheres.listRadius')
         self.root.liver.surface.addObject('BarycentricMapping', input='@..', output='@.')
-        self.cff = self.root.liver.surface.addObject('ConstantForceField', indices=[33], force=[0., 0., 0.],
-                                                     showArrowSize=5e-4)
+        self.cff = self.root.liver.surface.addObject('ConstantForceField', name='CFF', indices=[33],
+                                                     force=[0., 0., 0.], showArrowSize=5e-4)
 
         # Liver.Visual
         self.root.liver.addChild('visual')
@@ -62,27 +62,31 @@ class Liver(Sofa.Core.Controller):
         if self.factory is not None:
 
             # Window 1: Liver only
-            self.factory.add_mesh(record_object=self.root.liver.visual.getObject('LiverOgl'),
+            self.factory.add_mesh(position_object=self.root.liver.visual.getObject('LiverOgl'),
                                   cell_type='triangles', animated=True,
                                   at=0, c='red5')
 
             # Window 2: Liver + Force
-            self.factory.add_mesh(record_object=self.root.liver.visual.getObject('LiverOgl'),
+            self.factory.add_mesh(position_object=self.root.liver.visual.getObject('LiverOgl'),
                                   cell_type='triangles', animated=True,
-                                  at=1, c='red5', wireframe=True, line_width=2)
+                                  at=1, c='green8', wireframe=True, line_width=1)
+            self.factory.add_vectors(position_object=self.root.liver.surface.getObject('SurfaceMO'),
+                                     vector_object=self.root.liver.surface.getObject('CFF'), animated=True,
+                                     start_indices=array([33]),
+                                     at=1, scale=0.5e-3, c='green3', res=20)
 
             # Window 3: Grid + Constraint
-            self.factory.add_points(record_object=self.root.liver.getObject('GridMO'), animated=True,
+            self.factory.add_points(position_object=self.root.liver.getObject('GridMO'), animated=True,
                                     at=2, c='grey3', point_size=10)
             self.factory.add_mesh(topology_object=self.root.liver.getObject('Grid'), cell_type='tetrahedra',
-                                  record_object=self.root.liver.getObject('GridMO'), animated=True,
+                                  position_object=self.root.liver.getObject('GridMO'), animated=True,
                                   at=2, c='grey3', wireframe=True, line_width=1)
 
             # Window 4: Liver + Displacement
             nb_points = len(self.root.liver.visual.getObject('LiverOgl').position.value)
-            self.factory.add_mesh(record_object=self.root.liver.visual.getObject('LiverOgl'),
+            self.factory.add_mesh(position_object=self.root.liver.visual.getObject('LiverOgl'),
                                   cell_type='triangles', animated=True,
-                                  at=3, alpha=0.6, colormap='cool', scalar_field=zeros((nb_points,)))
+                                  at=3, alpha=0.6, colormap='coolwarm', scalar_field=zeros((nb_points,)))
 
     def onAnimateBeginEvent(self, _):
 
@@ -98,4 +102,4 @@ class Liver(Sofa.Core.Controller):
             current = self.root.liver.visual.getObject('LiverOgl')
             init = self.root.liver.visual.getObject('Liver')
             U = norm(current.position.value - init.position.value, axis=1)
-            self.factory.update_mesh(object_id=4, scalar_field=U)
+            self.factory.update_mesh(object_id=5, scalar_field=U)

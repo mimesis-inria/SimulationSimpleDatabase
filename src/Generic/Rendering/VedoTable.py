@@ -230,16 +230,17 @@ class VedoTable:
             vec = array(vec)
 
             # Coordinates operations
-            if coords:
-                # Assume vector is in the format [all_x, all_y, all_z]
-                if len(vec) == 3:
-                    if utils.isSequence(vec[0]) and len(vec[0]) > 3:
-                        vec = stack((vec[0], vec[1], vec[2]), axis=1)
-                # Assume vector is in the format [all_x, all_y, 0]
-                elif len(vec) == 2:
-                    vec = stack((vec[0], vec[1], zeros(len(vec[0]))), axis=1)
-                # Make it 3d
-                if len(vec) and len(vec[0]) == 2:
-                    vec = c_[array(vec), zeros(len(vec))]
+            # if coords:
+            #     # Assume vector is in the format [all_x, all_y, all_z]
+            #     if len(vec) == 3:
+            #         if utils.isSequence(vec[0]) and len(vec[0]) > 3:
+            #             vec = stack((vec[0], vec[1], vec[2]), axis=1)
+            #     # Assume vector is in the format [all_x, all_y, 0]
+            #     elif len(vec) == 2:
+            #         vec = stack((vec[0], vec[1], zeros(len(vec[0]))), axis=1)
+            #     # Make it 3d
+            #     if len(vec) and len(vec[0]) == 2:
+            #         vec = c_[array(vec), zeros(len(vec))]
+            # print(vec)
 
         return vec
