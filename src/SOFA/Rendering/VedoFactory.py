@@ -104,6 +104,9 @@ class VedoFactory(Sofa.Core.Controller):
                                              positions=positions,
                                              vectors=vectors * object_data[5])
 
+            elif object_type == 'Markers':
+                self.__factory.update_markers(object_id=object_id)
+
     ########
     # MESH #
     ########
@@ -354,3 +357,76 @@ class VedoFactory(Sofa.Core.Controller):
                                      alpha=alpha,
                                      c=c,
                                      res=res)
+
+    ###########
+    # MARKERS #
+    ###########
+
+    def add_markers(self,
+                    normal_to: int,
+                    indices: ndarray,
+                    animated: bool = True,
+                    at: int = -1,
+                    alpha: float = 1.,
+                    c: str = 'green',
+                    symbol: str = 'o',
+                    size: float = 0.1,
+                    filled: bool = True):
+        """
+        Add new Markers to the Factory.
+
+        :param normal_to: Index of the object that defines normals of the Markers.
+        :param indices: Indices of the DOFs of the object where the Markers will be centered.
+        :param animated:
+        :param at: Index of the window in which to Mesh will be rendered.
+        :param alpha: Markers opacity.
+        :param c: Markers color.
+        :param symbol: Symbol of a Marker.
+        :param size: Size of a Marker.
+        :param filled: If True, the symbol is filled.
+        """
+
+        # Add object
+        idx = self.__factory.add_markers(normal_to=normal_to,
+                                         indices=indices,
+                                         at=at,
+                                         alpha=alpha,
+                                         c=c,
+                                         symbol=symbol,
+                                         size=size,
+                                         filled=filled)
+        # Register object
+        if animated:
+            self.__updates[idx] = ('Markers', None)
+        return idx
+
+    def update_markers(self,
+                       object_id: int,
+                       normal_to: Optional[int] = None,
+                       indices: Optional[ndarray] = None,
+                       alpha: Optional[float] = None,
+                       c: Optional[str] = None,
+                       symbol: Optional[str] = None,
+                       size: Optional[float] = None,
+                       filled: Optional[bool] = None):
+        """
+        Update existing Markers in the Factory.
+
+        :param object_id: Index of the object (follows the global order of creation).
+        :param normal_to: Index of the object that defines normals of the Markers.
+        :param indices: Indices of the DOFs of the object where the Markers will be centered.
+        :param alpha: Markers opacity.
+        :param c: Markers color.
+        :param symbol: Symbol of a Marker.
+        :param size: Size of a Marker.
+        :param filled: If True, the symbol is filled.
+        """
+
+        self.__factory.update_markers(object_id=object_id,
+                                      normal_to=normal_to,
+                                      indices=indices,
+                                      alpha=alpha,
+                                      c=c,
+                                      symbol=symbol,
+                                      size=size,
+                                      filled=filled)

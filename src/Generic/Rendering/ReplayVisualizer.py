@@ -1,4 +1,4 @@
-from typing import Optional, Dict
+from typing import Optional, Dict, List
 from vedo import show, Plotter
 from numpy import array
 
@@ -31,10 +31,15 @@ class ReplayVisualizer:
         table_names = self.__database.get_tables()
         table_names.remove('Visual')
         table_names.remove('Sync')
+        # Sort by id
+        sorted_table_names: List[Optional[str]] = [None] * len(table_names)
+        for table_name in table_names:
+            table_id = table_name.split('_')[1]
+            sorted_table_names[int(table_id)] = table_name
 
         # 2. Retrieve visual data and create Actors (one Table per Actor)
         instances = {}
-        for table_name in table_names:
+        for table_name in sorted_table_names:
             # Get the number of sample
             if self.__nb_sample is None:
                 self.__nb_sample = self.__database.nb_lines(table_name=table_name)
@@ -78,6 +83,9 @@ class ReplayVisualizer:
 
     def start(self):
         self.step = 1
+
+    def get_actor(self, actor_id):
+        return self.__all_actors[str(actor_id)]
 
     def update(self, _):
 

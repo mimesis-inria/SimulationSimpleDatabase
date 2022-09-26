@@ -77,10 +77,12 @@ class Liver(Sofa.Core.Controller):
 
             # Window 3: Grid + Constraint
             self.factory.add_points(position_object=self.root.liver.getObject('GridMO'), animated=True,
-                                    at=2, c='grey3', point_size=10)
+                                    at=2, c='grey3', point_size=8)
             self.factory.add_mesh(topology_object=self.root.liver.getObject('Grid'), cell_type='tetrahedra',
                                   position_object=self.root.liver.getObject('GridMO'), animated=True,
                                   at=2, c='grey3', wireframe=True, line_width=1)
+            self.factory.add_markers(normal_to=4, indices=array([3, 39, 64]),
+                                     at=2, c='red3', size=0.5, symbol='0', filled=False)
 
             # Window 4: Liver + Displacement
             nb_points = len(self.root.liver.visual.getObject('LiverOgl').position.value)
@@ -102,4 +104,4 @@ class Liver(Sofa.Core.Controller):
             current = self.root.liver.visual.getObject('LiverOgl')
             init = self.root.liver.visual.getObject('Liver')
             U = norm(current.position.value - init.position.value, axis=1)
-            self.factory.update_mesh(object_id=5, scalar_field=U)
+            self.factory.update_mesh(object_id=6, scalar_field=U)
