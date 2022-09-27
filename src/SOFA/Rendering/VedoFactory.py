@@ -20,11 +20,14 @@ class VedoFactory(Sofa.Core.Controller):
                  root: Sofa.Core.Node,
                  database: Optional[Database] = None,
                  database_name: Optional[str] = None,
-                 remove_existing: Optional[bool] = False,
+                 remove_existing: bool = False,
                  *args, **kwargs):
 
         Sofa.Core.Controller.__init__(self, *args, **kwargs)
         self.root = root
+        self.root.addChild('factory')
+        self.root.factory.addObject(self)
+
         self.__factory = _VedoFactory(database, database_name, remove_existing)
         self.__updates = {}
 

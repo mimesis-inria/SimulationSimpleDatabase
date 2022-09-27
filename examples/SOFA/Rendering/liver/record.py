@@ -2,8 +2,6 @@ import Sofa
 import os
 
 from SSD.Generic.Rendering.VedoVisualizer import VedoVisualizer
-from SSD.SOFA.Rendering.VedoFactory import VedoFactory
-
 from Liver import Liver
 
 USE_GUI = True
@@ -18,9 +16,7 @@ def createScene(node):
 
     else:
         visualizer = VedoVisualizer(database_name='liver', remove_existing=True)
-        node.addChild('facto')
-        factory = node.facto.addObject(VedoFactory(node, database=visualizer.get_database(), name='ZZZZ'))
-        node.addObject(Liver(node, factory=factory, name='Controller'))
+        node.addObject(Liver(node, database=visualizer.get_database(), name='Controller'))
         return visualizer
 
 

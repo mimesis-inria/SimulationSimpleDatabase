@@ -10,8 +10,7 @@ class Caduceus(Sofa.Core.Controller):
         Sofa.Core.Controller.__init__(self, *args, **kwargs)
 
         self.root: Sofa.Core.Node = root
-        self.factory: Optional[VedoFactory] = self.root.addObject(VedoFactory(self.root, database=database)) \
-            if database is not None else None
+        self.factory: Optional[VedoFactory] = VedoFactory(self.root, database=database) if database is not None else None
 
         # Root
         self.root.gravity.value = [0, -1000, 0]

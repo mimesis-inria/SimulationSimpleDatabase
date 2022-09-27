@@ -9,11 +9,11 @@ from SSD.SOFA.Rendering.VedoFactory import VedoFactory
 
 class Liver(Sofa.Core.Controller):
 
-    def __init__(self, root, factory=None, *args, **kwargs):
+    def __init__(self, root, database=None, *args, **kwargs):
         Sofa.Core.Controller.__init__(self, *args, **kwargs)
 
         self.root: Sofa.Core.Node = root
-        self.factory: Optional[VedoFactory] = factory
+        self.factory: Optional[VedoFactory] = VedoFactory(self.root, database=database) if database is not None else None
         self.step: int = 0
         self.cff = None
 

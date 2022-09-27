@@ -1,16 +1,20 @@
+from numpy import ndarray
 import Sofa
+
+from SSD.SOFA.Storage.Database import Database
 
 
 class Caduceus(Sofa.Core.Controller):
 
     def __init__(self, root, *args, **kwargs):
         Sofa.Core.Controller.__init__(self, *args, **kwargs)
+
         self.root: Sofa.Core.Node = root
-        self.create()
+        self.database = Database(root=root, database_name='caduceus')
 
-    def create(self):
-
-        # Root node
+        # Root
+        self.root.gravity.value = [0, -1000, 0]
+        self.root.dt.value = 0.04
         required_plugins = ['CImgPlugin', 'SofaOpenglVisual', 'SofaNonUniformFem', 'SofaConstraint', 'SofaLoader',
                             'SofaImplicitOdeSolver', 'SofaMeshCollision', 'SofaSimpleFem']
         self.root.addObject('RequiredPlugin', pluginName=required_plugins)
@@ -30,7 +34,7 @@ class Caduceus(Sofa.Core.Controller):
         self.root.addObject('SpotLight', position=[0, 80, 25], direction=[0, -1, -0.8], cutoff=30, exponent=1)
         self.root.addObject('SpotLight', position=[0, 40, 100], direction=[0, 0, -1], cutoff=30, exponent=1)
 
-        # Snake
+        # Snake.Physics
         self.root.addChild('snake')
         self.root.snake.addObject('MeshOBJLoader', name='Snake', filename='mesh/snake_body.obj')
         self.root.snake.addObject('EulerImplicitSolver', rayleighMass=1, rayleighStiffness=0.03)
@@ -38,7 +42,7 @@ class Caduceus(Sofa.Core.Controller):
                                   template='CompressedRowSparseMatrixMat3x3d')
         self.root.snake.addObject('SparseGridRamificationTopology', name='Grid', src='@Snake', n=[4, 12, 3],
                                   nbVirtualFinerLevels=3, finestConnectivity=0)
-        self.root.snake.addObject('MechanicalObject', src='@Grid', scale=1, dy=2)
+        self.root.snake.addObject('MechanicalObject', name='GridMO', src='@Grid', scale=1, dy=2)
         self.root.snake.addObject('UniformMass', totalMass=1.)
         self.root.snake.addObject('HexahedronFEMForceField', youngModulus=30000, poissonRatio=0.3, method='large',
                                   updateStiffnessMatrix=False)
@@ -70,7 +74,7 @@ class Caduceus(Sofa.Core.Controller):
         self.root.snake.visual.cornea.addObject('OglModel', name='OglCornea', src='@SnakeCornea')
         self.root.snake.visual.cornea.addObject('BarycentricMapping', input='@../..', output='@.')
 
-        # Base
+        # Base.Collision
         self.root.addChild('base')
         self.root.base.addChild('stick')
         self.root.base.stick.addObject('MeshOBJLoader', name='Stick', filename='mesh/collision_batons.obj')
@@ -97,3 +101,47 @@ class Caduceus(Sofa.Core.Controller):
         self.root.base.addChild('visual')
         self.root.base.visual.addObject('MeshOBJLoader', name='Base', filename='mesh/SOFA_pod.obj')
         self.root.base.visual.addObject('OglModel', name='OglBase', src='@Base')
+
+    def onSimulationInitDoneEvent(self, _):
+
+        # Init the Database
+        self.database.new(remove_existing=True)
+
+        # Create a Table with "manual" Fields
+        self.database.create_table(table_name='SnakeShape',
+                                   storing_table=True,
+                                   fields=[('height', float), ('size', float)])
+
+        # Create a Table for Grid with "auto" Fields
+        self.database.add_callback(table_name='SnakeGrid', field_name='X',
+                                   record_object='@snake.GridMO', record_field='position')
+        self.database.add_callback(table_name='SnakeGrid', field_name='F',
+                                   record_object='@snake.GridMO', record_field='externalForce')
+        self.database.add_callback(table_name='SnakeGrid', field_name='V',
+                                   record_object='@snake.GridMO', record_field='velocity')
+
+        # Create a Table for Collision with both "auto" and "manual" Fields
+        self.database.add_callback(table_name='SnakeCollision', field_name='X',
+                                   record_object='@snake.collision.SnakeCollMo', record_field='position')
+        self.database.create_fields(table_name='SnakeCollision', fields=('U', ndarray))
+
+        # Create a Table for Visual with "auto" Fields
+        self.database.add_callback(table_name='SnakeVisual', field_name='X',
+                                   record_object='@snake.visual.body.OglBody', record_field='position')
+        self.database.add_callback(table_name='SnakeVisual', field_name='N',
+                                   record_object='@snake.visual.body.OglBody', record_field='normal')
+
+        # Print the resulting architecture
+        self.database.print_architecture()
+
+    def onAnimateEndEvent(self, _):
+
+        # Collision Data
+        coll_mo = self.root.snake.collision.getObject('SnakeCollMo')
+        self.database.add_data(table_name='SnakeCollision',
+                               data={'U': coll_mo.position.array() - coll_mo.rest_position.array()})
+
+        # Shape Data
+        X = self.root.snake.visual.body.getObject('OglBody').position.array()
+        self.database.add_data(table_name='SnakeShape',
+                               data={'height': X.max(), 'size': X.max() - X.min()})

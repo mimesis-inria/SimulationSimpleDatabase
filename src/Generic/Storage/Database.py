@@ -119,12 +119,15 @@ class Database:
         print(f'\nDATABASE {self.__database_name}.db')
         print(''.join([table.description(indent=True, name=name) for name, table in self.__tables.items()]))
 
-    def get_tables(self):
+    def get_tables(self,
+                   only_names: bool = True):
         """
         Get the names of created Tables in the Database.
         """
 
-        return list(self.__tables.keys())
+        if only_names:
+            return list(self.__tables.keys())
+        return self.__tables
 
     def get_fields(self,
                    table_name: str,
