@@ -1,6 +1,6 @@
 import Sofa
 
-from SSD.Core.Rendering.VedoVisualizer import VedoVisualizer
+from SSD.SOFA.Rendering.VedoVisualizer import VedoVisualizer
 from Liver import Liver
 
 USE_GUI = True

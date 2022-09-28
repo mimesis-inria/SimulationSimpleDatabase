@@ -1,6 +1,6 @@
 from os.path import exists
 
-from SSD.Core.Rendering.ReplayVisualizer import ReplayVisualizer
+from SSD.SOFA.Rendering.ReplayVisualizer import ReplayVisualizer
 
 
 # Check Database existence
