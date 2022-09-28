@@ -10,7 +10,15 @@ class VedoFactory:
     def __init__(self,
                  database: Optional[Database] = None,
                  database_name: Optional[str] = None,
-                 remove_existing: Optional[bool] = False):
+                 remove_existing: bool = False):
+        """
+        A Factory to manage objects to render and save in the Database.
+        User interface to create and update Vedo objects.
+
+        :param database: Database to connect to.
+        :param database_name: Name of the Database to connect to (used if 'database' is not defined).
+        :param remove_existing: If True, overwrite a Database with the same path.
+        """
 
         # Define Database
         if database is not None:
@@ -33,22 +41,29 @@ class VedoFactory:
                                      storing_table=False,
                                      fields=('step', int))
         self.__database.register_post_save_signal(table_name='Sync',
-                                                  handler=self.sync_visualizer)
+                                                  handler=self.__sync_visualizer)
         self.__update: Dict[int, bool] = {}
 
     def get_database(self):
+        """
+        Get the Database.
+        """
 
         return self.__database
 
-    def sync_visualizer(self, table_name, data_dict):
-
-        for i in self.__update.keys():
-            self.__update[i] = False
-
     def render(self):
+        """
+        Render the current state of Actors in the Plotter.
+        """
 
         self.__database.add_data(table_name='Sync',
                                  data={'step': 1})
+
+    def __sync_visualizer(self, table_name, data_dict):
+
+        # Reset al the update flags
+        for i in self.__update.keys():
+            self.__update[i] = False
 
     def __add_object(self,
                      object_type: str,

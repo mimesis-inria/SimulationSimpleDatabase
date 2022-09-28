@@ -19,7 +19,7 @@ class Database:
                  database_dir: str = '',
                  database_name: str = 'database'):
         """
-        Object representing the Database. Manage the creation and loading of Tables in the Database.
+        Manage the creation and loading of Tables in the Database.
         User interface to dynamically add, get and update entries.
         
         :param database_dir: Directory which contains the Database file.
@@ -40,6 +40,12 @@ class Database:
 
     @staticmethod
     def make_name(table_name: str):
+        """
+        Harmonize the Table names.
+
+        :param table_name: Name of the Table.
+        """
+
         return table_name[0] + table_name[1:].lower() if len(table_name) > 1 else table_name
 
     def new(self,
@@ -123,6 +129,9 @@ class Database:
                    only_names: bool = True):
         """
         Get the names of created Tables in the Database.
+
+        :param only_names: If True, only the names of the Tables will be returned in a List, otherwise the Tables
+                           themselves are returned in a Dict.
         """
 
         if only_names:
@@ -314,7 +323,7 @@ class Database:
         Execute a batch insert query.
 
         :param table_name: Name of the Table.
-        :param batch: New lines of the Table
+        :param batch: New lines of the Table.
         """
 
         table_name = self.make_name(table_name)

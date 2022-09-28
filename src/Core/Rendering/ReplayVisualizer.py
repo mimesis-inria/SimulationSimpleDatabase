@@ -10,8 +10,14 @@ class ReplayVisualizer:
 
     def __init__(self,
                  database_name: str,
-                 database_dir: str = '',
-                 mode: str = 'auto'):
+                 database_dir: str = ''):
+        """
+        Replay a simulation from saved visual data.
+
+        :param database_name: Name of the Database.
+        :param database_dir: Directory of the Database.
+        """
+
         # Load the Database
         self.__database = Database(database_dir=database_dir, database_name=database_name).load()
 
@@ -23,10 +29,13 @@ class ReplayVisualizer:
         self.__nb_sample: Optional[int] = None
 
         # Init visualizer
-        self.mode = mode
         self.step = 1
 
     def init_visualizer(self):
+        """
+        Initialize the Visualizer: create all Actors and render them in a Plotter.
+        """
+
         # 1. Get the Tables of the Database
         table_names = self.__database.get_tables()
         table_names.remove('Visual')
@@ -77,17 +86,25 @@ class ReplayVisualizer:
                               title='SofaVedo',
                               axes=4)
         self.__plotter.timerCallback('create')
-        self.__plotter.addCallback('Timer', self.update)
-        self.__plotter.addButton(self.start, states=['start'])
+        self.__plotter.addCallback('Timer', self.__update)
+        self.__plotter.addButton(self.__start, states=['start'])
         self.__plotter.interactive()
 
-    def start(self):
-        self.step = 1
+    def get_actor(self,
+                  actor_id: int):
+        """
+        Get an Actor instance.
 
-    def get_actor(self, actor_id):
+        :param actor_id: Index of the Actor.
+        """
+
         return self.__all_actors[str(actor_id)]
 
-    def update(self, _):
+    def __start(self):
+
+        self.step = 1
+
+    def __update(self, _):
 
         self.step += 1
         if self.step < self.__nb_sample:
@@ -112,4 +129,5 @@ class ReplayVisualizer:
                 if actor.actor_type in ['Arrows', 'Markers', 'Symbols']:
                     self.__plotter.add(actor.instance, at=actor.at)
 
+            # 3. Render
             self.__plotter.render()

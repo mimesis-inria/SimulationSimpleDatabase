@@ -1,6 +1,7 @@
 from typing import Dict, Optional, Any
 from numpy import array, ndarray, stack, zeros, c_
 from vedo import utils
+
 from SSD.Core.Storage.Database import Database
 
 
@@ -31,7 +32,9 @@ class VedoTable:
         self.create_columns = create_columns[self.table_type]
         self.format_data = format_data[self.table_type]
 
-    def send_data(self, data_dict: Dict[str, Any], update: bool):
+    def send_data(self,
+                  data_dict: Dict[str, Any],
+                  update: bool):
 
         if update:
             self.database.update(table_name=self.table_name,
@@ -44,14 +47,16 @@ class VedoTable:
     # CREATE COLUMNS METHODS #
     ##########################
 
-    def __create_visual_columns(self, visual_table: Optional[str] = None):
+    def __create_visual_columns(self,
+                                visual_table: Optional[str] = None):
 
         self.database.create_table(table_name=self.table_name,
                                    fields=[('at', int, 0),
                                            ('colormap', str, 'jet')])
         return self
 
-    def __create_mesh_columns(self, visual_table: Optional[str] = None):
+    def __create_mesh_columns(self,
+                              visual_table: Optional[str] = None):
 
         self.database.create_table(table_name=self.table_name,
                                    fields=[('positions', ndarray),
@@ -65,7 +70,8 @@ class VedoTable:
                                            ('visual_fk', visual_table)])
         return self
 
-    def __create_points_columns(self, visual_table: Optional[str] = None):
+    def __create_points_columns(self,
+                                visual_table: Optional[str] = None):
 
         self.database.create_table(table_name=self.table_name,
                                    fields=[('positions', ndarray),
@@ -76,7 +82,8 @@ class VedoTable:
                                            ('visual_fk', visual_table)])
         return self
 
-    def __create_arrows_columns(self, visual_table: Optional[str] = None):
+    def __create_arrows_columns(self,
+                                visual_table: Optional[str] = None):
 
         self.database.create_table(table_name=self.table_name,
                                    fields=[('positions', ndarray),
@@ -88,7 +95,8 @@ class VedoTable:
                                            ('visual_fk', visual_table)])
         return self
 
-    def __create_markers_columns(self, visual_table: Optional[str] = None):
+    def __create_markers_columns(self,
+                                 visual_table: Optional[str] = None):
 
         self.database.create_table(table_name=self.table_name,
                                    fields=[('normal_to', int),
@@ -102,7 +110,8 @@ class VedoTable:
                                            ('visual_fk', visual_table)])
         return self
 
-    def __create_symbols_columns(self, visual_table: Optional[str] = None):
+    def __create_symbols_columns(self,
+                                 visual_table: Optional[str] = None):
 
         self.database.create_table(table_name=self.table_name,
                                    fields=[('positions', ndarray),
@@ -121,12 +130,14 @@ class VedoTable:
     #######################
 
     @classmethod
-    def __format_visual_data(cls, data_dict: Dict[str, Any]):
+    def __format_visual_data(cls,
+                             data_dict: Dict[str, Any]):
 
         return data_dict
 
     @classmethod
-    def __format_mesh_data(cls, data_dict: Dict[str, Any]):
+    def __format_mesh_data(cls,
+                           data_dict: Dict[str, Any]):
 
         visual_data = {}
         for field in ['at', 'colormap']:
@@ -145,7 +156,8 @@ class VedoTable:
         return data_dict
 
     @classmethod
-    def __format_points_data(cls, data_dict: Dict[str, Any]):
+    def __format_points_data(cls,
+                             data_dict: Dict[str, Any]):
 
         visual_data = {}
         for field in ['at', 'colormap']:
@@ -164,7 +176,8 @@ class VedoTable:
         return data_dict
 
     @classmethod
-    def __format_arrows_data(cls, data_dict: Dict[str, Any]):
+    def __format_arrows_data(cls,
+                             data_dict: Dict[str, Any]):
 
         visual_data = {}
         for field in ['at', 'colormap']:
@@ -183,7 +196,8 @@ class VedoTable:
         return data_dict
 
     @classmethod
-    def __format_markers_data(cls, data_dict: Dict[str, Any]):
+    def __format_markers_data(cls,
+                              data_dict: Dict[str, Any]):
 
         visual_data = {}
         for field in ['at', 'colormap']:
@@ -202,7 +216,8 @@ class VedoTable:
         return data_dict
 
     @classmethod
-    def __format_symbols_data(cls, data_dict: Dict[str, Any]):
+    def __format_symbols_data(cls,
+                              data_dict: Dict[str, Any]):
 
         visual_data = {}
         for field in ['at', 'colormap']:
@@ -221,7 +236,9 @@ class VedoTable:
         return data_dict
 
     @classmethod
-    def parse_vector(cls, vec, coords=True):
+    def parse_vector(cls,
+                     vec,
+                     coords: bool = True):
 
         # Ensure sequence format
         if utils.isSequence(vec):

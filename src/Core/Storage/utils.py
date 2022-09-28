@@ -1,5 +1,4 @@
 from typing import List, Tuple, Union, Optional
-from os.path import exists
 
 from SSD.Core.Storage.Database import Database
 from SSD.Core.Storage.AdaptiveTable import AdaptiveTable
@@ -184,15 +183,3 @@ def export(database_name: str,
 
     db.export(exporter=exporter,
               filename=filename)
-
-
-
-if __name__ == '__main__':
-    from os import chdir
-
-    chdir('..')
-
-    # export(database_name='my_data',
-    #        exporter='csv',
-    #        filename='export')
-    merge(['my_data', 'my_data_to'])

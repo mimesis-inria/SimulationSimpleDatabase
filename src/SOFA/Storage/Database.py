@@ -1,4 +1,4 @@
-from typing import Any, Dict, Tuple, Union, List, Callable
+from typing import Any, Dict, Tuple
 import Sofa
 
 from SSD.Core.Storage.Database import Database as _Database
@@ -11,10 +11,20 @@ class Database(Sofa.Core.Controller, _Database):
                  database_dir: str = '',
                  database_name: str = 'runSofa',
                  *args, **kwargs):
+        """
+        Manage the creation and loading of Tables in the Database.
+        User interface to dynamically add, get and update entries.
+        Additional callbacks to automatically get SOFA objects Data.
+
+        :param root: Root node of the scene graph.
+        :param database_dir: Directory which contains the Database file.
+        :param database_name: Name of the Database file.
+        """
 
         Sofa.Core.Controller.__init__(self, *args, **kwargs)
         _Database.__init__(self, database_dir, database_name)
 
+        # Add the Database controller to the scene graph
         self.root: Sofa.Core.Node = root
         self.root.addChild('database')
         self.root.database.addObject(self)
@@ -28,6 +38,14 @@ class Database(Sofa.Core.Controller, _Database):
                      field_name: str,
                      record_object: str,
                      record_field: str):
+        """
+        Add a callback on an object Data field. If the specified Table or Field does not exist, create them.
+
+        :param table_name: Name of the Table.
+        :param field_name: Name of the Field.
+        :param record_object: Path to the SOFA object in the scene graph from root node ('@child_node.object_name').
+        :param record_field: The name of the Data field to record.
+        """
 
         # Check Table existence
         table_name = self.make_name(table_name)
@@ -63,17 +81,26 @@ class Database(Sofa.Core.Controller, _Database):
         self.__path[table_name][field_name] = f'@root.{record_object[1:]}.{record_field}'
 
     def onAnimateBeginEvent(self, _):
+        """
+        At the beginning of a time step.
+        """
 
+        # Reset all the dirty flags
         self.__dirty = {table: False for table in self.get_tables()}
 
     def onAnimateEndEvent(self, _):
+        """
+        At the end of a time step.
+        """
 
+        # Execute all callbacks
         for table_name in self.__updates:
             data = {}
             for field_name, (record_object, record_field) in self.__updates[table_name].items():
                 data[field_name] = record_object.__getattr__(record_field).value
             self.add_data(table_name=table_name, data=data)
 
+        # If a Table was not updated, add an empty line (keep one line per time step)
         for table_name, dirty in self.__dirty.items():
             if not dirty:
                 self.add_data(table_name, data={})
@@ -81,18 +108,28 @@ class Database(Sofa.Core.Controller, _Database):
     def add_data(self,
                  table_name: str,
                  data: Dict[str, Any]):
+        """
+        Execute a line insert query.
+
+        :param table_name: Name of the Table.
+        :param data: New line of the Table.
+        """
 
         table_name = self.make_name(table_name)
+        # If the Table was already edited during the time then update it (keep one line per time step)
         if self.__dirty[table_name]:
             self.update(table_name=table_name, data=data)
+        # Otherwise, create a new line
         else:
             self.__dirty[table_name] = True
             _Database.add_data(self, table_name=table_name, data=data)
 
     def print_architecture(self):
+        """
+        Print the content of the Database with Table(s), Field(s) and connected SOFA objects.
+        """
 
         print(f'\nDATABASE {self.__database_name}.db')
-
         for name, table in self.get_tables(only_names=False).items():
             info = table.description(indent=True, name=name).split('\n')
             for i, line in enumerate(info[1:-1]):

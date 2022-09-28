@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Dict, Tuple, Any
 from numpy import array, ndarray, tile
 import Sofa
 
@@ -22,14 +22,26 @@ class VedoFactory(Sofa.Core.Controller):
                  database_name: Optional[str] = None,
                  remove_existing: bool = False,
                  *args, **kwargs):
+        """
+            A Factory to manage objects to render and save in the Database.
+            User interface to create and update Vedo objects.
+            Additional callbacks to automatically get SOFA objects Data.
+
+            :param root: Root node of the sce graph.
+            :param database: Database to connect to.
+            :param database_name: Name of the Database to connect to (used if 'database' is not defined).
+            :param remove_existing: If True, overwrite a Database with the same path.
+            """
 
         Sofa.Core.Controller.__init__(self, *args, **kwargs)
-        self.root = root
+
+        # Add the Factory controller to the scene graph
+        self.root: Sofa.Core.Node = root
         self.root.addChild('factory')
         self.root.factory.addObject(self)
 
-        self.__factory = _VedoFactory(database, database_name, remove_existing)
-        self.__updates = {}
+        self.__factory: _VedoFactory = _VedoFactory(database, database_name, remove_existing)
+        self.__updates: Dict[int, Tuple[str, Any]] = {}
 
     @classmethod
     def __get_position_data(cls,
@@ -80,7 +92,11 @@ class VedoFactory(Sofa.Core.Controller):
         return cells
 
     def onAnimateEndEvent(self, _):
+        """
+        At the end of a time step.
+        """
 
+        # Execute all callbacks
         for object_id, (object_type, object_data) in self.__updates.items():
 
             if object_type == 'Mesh':
