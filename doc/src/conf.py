@@ -13,8 +13,8 @@
 from os.path import abspath, join, pardir
 import sys
 
-# Generic.Rendering modules import
-root = abspath(join(abspath(__file__), pardir, pardir, pardir, 'src', 'Generic', 'Storage'))
+# Core.rendering modules import
+root = abspath(join(abspath(__file__), pardir, pardir, pardir, 'src', 'Core', 'Storage'))
 sys.path.append(root)
 # all_modules = ['Database', 'utils']
 # for module in all_modules:

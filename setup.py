@@ -11,8 +11,8 @@ except ImportError:
     include_SOFA = False
 
 project = 'SSD'
-roots = ['Generic', 'SOFA'] if include_SOFA else ['Generic']
-root_packages = ['Storage', 'Rendering']
+roots = ['Core', 'SOFA'] if include_SOFA else ['Core']
+root_packages = ['storage', 'rendering']
 
 for root in roots:
     packages.append(f'{project}.{root}')

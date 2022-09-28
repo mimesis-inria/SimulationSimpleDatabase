@@ -1,7 +1,7 @@
 from typing import Any, Dict, Tuple, Union, List, Callable
 import Sofa
 
-from SSD.Generic.Storage.Database import Database as _Database
+from SSD.Core.Storage.Database import Database as _Database
 
 
 class Database(Sofa.Core.Controller, _Database):

@@ -2,8 +2,8 @@ from typing import Optional
 from numpy import array, ndarray, tile
 import Sofa
 
-from SSD.Generic.Storage.Database import Database
-from SSD.Generic.Rendering.VedoFactory import VedoFactory as _VedoFactory
+from SSD.Core.Storage.Database import Database
+from SSD.Core.Rendering.VedoFactory import VedoFactory as _VedoFactory
 
 
 class VedoFactory(Sofa.Core.Controller):
