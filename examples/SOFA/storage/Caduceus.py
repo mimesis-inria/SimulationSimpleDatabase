@@ -6,11 +6,13 @@ from SSD.SOFA.Storage.Database import Database
 
 class Caduceus(Sofa.Core.Controller):
 
-    def __init__(self, root, *args, **kwargs):
+    def __init__(self, root, database=False, *args, **kwargs):
         Sofa.Core.Controller.__init__(self, *args, **kwargs)
 
         self.root: Sofa.Core.Node = root
-        self.database = Database(root=root, database_name='rendering-offscreen')
+
+        # Create the Database
+        self.database = Database(root=root, database_name='caduceus') if database else None
 
         # Root
         self.root.gravity.value = [0, -1000, 0]
@@ -104,44 +106,48 @@ class Caduceus(Sofa.Core.Controller):
 
     def onSimulationInitDoneEvent(self, _):
 
-        # Init the Database
-        self.database.new(remove_existing=True)
+        if self.database is not None:
 
-        # Create a Table with "manual" Fields
-        self.database.create_table(table_name='SnakeShape',
-                                   storing_table=True,
-                                   fields=[('height', float), ('size', float)])
+            # Init the Database
+            self.database.new(remove_existing=True)
 
-        # Create a Table for Grid with "auto" Fields
-        self.database.add_callback(table_name='SnakeGrid', field_name='X',
-                                   record_object='@snake.GridMO', record_field='position')
-        self.database.add_callback(table_name='SnakeGrid', field_name='F',
-                                   record_object='@snake.GridMO', record_field='externalForce')
-        self.database.add_callback(table_name='SnakeGrid', field_name='V',
-                                   record_object='@snake.GridMO', record_field='velocity')
+            # Create a Table with "manual" Fields
+            self.database.create_table(table_name='SnakeShape',
+                                       storing_table=True,
+                                       fields=[('height', float), ('size', float)])
 
-        # Create a Table for Collision with both "auto" and "manual" Fields
-        self.database.add_callback(table_name='SnakeCollision', field_name='X',
-                                   record_object='@snake.collision.SnakeCollMo', record_field='position')
-        self.database.create_fields(table_name='SnakeCollision', fields=('U', ndarray))
+            # Create a Table for Grid with "auto" Fields
+            self.database.add_callback(table_name='SnakeGrid', field_name='X',
+                                       record_object='@snake.GridMO', record_field='position')
+            self.database.add_callback(table_name='SnakeGrid', field_name='F',
+                                       record_object='@snake.GridMO', record_field='externalForce')
+            self.database.add_callback(table_name='SnakeGrid', field_name='V',
+                                       record_object='@snake.GridMO', record_field='velocity')
 
-        # Create a Table for Visual with "auto" Fields
-        self.database.add_callback(table_name='SnakeVisual', field_name='X',
-                                   record_object='@snake.visual.body.OglBody', record_field='position')
-        self.database.add_callback(table_name='SnakeVisual', field_name='N',
-                                   record_object='@snake.visual.body.OglBody', record_field='normal')
+            # Create a Table for Collision with both "auto" and "manual" Fields
+            self.database.add_callback(table_name='SnakeCollision', field_name='X',
+                                       record_object='@snake.collision.SnakeCollMo', record_field='position')
+            self.database.create_fields(table_name='SnakeCollision', fields=('U', ndarray))
 
-        # Print the resulting architecture
-        self.database.print_architecture()
+            # Create a Table for Visual with "auto" Fields
+            self.database.add_callback(table_name='SnakeVisual', field_name='X',
+                                       record_object='@snake.visual.body.OglBody', record_field='position')
+            self.database.add_callback(table_name='SnakeVisual', field_name='N',
+                                       record_object='@snake.visual.body.OglBody', record_field='normal')
+
+            # Print the resulting architecture
+            self.database.print_architecture()
 
     def onAnimateEndEvent(self, _):
 
-        # Collision Data
-        coll_mo = self.root.snake.collision.getObject('SnakeCollMo')
-        self.database.add_data(table_name='SnakeCollision',
-                               data={'U': coll_mo.position.array() - coll_mo.rest_position.array()})
+        if self.database is not None:
 
-        # Shape Data
-        X = self.root.snake.visual.body.getObject('OglBody').position.array()
-        self.database.add_data(table_name='SnakeShape',
-                               data={'height': X.max(), 'size': X.max() - X.min()})
+            # Collision Data
+            coll_mo = self.root.snake.collision.getObject('SnakeCollMo')
+            self.database.add_data(table_name='SnakeCollision',
+                                   data={'U': coll_mo.position.array() - coll_mo.rest_position.array()})
+
+            # Shape Data
+            X = self.root.snake.visual.body.getObject('OglBody').position.array()
+            self.database.add_data(table_name='SnakeShape',
+                                   data={'height': X.max(), 'size': X.max() - X.min()})

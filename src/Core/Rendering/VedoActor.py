@@ -158,8 +158,9 @@ class VedoActor:
 
     def __update_symbols(self, data):
 
-        if 'orientations' in data:
-            pos = data['positions'] if 'positions' in data else self.actor_data['positions']
+        if 'orientations' in data and data['orientations'] is not None:
+            pos = data['positions'] if 'positions' in data and data['positions'] is not None\
+                else self.actor_data['positions']
             if data['orientations'].shape == (1, 3):
                 data['orientations'] = tile(data['orientations'][0], (len(pos), 1))
             else:

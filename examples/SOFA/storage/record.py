@@ -1,23 +1,32 @@
 import Sofa
-import os
 
 from Caduceus import Caduceus
+
+USE_GUI = True
 
 
 def createScene(node):
 
-    node.addObject(Caduceus(node, name='Controller'))
+    global USE_GUI
+
+    # The script is launched with "runSofa"
+    if USE_GUI:
+        node.addObject(Caduceus(node, name='Controller'))
+
+    # The script is launched with "python3" then create a Database
+    else:
+        node.addObject(Caduceus(node, database=True, name='Controller'))
 
 
 if __name__ == '__main__':
 
+    USE_GUI = False
+
+    # Init the scene graph
     root = Sofa.Core.Node('root')
     createScene(root)
     Sofa.Simulation.init(root)
 
-    for _ in range(300):
+    # Run a few steps of simulation and render them
+    for _ in range(100):
         Sofa.Simulation.animate(root, root.dt.value)
-
-    for file in os.listdir(os.getcwd()):
-        if '.ini' in file or '.log' in file:
-            os.remove(file)

@@ -1,4 +1,3 @@
-from typing import Optional
 import Sofa
 
 from SSD.SOFA.Rendering.VedoFactory import VedoFactory
@@ -10,7 +9,9 @@ class Caduceus(Sofa.Core.Controller):
         Sofa.Core.Controller.__init__(self, *args, **kwargs)
 
         self.root: Sofa.Core.Node = root
-        self.factory: Optional[VedoFactory] = VedoFactory(self.root, database=database) if database is not None else None
+
+        # Create the factory
+        self.factory = VedoFactory(self.root, database=database) if database is not None else None
 
         # Root
         self.root.gravity.value = [0, -1000, 0]
@@ -104,17 +105,18 @@ class Caduceus(Sofa.Core.Controller):
 
     def onSimulationInitDoneEvent(self, _):
 
+        # Add objects to the factory
         if self.factory is not None:
 
-            # Snake visual meshes (body + eyes)
+            # Window 1: Snake visual meshes for body (id=0) and eyes (id=1)
             self.factory.add_mesh(position_object=self.root.snake.visual.body.getObject('OglBody'),
                                   cell_type='quads', animated=True,
-                                  at=0, c='indigo7')
+                                  at=0, c='#93493a')
             self.factory.add_mesh(position_object=self.root.snake.visual.eye.getObject('OglEye'),
                                   cell_type='quads', animated=True,
                                   at=0, c='yellow5')
 
-            # Base visual meshes (quads + triangles cells)
+            # Window 1: Base visual meshes for quads (id=2) and triangles (id=3)
             self.factory.add_mesh(position_object=self.root.base.visual.getObject('OglBase'),
                                   cell_type='quads', animated=False,
                                   at=0, c='orange4')
@@ -122,13 +124,13 @@ class Caduceus(Sofa.Core.Controller):
                                   cell_type='triangles', animated=False,
                                   at=0, c='orange4')
 
-            # Snake collision mesh
+            # Window 2: Snake collision mesh (id=4)
             self.factory.add_mesh(position_object=self.root.snake.collision.getObject('SnakeCollMo'),
                                   topology_object=self.root.snake.collision.getObject('SnakeCollTopo'),
                                   cell_type='triangles', animated=True,
                                   at=1, c='orange7', wireframe=True, line_width=2)
 
-            # Base Collision meshes (stick + blobs + foot)
+            # Window 2: Base Collision meshes for stick (id=5), blobs (id=6) and foot (id=7)
             self.factory.add_mesh(position_object=self.root.base.stick.getObject('StickCollTopo'),
                                   cell_type='edges', animated=False,
                                   at=1, c='orange7', wireframe=True, line_width=2)
