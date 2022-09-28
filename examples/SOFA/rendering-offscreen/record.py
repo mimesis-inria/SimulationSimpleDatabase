@@ -16,7 +16,7 @@ def createScene(node):
 
     # The script is launched with "python3" then create a Visualizer
     else:
-        visualizer = VedoVisualizer(database_name='caduceus', remove_existing=True, offscreen=False)
+        visualizer = VedoVisualizer(database_name='caduceus', remove_existing=True, offscreen=True)
         node.addObject(Caduceus(node, database=visualizer.get_database(), name='Controller'))
         return visualizer
 

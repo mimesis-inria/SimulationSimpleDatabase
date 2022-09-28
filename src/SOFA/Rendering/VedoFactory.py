@@ -126,13 +126,31 @@ class VedoFactory(Sofa.Core.Controller):
             elif object_type == 'Markers':
                 self.__factory.update_markers(object_id=object_id)
 
+    def __get_object(self,
+                     object_path: str):
+
+        if object_path[0] != '@':
+            print("You must give the Path to the object to record: '@child_node.object_name'.")
+            quit()
+        node = self.root
+        for child_node in object_path[1:].split('.')[:-1]:
+            try:
+                node = node.__getattr__(child_node)
+            except:
+                print(f"[ERROR] The child node {child_node} does not exist.")
+                quit()
+        try:
+            return node.__getattr__(object_path.split('.')[-1])
+        except:
+            print(f"[ERROR] The object {object_path.split('.')[-1]} does not exist.")
+
     ########
     # MESH #
     ########
 
     def add_mesh(self,
-                 position_object: Sofa.Core.Base,
-                 topology_object: Optional[Sofa.Core.Base] = None,
+                 position_object: str,
+                 topology_object: Optional[str] = None,
                  cell_type: str = 'triangles',
                  animated=True,
                  at: int = -1,
@@ -146,9 +164,9 @@ class VedoFactory(Sofa.Core.Controller):
         """
         Add a new Mesh to the Factory.
 
-        :param position_object:
-        :param cell_type:
-        :param topology_object:
+        :param position_object: Path to an object containing position and eventually topology Data.
+        :param topology_object: Path to an object containing topology Data.
+        :param cell_type: Type of the cells ('edges', 'triangles', 'quads', 'tetrahedra', 'hexahedra').
         :param animated: If True, the object will be automatically updated at each step.
         :param at: Index of the window in which to Mesh will be rendered.
         :param alpha: Mesh opacity.
@@ -159,6 +177,11 @@ class VedoFactory(Sofa.Core.Controller):
         :param compute_normals: If True, the normals of the Mesh are pre-computed.
         :param line_width: Width of the edges of the faces.
         """
+
+        # Get the objects
+        position_object = self.__get_object(object_path=position_object)
+        topology_object = position_object if topology_object is None \
+            else self.__get_object(object_path=topology_object)
 
         # Get the cells
         cells = self.__get_topology_data(
@@ -214,7 +237,7 @@ class VedoFactory(Sofa.Core.Controller):
     ##########
 
     def add_points(self,
-                   position_object: Sofa.Core.Base,
+                   position_object: str,
                    position_indices: Optional[ndarray] = None,
                    animated=True,
                    at: int = -1,
@@ -236,6 +259,9 @@ class VedoFactory(Sofa.Core.Controller):
         :param scalar_field: Scalar values used to color the Mesh regarding the colormap.
         :param point_size: Size of the points.
         """
+
+        # Get the object
+        position_object = self.__get_object(object_path=position_object)
 
         # Get the positions
         positions = self.__get_position_data(position_object=position_object)
@@ -285,9 +311,9 @@ class VedoFactory(Sofa.Core.Controller):
     ###########
 
     def add_vectors(self,
-                    position_object: Sofa.Core.Base,
-                    vector_object: Optional[Sofa.Core.Base] = None,
-                    dest_object: Optional[Sofa.Core.Base] = None,
+                    position_object: str,
+                    vector_object: Optional[str] = None,
+                    dest_object: Optional[str] = None,
                     start_indices: Optional[ndarray] = None,
                     end_indices: Optional[ndarray] = None,
                     scale: float = 1.,
@@ -311,6 +337,11 @@ class VedoFactory(Sofa.Core.Controller):
         :param c: Arrows color.
         :param res: Circular resolution of the arrows.
         """
+
+        # Get the objects
+        position_object = self.__get_object(object_path=position_object)
+        vector_object = self.__get_object(object_path=vector_object) if vector_object is not None else None
+        dest_object = self.__get_object(object_path=dest_object) if dest_object is not None else None
 
         # Get the positions
         positions = self.__get_position_data(position_object=position_object)

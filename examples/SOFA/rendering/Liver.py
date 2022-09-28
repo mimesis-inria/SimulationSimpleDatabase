@@ -63,31 +63,30 @@ class Liver(Sofa.Core.Controller):
         if self.factory is not None:
 
             # Window 1: Liver only (id=0)
-            self.factory.add_mesh(position_object=self.root.liver.visual.getObject('LiverOgl'),
+            self.factory.add_mesh(position_object='@liver.visual.LiverOgl',
                                   cell_type='triangles', animated=True,
                                   at=0, c='red5')
 
             # Window 2: Liver (id=1) + Force (id=2)
-            self.factory.add_mesh(position_object=self.root.liver.visual.getObject('LiverOgl'),
+            self.factory.add_mesh(position_object='@liver.visual.LiverOgl',
                                   cell_type='triangles', animated=True,
                                   at=1, c='green8', wireframe=True, line_width=1)
-            self.factory.add_vectors(position_object=self.root.liver.surface.getObject('SurfaceMO'),
-                                     vector_object=self.root.liver.surface.getObject('CFF'), animated=True,
-                                     start_indices=array([33]),
+            self.factory.add_vectors(position_object='@liver.surface.SurfaceMO', vector_object='@liver.surface.CFF',
+                                     animated=True, start_indices=array([33]),
                                      at=1, scale=0.5e-3, c='green3', res=20)
 
             # Window 3: Grid (id=3 & id=4) + Constraint (id=5)
-            self.factory.add_points(position_object=self.root.liver.getObject('GridMO'), animated=True,
+            self.factory.add_points(position_object='@liver.GridMO', animated=True,
                                     at=2, c='grey3', point_size=8)
-            self.factory.add_mesh(topology_object=self.root.liver.getObject('Grid'), cell_type='tetrahedra',
-                                  position_object=self.root.liver.getObject('GridMO'), animated=True,
+            self.factory.add_mesh(position_object='@liver.GridMO', topology_object='@liver.Grid',
+                                  cell_type='tetrahedra', animated=True,
                                   at=2, c='grey3', wireframe=True, line_width=1)
             self.factory.add_markers(normal_to=4, indices=array([3, 39, 64]),
                                      at=2, c='red3', size=0.5, symbol='0', filled=False)
 
             # Window 4: Liver Displacement (id=6)
             nb_points = len(self.root.liver.visual.getObject('LiverOgl').position.value)
-            self.factory.add_mesh(position_object=self.root.liver.visual.getObject('LiverOgl'),
+            self.factory.add_mesh(position_object='@liver.visual.LiverOgl',
                                   cell_type='triangles', animated=True,
                                   at=3, alpha=0.6, colormap='coolwarm', scalar_field=zeros((nb_points,)))
 
