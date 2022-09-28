@@ -107,34 +107,34 @@ class Caduceus(Sofa.Core.Controller):
         if self.factory is not None:
 
             # Snake visual meshes (body + eyes)
-            self.factory.add_mesh(record_object=self.root.snake.visual.body.getObject('OglBody'),
+            self.factory.add_mesh(position_object=self.root.snake.visual.body.getObject('OglBody'),
                                   cell_type='quads', animated=True,
                                   at=0, c='indigo7')
-            self.factory.add_mesh(record_object=self.root.snake.visual.eye.getObject('OglEye'),
+            self.factory.add_mesh(position_object=self.root.snake.visual.eye.getObject('OglEye'),
                                   cell_type='quads', animated=True,
                                   at=0, c='yellow5')
 
             # Base visual meshes (quads + triangles cells)
-            self.factory.add_mesh(record_object=self.root.base.visual.getObject('OglBase'),
+            self.factory.add_mesh(position_object=self.root.base.visual.getObject('OglBase'),
                                   cell_type='quads', animated=False,
                                   at=0, c='orange4')
-            self.factory.add_mesh(record_object=self.root.base.visual.getObject('OglBase'),
+            self.factory.add_mesh(position_object=self.root.base.visual.getObject('OglBase'),
                                   cell_type='triangles', animated=False,
                                   at=0, c='orange4')
 
             # Snake collision mesh
-            self.factory.add_mesh(record_object=self.root.snake.collision.getObject('SnakeCollMo'),
+            self.factory.add_mesh(position_object=self.root.snake.collision.getObject('SnakeCollMo'),
                                   topology_object=self.root.snake.collision.getObject('SnakeCollTopo'),
                                   cell_type='triangles', animated=True,
                                   at=1, c='orange7', wireframe=True, line_width=2)
 
             # Base Collision meshes (stick + blobs + foot)
-            self.factory.add_mesh(record_object=self.root.base.stick.getObject('StickCollTopo'),
+            self.factory.add_mesh(position_object=self.root.base.stick.getObject('StickCollTopo'),
                                   cell_type='edges', animated=False,
                                   at=1, c='orange7', wireframe=True, line_width=2)
-            self.factory.add_mesh(record_object=self.root.base.blobs.getObject('BlobsCollTopo'),
+            self.factory.add_mesh(position_object=self.root.base.blobs.getObject('BlobsCollTopo'),
                                   cell_type='triangles', animated=False,
                                   at=1, c='orange7', wireframe=True, line_width=2)
-            self.factory.add_mesh(record_object=self.root.base.foot.getObject('FootCollTopo'),
+            self.factory.add_mesh(position_object=self.root.base.foot.getObject('FootCollTopo'),
                                   cell_type='triangles', animated=False,
                                   at=1, c='orange7', wireframe=True, line_width=2)

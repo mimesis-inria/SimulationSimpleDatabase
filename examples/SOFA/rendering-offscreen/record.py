@@ -15,7 +15,7 @@ def createScene(node):
         node.addObject(Caduceus(node, name='Controller'))
 
     else:
-        visualizer = VedoVisualizer(database_name='rendering-offscreen', remove_existing=True)
+        visualizer = VedoVisualizer(database_name='caduceus', remove_existing=True, offscreen=True)
         node.addObject(Caduceus(node, database=visualizer.get_database(), name='Controller'))
         return visualizer
 

@@ -9,7 +9,7 @@ from SSD.Core.Rendering.VedoFactory import VedoFactory as _VedoFactory
 class VedoFactory(Sofa.Core.Controller):
     accessor = {'position': lambda o: o.position.value,
                 'positions': lambda o: o.positions.value,
-                'edges': lambda o: o.egdes.value,
+                'edges': lambda o: o.edges.value,
                 'triangles': lambda o: o.triangles.value,
                 'quads': lambda o: o.quads.value,
                 'tetrahedra': lambda o: o.tetrahedra.value,

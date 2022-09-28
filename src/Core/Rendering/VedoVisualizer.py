@@ -12,7 +12,8 @@ class VedoVisualizer:
     def __init__(self,
                  database: Optional[Database] = None,
                  database_name: Optional[str] = None,
-                 remove_existing: Optional[bool] = False):
+                 remove_existing: bool = False,
+                 offscreen: bool = False):
 
         # Define Database
         if database is not None:
@@ -27,6 +28,7 @@ class VedoVisualizer:
         self.__all_actors: Dict[str, VedoActor] = {}
         self.__updated_actors: Dict[str, bool] = {}
         self.__plotter: Optional[Plotter] = None
+        self.__offscreen: bool = offscreen
 
     def get_database(self):
         return self.__database
@@ -73,29 +75,30 @@ class VedoVisualizer:
             instances[at].append(self.__actors[at][actor_id].create(data_dict).apply_cmap(cmap_dict))
 
         # 3. Create Plotter
-        actors = []
-        for window in sorted(instances.keys()):
-            actors.append(instances[window])
-        plt = show(actors,
-                   new=True,
-                   N=len(actors),
-                   sharecam=True,
-                   interactive=False,
-                   title='SofaVedo',
-                   axes=4)
-        plt.addButton(plt.interactor.TerminateApp, states=["start"])
-        plt.interactive()
-        # Once the user closed the window, recreate a new Plotter
-        camera = {'pos': plt.camera.GetPosition(),
-                  'focalPoint': plt.camera.GetFocalPoint()}
-        self.__plotter = show(actors,
-                              new=True,
-                              N=len(actors),
-                              sharecam=True,
-                              interactive=False,
-                              title='SofaVedo',
-                              axes=plt.axes,
-                              camera=camera)
+        if not self.__offscreen:
+            actors = []
+            for window in sorted(instances.keys()):
+                actors.append(instances[window])
+            plt = show(actors,
+                       new=True,
+                       N=len(actors),
+                       sharecam=True,
+                       interactive=False,
+                       title='SofaVedo',
+                       axes=4)
+            plt.addButton(plt.interactor.TerminateApp, states=["start"])
+            plt.interactive()
+            # Once the user closed the window, recreate a new Plotter
+            camera = {'pos': plt.camera.GetPosition(),
+                      'focalPoint': plt.camera.GetFocalPoint()}
+            self.__plotter = show(actors,
+                                  new=True,
+                                  N=len(actors),
+                                  sharecam=True,
+                                  interactive=False,
+                                  title='SofaVedo',
+                                  axes=plt.axes,
+                                  camera=camera)
 
     def update_instance(self,
                         table_name: str,
@@ -109,10 +112,10 @@ class VedoVisualizer:
             actor = self.__all_actors[table_name.split('_')[1]]
             if table_name == 'mesh_4':
                 print(cmap_dict)
-            if actor.actor_type in ['Arrows', 'Markers', 'Symbols']:
+            if actor.actor_type in ['Arrows', 'Markers', 'Symbols'] and not self.__offscreen:
                 self.__plotter.remove(actor.instance, at=actor.at)
             actor.update(data_dict).apply_cmap(cmap_dict)
-            if actor.actor_type in ['Arrows', 'Markers', 'Symbols']:
+            if actor.actor_type in ['Arrows', 'Markers', 'Symbols'] and not self.__offscreen:
                 self.__plotter.add(actor.instance, at=actor.at)
             self.__updated_actors[table_name.split('_')[1]] = True
 
@@ -122,7 +125,8 @@ class VedoVisualizer:
                                  data={'step': 1})
 
     def sync_visualizer(self, table_name, data_dict):
-        self.__plotter.render()
+        if not self.__offscreen:
+            self.__plotter.render()
         table_names = self.__database.get_tables()
         table_names.remove('Visual')
         table_names.remove('Sync')
