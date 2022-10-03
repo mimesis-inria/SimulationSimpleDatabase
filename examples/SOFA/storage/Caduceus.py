@@ -140,6 +140,7 @@ class Caduceus(Sofa.Core.Controller):
 
     def onAnimateEndEvent(self, _):
 
+        # Only update "manual" Fields
         if self.database is not None:
 
             # Collision Data

@@ -2,6 +2,7 @@ from typing import Any, Dict, Tuple
 import Sofa
 
 from SSD.Core.Storage.Database import Database as _Database
+from SSD.SOFA.utils import error_message
 
 
 class Database(Sofa.Core.Controller, _Database):
@@ -52,19 +53,35 @@ class Database(Sofa.Core.Controller, _Database):
         if table_name not in self.get_tables():
             self.create_table(table_name=table_name)
 
-        # Get the object
-        if record_object[0] != '@':
-            raise TypeError("You must give the Path to the object to record: '@child_node.object_name'.")
-        node = self.root
-        for child_node in record_object[1:].split('.')[:-1]:
-            node = node.__getattr__(child_node)
-        obj = node.__getattr__(record_object.split('.')[-1])
+        # Check the path
+        if record_object[0] != '@' or len(record_object[1:].split('.')) == 0:
+            error_message(f"You must give the absolute path to the object to record. "
+                          f"The path '{record_object}' must be defined such as '@child_node.object_name'.")
 
-        # Check Data access
-        try:
-            data_type = type(obj.__getattr__(record_field).value)
-        except:
-            raise ValueError(f"The given object does not have a '{field_name}' Data field.")
+        # Access each child node
+        node: Sofa.Core.Node = self.root
+        child_nodes = record_object[1:].split('.')[:-1]
+        if len(child_nodes) > 0 and child_nodes[0] == node.getName():
+            child_nodes.pop(0)
+        for child_node in child_nodes:
+            if child_node not in node.children:
+                node_path = f'{self.root.getName()}{node.getPathName()}'
+                error_message(f"The node '{child_node}' is not a child of '{node_path}'. "
+                              f"Available children are {[n.getName() for n in node.children]}.")
+            node = node.getChild(child_node)
+
+        # Access object
+        object_name = record_object[1:].split('.')[-1]
+        if object_name not in node.objects:
+            node_path = f'{self.root.getName()}{node.getPathName()}'
+            error_message(f"The object '{object_name} does not belong to node '{node_path}'. "
+                          f"Available objects are {[o.getName() for o in node.objects]}.")
+        obj: Sofa.Core.Object = node.getObject(object_name)
+
+        # Check Data access and get Data type
+        if (data := obj.getData(record_field)) is None:
+            error_message(f"The object {obj.getName()} does not have a '{field_name}' Data field.")
+        data_type = type(data.value)
 
         # Check Field existence
         if field_name not in self.get_fields(table_name=table_name):
@@ -76,7 +93,7 @@ class Database(Sofa.Core.Controller, _Database):
             self.__updates[table_name] = {}
             self.__path[table_name] = {}
         if field_name in self.__updates[table_name]:
-            raise ValueError(f"The Field '{field_name}' in Table '{table_name}' is already associated with an object.")
+            error_message(f"The Field '{field_name}' in Table '{table_name}' is already associated with an object.")
         self.__updates[table_name][field_name] = (obj, record_field)
         self.__path[table_name][field_name] = f'@root.{record_object[1:]}.{record_field}'
 
@@ -97,7 +114,7 @@ class Database(Sofa.Core.Controller, _Database):
         for table_name in self.__updates:
             data = {}
             for field_name, (record_object, record_field) in self.__updates[table_name].items():
-                data[field_name] = record_object.__getattr__(record_field).value
+                data[field_name] = record_object.getData(record_field).value
             self.add_data(table_name=table_name, data=data)
 
         # If a Table was not updated, add an empty line (keep one line per time step)

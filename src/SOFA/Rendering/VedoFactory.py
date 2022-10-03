@@ -4,17 +4,10 @@ import Sofa
 
 from SSD.Core.Storage.Database import Database
 from SSD.Core.Rendering.VedoFactory import VedoFactory as _VedoFactory
+from SSD.SOFA.utils import error_message
 
 
 class VedoFactory(Sofa.Core.Controller):
-    accessor = {'position': lambda o: o.position.value,
-                'positions': lambda o: o.positions.value,
-                'edges': lambda o: o.edges.value,
-                'triangles': lambda o: o.triangles.value,
-                'quads': lambda o: o.quads.value,
-                'tetrahedra': lambda o: o.tetrahedra.value,
-                'hexahedra': lambda o: o.hexahedra.value,
-                'forces': lambda o: o.forces.value}
 
     def __init__(self,
                  root: Sofa.Core.Node,
@@ -47,30 +40,38 @@ class VedoFactory(Sofa.Core.Controller):
     def __get_position_data(cls,
                             position_object: Sofa.Core.Base) -> ndarray:
 
-        try:
-            positions = cls.accessor['positions'](position_object)
-        except:
-            try:
-                positions = cls.accessor['position'](position_object)
-            except:
+        # Try to access Data field
+        if (data := position_object.getData('positions')) is None:
+            if (data := position_object.getData('position')) is None:
                 positions = None
+            else:
+                positions = data.value
+        else:
+            positions = data.value
+
+        # Check value
         if positions is None or len(positions) == 0:
-            print("[ERROR] The given 'record_object' does not contain any positions information or contains empty "
-                  "positions.")
-            quit()
+            error_message(f"The object '{position_object.getName()}' does not contain any position data or contains an "
+                          f"empty position array.")
         return positions
 
     @classmethod
     def __get_force_data(cls,
                          force_object: Sofa.Core.Base) -> ndarray:
 
-        try:
-            forces = cls.accessor['forces'](force_object)
-        except:
-            forces = None
+        # Try to access Data field
+        if (data := force_object.getData('forces')) is None:
+            if (data := force_object.getData('force')) is None:
+                forces = None
+            else:
+                forces = data.value
+        else:
+            forces = data.value
+
+        # Check value
         if forces is None or len(forces) == 0:
-            print("[ERROR] The given 'record_object' does not contain any force information or contains empty forces")
-            quit()
+            error_message(f"The object '{force_object.getName()} does not contain any force data or contains an empty "
+                          f"force array.")
         return forces
 
     @classmethod
@@ -78,17 +79,21 @@ class VedoFactory(Sofa.Core.Controller):
                             topology_object: Sofa.Core.Base,
                             cell_type: str) -> ndarray:
 
-        if cell_type not in cls.accessor.keys():
-            print("[ERROR] The 'cell_type' must be in ['edges', 'triangles', 'quads', 'tetrahedra', 'hexahedra'].")
-            quit()
-        try:
-            cells = cls.accessor[cell_type](topology_object)
-        except:
+        # Check cell type
+        available_cell_types = ['edges', 'triangles', 'quads', 'tetrahedra', 'hexahedra']
+        if cell_type not in available_cell_types:
+            error_message(f"Wrong cell type value '{cell_type}'. The cell type must be in {available_cell_types}.")
+
+        # Try to access Data field
+        if (data := topology_object.getData(cell_type)) is None:
             cells = None
+        else:
+            cells = data.value
+
+        # Check value
         if cells is None or len(cells) == 0:
-            print(f"[ERROR] The given 'topology_object' does not contain any topology information or contains empty "
-                  f"topology with cell type = {cell_type}.")
-            quit()
+            error_message(f"The object {topology_object.getName()} does not contain any topology data or contains an "
+                          f"empty topology array with cell type value '{cell_type}'.")
         return cells
 
     def onAnimateEndEvent(self, _):
@@ -129,20 +134,30 @@ class VedoFactory(Sofa.Core.Controller):
     def __get_object(self,
                      object_path: str):
 
-        if object_path[0] != '@':
-            print("You must give the Path to the object to record: '@child_node.object_name'.")
-            quit()
-        node = self.root
-        for child_node in object_path[1:].split('.')[:-1]:
-            try:
-                node = node.__getattr__(child_node)
-            except:
-                print(f"[ERROR] The child node {child_node} does not exist.")
-                quit()
-        try:
-            return node.__getattr__(object_path.split('.')[-1])
-        except:
-            print(f"[ERROR] The object {object_path.split('.')[-1]} does not exist.")
+        # Check the path
+        if object_path[0] != '@' or len(object_path[1:].split('.')) == 0:
+            error_message(f"You must give the absolute path to the object to record. "
+                          f"The path '{object_path}' must be defined such as '@child_node.object_name'.")
+
+        # Access each child node
+        node: Sofa.Core.Node = self.root
+        child_nodes = object_path[1:].split('.')[:-1]
+        if len(child_nodes) > 0 and child_nodes[0] == node.getName():
+            child_nodes.pop(0)
+        for child_node in child_nodes:
+            if child_node not in node.children:
+                node_path = f'{self.root.getName()}{node.getPathName()}'
+                error_message(f"The node '{child_node}' is not a child of '{node_path}'. "
+                              f"Available children are {[n.getName() for n in node.children]}.")
+            node = node.getChild(child_node)
+
+        # Access object
+        object_name = object_path[1:].split('.')[-1]
+        if object_name not in node.objects:
+            node_path = f'{self.root.getName()}{node.getPathName()}'
+            error_message(f"The object '{object_name} does not belong to node '{node_path}'. "
+                          f"Available objects are {[o.getName() for o in node.objects]}.")
+        return node.getObject(object_name)
 
     ########
     # MESH #
@@ -349,9 +364,8 @@ class VedoFactory(Sofa.Core.Controller):
 
         # Get the orientation vector
         if vector_object is None and dest_object is None:
-            print("[ERROR] You must specify an object containing vector data to create arrows (either using "
-                  "'vector_object' either using 'dest_object' variables).")
-            quit()
+            error_message("You must specify an object containing vector data to create arrows (either using "
+                          "'vector_object' either using 'dest_object' variables).")
         if vector_object is not None:
             vectors = self.__get_force_data(vector_object)
         else:
@@ -359,8 +373,7 @@ class VedoFactory(Sofa.Core.Controller):
             vectors = dest - positions
         vectors = vectors[end_indices] if end_indices is not None else vectors
         if len(vectors) != 1 and len(vectors) != len(positions):
-            print("[ERROR] There must be a vector per DOF.")
-            quit()
+            error_message("There must be a vector per DOF.")
 
         if len(vectors) == 1:
             vectors = tile(vectors, (len(positions), 1))
