@@ -15,3 +15,7 @@ div.leftside {
 div.rightside {
     margin-left: 48%;
 }
+
+.tight-table td {
+    white-space: normal !important;
+}

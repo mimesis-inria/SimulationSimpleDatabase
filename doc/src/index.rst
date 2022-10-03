@@ -1,17 +1,25 @@
+.. figure:: _static/image/logo.svg
+
+
 SSD - SimulationSimpleDatabase
-==============================
-
-.. image:: _static/image/logo.svg
-    :width: 60%
-
+------------------------------
 
 The **SSD** project provides Python3 tools allowing users to easily develop **data storage** strategies for their
 **numerical simulations**.
 
-The **SSD** project has two main objectives:
+This project has two main objectives:
 
-  * **Storage**: Easy **storage** management system for **any data** coming from a numerical simulation.
-  * **Rendering**: Easy **storage** and **rendering** management systems for **visual data** from a numerical simulation.
+    .. table::
+        :widths: 15 90
+
+        +---------------+------------------------------------------------------------------------------------------+
+        | ``Storage``   | Easy **storage** management system for **any data** from a numerical simulation.         |
+        +---------------+------------------------------------------------------------------------------------------+
+        | ``Rendering`` | Easy **storage** & **rendering** management systems for **visual data** from a numerical |
+        |               | simulation.                                                                              |
+        +---------------+------------------------------------------------------------------------------------------+
+
+
 
 The **SSD** project is mainly using the :Peewee:`Peewee <>` Python3 library and was mostly designed to fit the
 :DeepPhysX:`DeepPhysX <>` and :SOFA:`SOFA <>` frameworks.
@@ -20,44 +28,43 @@ The **SSD** project is mainly using the :Peewee:`Peewee <>` Python3 library and 
 Features
 --------
 
-.. container:: twocol
+The **SSD** project provides the following packages:
 
-    The **SSD** project provides the following packages:
+    .. table::
+        :widths: 50 50
+        :class: tight-table
 
-    .. container:: leftside
+        +------------------------------------------------------+------------------------------------------------------+
+        | ``SSD.Core.Storage``                                 | ``SSD.Core.Rendering``                               |
+        |  * Automatic management of Database file for any     |  * Automatic management of Database file for         |
+        |    data;                                             |    visualization data;                               |
+        |  * Creation of highly customizable Tables in the     |  * Live rendering of numerical simulations;          |
+        |    Database;                                         |  * Replay of stored numerical simulation steps;      |
+        |  * Easy writing and reading user interface;          |  * Various object types and highly customizable      |
+        |  * Event management system;                          |    rendering styles;                                 |
+        |  * Tools such as merging and exporting data in other |  * Several Python libraries available:               |
+        |    formats.                                          |    :Vedo:`Vedo <>`.                                  |
+        +------------------------------------------------------+------------------------------------------------------+
 
-        ``SSD.Generic.Storage``
-         * Automatic management of Database file;
-         * Creation of highly customizable Tables in the Database;
-         * Easy writing and reading interface;
-         * Signal management system;
-         * Utils such as merging and exporting in other formats.
+The **SSD** project also provides a compatible layer with :SOFA:`SOFA <>` framework:
 
-    .. container:: rightside
+    .. table::
+        :widths: 50 50
+        :class: tight-table
 
-        ``SSD.Generic.Rendering``
-         * Automatic management of Database file for visualization data;
-         * On-line rendering of numerical simulations;
-         * Replay of stored simulation steps;
-         * Various object types;
-         * Several Python libraries available: :Vedo:`Vedo <>`.
-
-
-.. container:: twocol
-
-    The **SSD** project also provides a compatible layer with :SOFA:`SOFA <>` framework:
-
-    .. container:: leftside
-
-        ``SSD.SOFA.Storage``
-         * Same features as Generic Storage package;
-         * Compatible layer with :SOFA:`SOFA <>` Python bindings.
-
-    .. container:: rightside
-
-        ``SSD.SOFA.Rendering``
-         * Same features as Generic Rendering package;
-         * Compatible layer with :SOFA:`SOFA <>` Python bindings.
+        +------------------------------------------------------+------------------------------------------------------+
+        | ``SSD.SOFA.Storage``                                 | ``SSD.SOFA.Rendering``                               |
+        |  * Same features as Core Storage package;            |  * Same features as Core Rendering package;          |
+        |  * Compatible layer with :SOFA:`SOFA <>` Python      |  * Compatible layer with :SOFA:`SOFA <>` Python      |
+        |    bindings.                                         |    bindings.                                         |
+        |  * Callbacks to automatically record any Data field  |  * Callbacks to automatically record visual Data     |
+        |    of SOFA objects.                                  |    fields of SOFA objects.                           |
+        |  * Recording can be done whether the simulation is   |  * Recording can be done whether the simulation is   |
+        |    running with ``runSofa`` or with a ``python``     |    running with ``runSofa`` or with a ``python``     |
+        |    interpreter.                                      |    interpreter.                                      |
+        |                                                      |  * Rendering is available when a simulation is       |
+        |                                                      |    driven with a ``python`` interpreter.             |
+        +------------------------------------------------------+------------------------------------------------------+
 
 
 .. toctree::
@@ -65,8 +72,8 @@ Features
     :maxdepth: 1
     :hidden:
 
-    Install   <Presentation/install.rst>
-    Overview  <Presentation/overview.rst>
+    Install      <Presentation/install.rst>
+    Definitions  <Presentation/definitions.rst>
 
 
 .. toctree::
@@ -74,15 +81,19 @@ Features
     :maxdepth: 1
     :hidden:
 
-    Database             <Generic/Storage/database.rst>
-    Table Relationships  <Generic/Storage/relationships.rst>
-    Utils                <Generic/Storage/utils.rst>
-    API                  <Generic/Storage/api.rst>
+    Database             <Core/Storage/database.rst>
+    Table Relationships  <Core/Storage/relationships.rst>
+    Utils                <Core/Storage/utils.rst>
+    API                  <Core/Storage/api.rst>
 
 .. toctree::
     :caption: RENDERING
     :maxdepth: 1
     :hidden:
+
+    Factory     <Core/Rendering/factory.rst>
+    Visualizer  <Core/Rendering/visualizer.rst>
+    API         <Core/Rendering/api.rst>
 
 .. toctree::
     :caption: SOFA

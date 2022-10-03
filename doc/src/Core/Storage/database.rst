@@ -9,7 +9,7 @@ To create this file with a `.db` extension, a call to the ``new`` method is requ
 
 .. code-block:: python
 
-    from AdaptiveDB.Database import Database
+    from SSD.Core.Storage.Database import Database
 
     # Create a new Database object and a new storage file
     db = Database(database_dir='my_directory',
@@ -28,7 +28,7 @@ Loading an existing *Database* is pretty similar as creating a new one, except t
 
 .. code-block:: python
 
-    from AdaptiveDB.Database import Database
+    from SSD.Core.Storage.Database import Database
 
     # Create a new Database object and load an exiting storage file
     db = Database(database_dir='my_directory',
@@ -61,8 +61,7 @@ Creating a new Field
 
 Creating a new *Field* requires a few information in a tuple defined as
 :guilabel:`(field_name, field_type, default_value)`.
-The default value specifies the value to apply in a row if the entry does not contain a value for the corresponding
-column.
+The default value specifies the value to set in a row if an entry does not contain data for this field.
 The name and the type of the *Field* are mandatory but the default value is optional; if not set, it will be ``<null>``.
 
 *Fields* can either be created one by one or at once:
@@ -118,7 +117,7 @@ Adding data to a Table
 ----------------------
 
 Adding data to a *Table* can be done either line by line either per batch of lines.
-In both cases, data must passed as a dictionary:
+In both cases, data must be passed as a dictionary:
 
 .. code-block:: python
 

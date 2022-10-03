@@ -13,12 +13,11 @@
 from os.path import abspath, join, pardir
 import sys
 
-# Core.rendering modules import
-root = abspath(join(abspath(__file__), pardir, pardir, pardir, 'src', 'Core', 'Storage'))
-sys.path.append(root)
-# all_modules = ['Database', 'utils']
-# for module in all_modules:
-#     sys.path.append(join(root, module))
+# Modules imports
+for parent in ['Core', 'SOFA']:
+    for child in ['Storage', 'Rendering']:
+        path = abspath(join(abspath(__file__), pardir, pardir, pardir, 'src', parent, child))
+        sys.path.append(path)
 
 # -- Project information -----------------------------------------------------
 
@@ -73,5 +72,6 @@ extlinks = {'Peewee': ('https://docs.peewee-orm.com/en/latest/', None),
             'SP3I': ('https://sofapython3.readthedocs.io/en/latest/menu/Compilation.html', None),
             'Numpy': ('https://numpy.org/', None),
             'PyPi': ('https://pypi.org/project/SimulationSimpleDatabase', None),
-            'Vedo': ('https://vedo.embl.es/', None)
+            'Vedo': ('https://vedo.embl.es/', None),
+            'VedoObject': ('https://vedo.embl.es/autodocs/content/vedo/%s', '%s')
             }

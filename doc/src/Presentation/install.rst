@@ -9,21 +9,22 @@ The **SSD** project has the following dependencies:
 .. table::
     :widths: 20 20 10 30
 
-    +---------------------------+-----------------------+--------------+--------------------------------+
-    | **Package**               | **Dependency**        | **Type**     | **Install**                    |
-    +===========================+=======================+==============+================================+
-    | ``SSD.Generic.Storage``   | :Peewee:`Peewee <>`   | **Required** | :guilabel:`pip install peewee` |
-    |                           +-----------------------+--------------+--------------------------------+
-    |                           | :Numpy:`Numpy <>`     | **Required** | :guilabel:`pip install numpy`  |
-    +---------------------------+-----------------------+--------------+--------------------------------+
-    | ``SSD.Generic.Rendering`` | :Vedo:`Vedo <>`       | **Required** | :guilabel:`pip install vedo`   |
-    +---------------------------+-----------------------+--------------+--------------------------------+
-    | ``SSD.SOFA``              | :SP3:`SofaPython3 <>` | Optional     | :SP3I:`Follow instructions <>` |
-    +---------------------------+-----------------------+--------------+--------------------------------+
+    +------------------------+-----------------------+--------------+--------------------------------+
+    | **Package**            | **Dependency**        | **Type**     | **Install**                    |
+    +========================+=======================+==============+================================+
+    | ``SSD.Core.Storage``   | :Peewee:`Peewee <>`   | **Required** | :guilabel:`pip install peewee` |
+    |                        +-----------------------+--------------+--------------------------------+
+    |                        | :Numpy:`Numpy <>`     | **Required** | :guilabel:`pip install numpy`  |
+    +------------------------+-----------------------+--------------+--------------------------------+
+    | ``SSD.Core.Rendering`` | :Vedo:`Vedo <>`       | **Required** | :guilabel:`pip install vedo`   |
+    +------------------------+-----------------------+--------------+--------------------------------+
+    | ``SSD.SOFA``           | :SP3:`SofaPython3 <>` | Optional     | :SP3I:`Follow instructions <>` |
+    +------------------------+-----------------------+--------------+--------------------------------+
 
 .. warning::
-    The :SOFA:`SOFA <>` Python bindings are not required to use the ``SSD.Generic`` packages, but they are
-    obviously required to use the ``SSD.SOFA`` packages.
+    The :SOFA:`SOFA <>` Python bindings are not required to use the ``SSD.Core`` packages, but they are obviously
+    required to use the ``SSD.SOFA.Storage`` and ``SSD.SOFA.rendering`` packages. Those two packages will be ignored
+    during the installation process if :SOFA:`SOFA <>` Python bindings are not found by the interpreter.
 
 Install
 -------
@@ -35,7 +36,7 @@ The **SSD** project is registered on :PyPi:`PyPi <>`, thus it can easily be inst
 
 .. code-block:: bash
 
-    $ pip3 install AdaptiveDB
+    $ pip3 install SimulationSimpleDatabase
 
 Then, you should be able to run:
 
