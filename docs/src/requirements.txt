@@ -2,3 +2,4 @@ numpy
 peewee
 vedo
 sphinx-tabs
+SimulationSimpleDatabase
