@@ -53,7 +53,8 @@ class VedoFactory(Sofa.Core.Controller):
         if positions is None or len(positions) == 0:
             error_message(f"The object '{position_object.getName()}' does not contain any position data or contains an "
                           f"empty position array.")
-        return positions
+        positions = array(positions) if type(positions[0]) != ndarray else positions
+        return positions[:, :3]
 
     @classmethod
     def __get_force_data(cls,
@@ -130,6 +131,9 @@ class VedoFactory(Sofa.Core.Controller):
 
             elif object_type == 'Markers':
                 self.__factory.update_markers(object_id=object_id)
+
+        # Execute rendering
+        self.__factory.render()
 
     def __get_object(self,
                      object_path: str):

@@ -146,9 +146,13 @@ class VedoVisualizer:
 
         self.step += 1
         self.__database.add_data(table_name='Sync',
-                                 data={'step': 1})
+                                 data={'step': 'V'})
 
     def __sync_visualizer(self, table_name, data_dict):
+
+        # 0. Call to render from Factory
+        if data_dict['step'] == 'F':
+            self.step += 1
 
         # 1. Retrieve visual data and update Actors (one Table per Actor)
         table_names = self.__database.get_tables()

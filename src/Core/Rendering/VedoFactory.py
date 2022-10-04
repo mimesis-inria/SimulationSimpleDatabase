@@ -39,7 +39,7 @@ class VedoFactory:
         # ExchangeTable to synchronize Factory and Visualizer
         self.__database.create_table(table_name='Sync',
                                      storing_table=False,
-                                     fields=('step', int))
+                                     fields=('step', str))
         self.__database.register_post_save_signal(table_name='Sync',
                                                   handler=self.__sync_visualizer)
         self.__update: Dict[int, bool] = {}
@@ -57,7 +57,7 @@ class VedoFactory:
         """
 
         self.__database.add_data(table_name='Sync',
-                                 data={'step': 1})
+                                 data={'step': 'F'})
 
     def __sync_visualizer(self, table_name, data_dict):
 
