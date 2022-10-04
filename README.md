@@ -13,7 +13,8 @@ The **SSD** project is mainly using the [Peewee](http://docs.peewee-orm.com/en/l
 designed to fit the [DeepPhysX](https://github.com/mimesis-inria/DeepPhysX) and 
 [SOFA](https://www.sofa-framework.org/) frameworks.
 
-Discover more about the project on the dedicated [**Documentation**]().
+Discover more about the project on the dedicated 
+[**Documentation**](https://simulationsimpledatabase.readthedocs.io/en/latest/).
 
 ## Features
 
@@ -45,7 +46,8 @@ The **SSD** project also provides a `SOFA` compatible package with additional fe
 
 ### Install with pip
 
-The **SSD** project is registered on [PyPi](), thus it can easily be installed using `pip`:
+The **SSD** project is registered on [PyPi]('https://pypi.org/project/SimulationSimpleDatabase/), thus it can easily 
+be installed using `pip`:
 
 ``` bash
 $ pip3 install SimulationSimpleDatabase
