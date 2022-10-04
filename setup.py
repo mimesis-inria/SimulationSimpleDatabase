@@ -21,11 +21,11 @@ for root in roots:
         packages.append(f'{project}.{root}.{package}')
         packages_dir[f'{project}.{root}.{package}'] = join('src', root, package)
 
-setup(name=project,
+setup(name='SimulationSimpleDatabase',
       version='22.06',
       description='A simplified API to use SQL Databases with numerical simulation.',
       author='R. Enjalbert, A. Odot',
-      url='https://github.com/mimesis-inria/SimulationSimpleDatabase',
+      url='https://github.com/RobinEnjalbert/SimulationSimpleDatabase',
       packages=packages,
       package_dir=packages_dir,
       install_requires=['numpy', 'peewee', 'vedo'])

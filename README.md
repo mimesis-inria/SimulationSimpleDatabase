@@ -56,7 +56,7 @@ $ pip3 install SimulationSimpleDatabase
 You can also easily install the **SSD** project from sources using the following instructions:
 
 ``` bash
-$ git clone https://github.com/mimesis-inria/SimulationSimpleDatabase.git
+$ git clone https://github.com/RobinEnjalbert/SimulationSimpleDatabase.git
 $ cd SimpleSimulationDatabase
 
 # Option 1: Install as non-editable (users)

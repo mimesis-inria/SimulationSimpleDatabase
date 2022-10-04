@@ -56,7 +56,7 @@ Start by cloning the **SSD** source code from its Github repository:
 
 .. code-block:: bash
 
-    $ git clone https://github.com/mimesis-inria/SimulationSimpleDatabase.git
+    $ git clone https://github.com/RobinEnjalbert/SimulationSimpleDatabase.git
     $ cd SimpleSimulationDatabase
 
 Then, you have two options to install the project:
