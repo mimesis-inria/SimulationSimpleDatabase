@@ -36,6 +36,7 @@ extensions = ['sphinx.ext.duration',
               'sphinx.ext.autosummary',
               'sphinx.ext.viewcode',
               'sphinx.ext.extlinks',
+              'sphinx_tabs.tabs'
               ]
 
 intersphinx_mapping = {'python': ('https://docs.python.org/3/', None),
@@ -65,13 +66,12 @@ html_static_path = ['_static']
 html_css_files = ['theme.css']
 master_doc = "index"
 
-extlinks = {'Peewee': ('https://docs.peewee-orm.com/en/latest/', None),
-            'DeepPhysX': ('https://deepphysx.readthedocs.io/en/latest/', None),
-            'SOFA': ('https://www.sofa-framework.org/%s', None),
-            'SP3': ('https://sofapython3.readthedocs.io/en/latest/', None),
-            'SP3I': ('https://sofapython3.readthedocs.io/en/latest/menu/Compilation.html', None),
-            'Numpy': ('https://numpy.org/', None),
-            'PyPi': ('https://pypi.org/project/SimulationSimpleDatabase', None),
-            'Vedo': ('https://vedo.embl.es/', None),
+extlinks = {'Peewee': ('https://docs.peewee-orm.com/en/latest/%s', '%s'),
+            'DeepPhysX': ('https://deepphysx.readthedocs.io/en/latest/%s', '%s'),
+            'SOFA': ('https://www.sofa-framework.org/%s', '%s'),
+            'SP3': ('https://sofapython3.readthedocs.io/en/latest/%s', '%s'),
+            'Numpy': ('https://numpy.org/%s', '%s'),
+            'PyPi': ('https://pypi.org/project/SimulationSimpleDatabase/%s', '%s'),
+            'Vedo': ('https://vedo.embl.es/%s', '%s'),
             'VedoObject': ('https://vedo.embl.es/autodocs/content/vedo/%s', '%s')
             }

@@ -99,3 +99,7 @@ The **SSD** project also provides a compatible layer with :SOFA:`SOFA <>` framew
     :caption: SOFA
     :maxdepth: 1
     :hidden:
+
+    Storage    <SOFA/storage.rst>
+    Rendering  <SOFA/rendering.rst>
+    API        <SOFA/api.rst>
