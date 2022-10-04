@@ -70,13 +70,13 @@ The **SSD** project also provides a compatible layer with :SOFA:`SOFA <>` framew
 Gallery
 -------
 
-.. figure:: _static/image/gallery_caduceus.gif
+.. figure:: http://mimesis.inria.fr/wp-content/uploads/2022/10/gallery_caduceus.gif
     :align: center
 
     **examples/SOFA/rendering-offscreen/replay.py**
 
 
-.. figure:: _static/image/gallery_liver.gif
+.. figure:: http://mimesis.inria.fr/wp-content/uploads/2022/10/gallery_liver.gif
     :align: center
 
     **examples/SOFA/rendering/replay.py**

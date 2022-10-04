@@ -69,10 +69,10 @@ $ python3 dev.py set
 
 ## Gallery
 
-|     **examples/SOFA/rendering-offscreen/replay.py**     |
-|:-------------------------------------------------------:|
-| ![caduceus](doc/src/_static/image/gallery_caduceus.gif) |
+|                   **examples/SOFA/rendering-offscreen/replay.py**                    |
+|:------------------------------------------------------------------------------------:|
+| ![caduceus](http://mimesis.inria.fr/wp-content/uploads/2022/10/gallery_caduceus.gif) |
 
-|       **examples/SOFA/rendering/replay.py**       |
-|:-------------------------------------------------:|
-| ![liver](doc/src/_static/image/gallery_liver.gif) |
+|                     **examples/SOFA/rendering/replay.py**                      |
+|:------------------------------------------------------------------------------:|
+| ![liver](http://mimesis.inria.fr/wp-content/uploads/2022/10/gallery_liver.gif) |
