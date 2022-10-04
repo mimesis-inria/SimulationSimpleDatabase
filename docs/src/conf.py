@@ -14,10 +14,11 @@ from os.path import abspath, join, pardir
 import sys
 
 # Modules imports
-for parent in ['Core', 'SOFA']:
-    for child in ['Storage', 'Rendering']:
-        path = abspath(join(abspath(__file__), pardir, pardir, pardir, 'src', parent, child))
-        sys.path.append(path)
+import SSD
+# for parent in ['Core', 'SOFA']:
+#     for child in ['Storage', 'Rendering']:
+#         path = abspath(join(abspath(__file__), pardir, pardir, pardir, 'src', parent, child))
+#         sys.path.append(path)
 
 # -- Project information -----------------------------------------------------
 
