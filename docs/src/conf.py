@@ -76,3 +76,5 @@ extlinks = {'Peewee': ('https://docs.peewee-orm.com/en/latest/%s', '%s'),
             'Vedo': ('https://vedo.embl.es/%s', '%s'),
             'VedoObject': ('https://vedo.embl.es/autodocs/content/vedo/%s', '%s')
             }
+
+autodoc_mock_imports = ['Sofa']
