@@ -67,6 +67,21 @@ The **SSD** project also provides a compatible layer with :SOFA:`SOFA <>` framew
         +------------------------------------------------------+------------------------------------------------------+
 
 
+Gallery
+-------
+
+.. figure:: _static/image/gallery_caduceus.gif
+    :align: center
+
+    **examples/SOFA/rendering-offscreen/replay.py**
+
+
+.. figure:: _static/image/gallery_liver.gif
+    :align: center
+
+    **examples/SOFA/rendering/replay.py**
+
+
 .. toctree::
     :caption: PRESENTATION
     :maxdepth: 1

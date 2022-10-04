@@ -34,4 +34,3 @@ if __name__ == '__main__':
     # Run a few steps of simulation and render them
     for _ in range(300):
         Sofa.Simulation.animate(root, root.dt.value)
-        viewer.render()
