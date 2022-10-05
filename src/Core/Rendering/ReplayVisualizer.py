@@ -1,6 +1,6 @@
-from typing import Optional, Dict, List
+from typing import Optional, Dict, List, Tuple
 from vedo import show, Plotter
-from numpy import array
+from numpy import array, ndarray
 
 from SSD.Core.Storage.Database import Database
 from SSD.Core.Rendering.VedoActor import VedoActor
@@ -22,9 +22,9 @@ class ReplayVisualizer:
         self.__database = Database(database_dir=database_dir, database_name=database_name).load()
 
         # Information about all Factories / Actors
-        self.__actors: Dict[int, Dict[int, VedoActor]] = {}
-        self.__all_actors: Dict[str, VedoActor] = {}
-        self.__updated_actors: Dict[str, bool] = {}
+        self.__actors: Dict[int, Dict[Tuple[int, int], VedoActor]] = {}
+        self.__all_actors: Dict[Tuple[int, int], VedoActor] = {}
+        self.__updated_actors: Dict[Tuple[int, int], bool] = {}
         self.__plotter: Optional[Plotter] = None
         self.__nb_sample: Optional[int] = None
 
@@ -36,15 +36,20 @@ class ReplayVisualizer:
         Initialize the Visualizer: create all Actors and render them in a Plotter.
         """
 
-        # 1. Get the Tables of the Database
+        # 1. Get the Tables of the Database, sort their names per factory and per object indices
         table_names = self.__database.get_tables()
         table_names.remove('Visual')
         table_names.remove('Sync')
-        # Sort by id
-        sorted_table_names: List[Optional[str]] = [None] * len(table_names)
+        sorted_table_names = []
+        sorter: Dict[int, Dict[int, str]] = {}
         for table_name in table_names:
-            table_id = table_name.split('_')[1]
-            sorted_table_names[int(table_id)] = table_name
+            factory_id, table_id = table_name.split('_')[-2:]
+            if int(factory_id) not in sorter:
+                sorter[int(factory_id)] = {}
+            sorter[int(factory_id)][int(table_id)] = table_name
+        for factory_id in sorted(sorter.keys()):
+            for table_id in sorted(sorter[factory_id].keys()):
+                sorted_table_names.append(sorter[factory_id][table_id])
 
         # 2. Retrieve visual data and create Actors (one Table per Actor)
         instances = {}
@@ -63,15 +68,16 @@ class ReplayVisualizer:
                          'scalar_field': data_dict.pop('scalar_field') if 'scalar_field' in data_dict else array([])}
             at = visual_dict.pop('at')
             # Retrieve good indexing of Actors
-            actor_type, actor_id = table_name.split('_')
+            actor_type, factory_id, actor_id = table_name.split('_')
+            factory_id, actor_id = int(factory_id), int(actor_id)
             if at not in self.__actors:
                 self.__actors[at] = {}
                 instances[at] = []
             # Create Actor
-            self.__actors[at][actor_id] = VedoActor(self, actor_type, at)
-            self.__all_actors[actor_id] = self.__actors[at][actor_id]
-            self.__updated_actors[actor_id] = False
-            instances[at].append(self.__actors[at][actor_id].create(data_dict).apply_cmap(cmap_dict))
+            self.__actors[at][(factory_id, actor_id)] = VedoActor(self, actor_type, at)
+            self.__all_actors[(factory_id, actor_id)] = self.__actors[at][(factory_id, actor_id)]
+            self.__updated_actors[(factory_id, actor_id)] = False
+            instances[at].append(self.__actors[at][(factory_id, actor_id)].create(data_dict).apply_cmap(cmap_dict))
 
         # 3. Create Plotter
         actors = []
@@ -91,14 +97,14 @@ class ReplayVisualizer:
         self.__plotter.interactive()
 
     def get_actor(self,
-                  actor_id: int):
+                  actor_id: ndarray):
         """
         Get an Actor instance.
 
         :param actor_id: Index of the Actor.
         """
 
-        return self.__all_actors[str(actor_id)]
+        return self.__all_actors[tuple(actor_id)]
 
     def __start(self):
 
@@ -122,7 +128,9 @@ class ReplayVisualizer:
                 # Sort data
                 cmap_dict = {'scalar_field': data_dict.pop('scalar_field')} if 'scalar_field' in data_dict else {}
                 # Update Actors
-                actor = self.__all_actors[table_name.split('_')[1]]
+                _, factory_id, actor_id = table_name.split('_')
+                factory_id, actor_id = int(factory_id), int(actor_id)
+                actor = self.__all_actors[(factory_id, actor_id)]
                 if actor.actor_type in ['Arrows', 'Markers', 'Symbols']:
                     self.__plotter.remove(actor.instance, at=actor.at)
                 actor.update(data_dict).apply_cmap(cmap_dict)

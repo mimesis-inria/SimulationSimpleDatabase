@@ -10,7 +10,8 @@ class VedoFactory:
     def __init__(self,
                  database: Optional[Database] = None,
                  database_name: Optional[str] = None,
-                 remove_existing: bool = False):
+                 remove_existing: bool = False,
+                 idx_instance: int = 0):
         """
         A Factory to manage objects to render and save in the Database.
         User interface to create and update Vedo objects.
@@ -18,6 +19,7 @@ class VedoFactory:
         :param database: Database to connect to.
         :param database_name: Name of the Database to connect to (used if 'database' is not defined).
         :param remove_existing: If True, overwrite a Database with the same path.
+        :param idx_instance: If several Factories must be created, specify the index of the Factory.
         """
 
         # Define Database
@@ -31,6 +33,7 @@ class VedoFactory:
         # Information about all Tables
         self.__tables: List[VedoTable] = []
         self.__current_id: int = 0
+        self.__idx: int = idx_instance
 
         # Common data are stored in a dedicated Table
         VedoTable(db=self.__database,
@@ -40,8 +43,9 @@ class VedoFactory:
         self.__database.create_table(table_name='Sync',
                                      storing_table=False,
                                      fields=('step', str))
-        self.__database.register_post_save_signal(table_name='Sync',
-                                                  handler=self.__sync_visualizer)
+        self.__database.register_pre_save_signal(table_name='Sync',
+                                                 handler=self.__sync_visualizer,
+                                                 name=f'Factory_{self.__idx}')
         self.__update: Dict[int, bool] = {}
 
     def get_database(self):
@@ -73,7 +77,7 @@ class VedoFactory:
         del data_dict['self']
 
         # Define Table name
-        table_name = object_type + f'_{self.__current_id}'
+        table_name = object_type + f'_{self.__idx}' + f'_{self.__current_id}'
         self.__update[self.__current_id] = False
         self.__current_id += 1
 
@@ -294,6 +298,7 @@ class VedoFactory:
         :param filled: If True, the symbol is filled.
         """
 
+        normal_to = array([self.__idx, normal_to])
         return self.__add_object('Markers', locals())
 
     def update_markers(self,
@@ -320,6 +325,7 @@ class VedoFactory:
         :param filled: If True, the symbol is filled.
         """
 
+        normal_to = array([self.__idx, normal_to]) if normal_to is not None else None
         object_id = self.__check_id(object_id, 'Markers')
         return self.__update_object(object_id, locals())
 

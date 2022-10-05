@@ -14,6 +14,7 @@ class VedoFactory(Sofa.Core.Controller):
                  database: Optional[Database] = None,
                  database_name: Optional[str] = None,
                  remove_existing: bool = False,
+                 idx_instance: int = 0,
                  *args, **kwargs):
         """
             A Factory to manage objects to render and save in the Database.
@@ -24,6 +25,7 @@ class VedoFactory(Sofa.Core.Controller):
             :param database: Database to connect to.
             :param database_name: Name of the Database to connect to (used if 'database' is not defined).
             :param remove_existing: If True, overwrite a Database with the same path.
+            :param idx_instance: If several Factories must be created, specify the index of the Factory.
             """
 
         Sofa.Core.Controller.__init__(self, *args, **kwargs)
@@ -33,7 +35,7 @@ class VedoFactory(Sofa.Core.Controller):
         self.root.addChild('factory')
         self.root.factory.addObject(self)
 
-        self.__factory: _VedoFactory = _VedoFactory(database, database_name, remove_existing)
+        self.__factory: _VedoFactory = _VedoFactory(database, database_name, remove_existing, idx_instance)
         self.__updates: Dict[int, Tuple[str, Any]] = {}
 
     @classmethod

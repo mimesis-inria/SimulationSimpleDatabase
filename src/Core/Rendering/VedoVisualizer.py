@@ -1,5 +1,5 @@
-from typing import Dict, Optional, Any
-from numpy import array
+from typing import Dict, Optional, Any, Tuple
+from numpy import array, ndarray
 from vedo import show, Plotter
 
 from SSD.Core.Storage.Database import Database
@@ -31,8 +31,8 @@ class VedoVisualizer:
             raise ValueError("Both 'database' and 'database_name' are not defined.")
 
         # Information about all Factories / Actors
-        self.__actors: Dict[int, Dict[int, VedoActor]] = {}
-        self.__all_actors: Dict[str, VedoActor] = {}
+        self.__actors: Dict[int, Dict[Tuple[int, int], VedoActor]] = {}
+        self.__all_actors: Dict[Tuple[int, int], VedoActor] = {}
         self.__plotter: Optional[Plotter] = None
         self.__offscreen: bool = offscreen
         self.step: int = 0
@@ -45,14 +45,14 @@ class VedoVisualizer:
         return self.__database
 
     def get_actor(self,
-                  actor_id: int):
+                  actor_id: ndarray):
         """
         Get an Actor instance.
 
         :param actor_id: Index of the Actor.
         """
 
-        return self.__all_actors[str(actor_id)]
+        return self.__all_actors[tuple(actor_id)]
 
     def init_visualizer(self):
         """
@@ -61,15 +61,27 @@ class VedoVisualizer:
 
         # 1. Connect signals between the VedoFactory and the Visualizer
         table_names = self.__database.get_tables()
-        self.__database.register_pre_save_signal(table_name='Sync',
-                                                 handler=self.__sync_visualizer)
+        self.__database.register_post_save_signal(table_name='Sync',
+                                                  handler=self.__sync_visualizer)
         self.__database.connect_signals()
 
-        # 2. Retrieve visual data and create Actors (one Table per Actor)
-        instances = {}
+        # 2. Sort the Table names per factory and per object indices
         table_names.remove('Visual')
         table_names.remove('Sync')
+        sorted_table_names = []
+        sorter: Dict[int, Dict[int, str]] = {}
         for table_name in table_names:
+            factory_id, table_id = table_name.split('_')[-2:]
+            if int(factory_id) not in sorter:
+                sorter[int(factory_id)] = {}
+            sorter[int(factory_id)][int(table_id)] = table_name
+        for factory_id in sorted(sorter.keys()):
+            for table_id in sorted(sorter[factory_id].keys()):
+                sorted_table_names.append(sorter[factory_id][table_id])
+
+        # 3.  Retrieve visual data and create Actors (one Table per Actor)
+        instances = {}
+        for table_name in sorted_table_names:
             # Get the full line of data
             data_dict = self.__database.get_line(table_name=table_name,
                                                  joins='Visual')
@@ -80,14 +92,15 @@ class VedoVisualizer:
                          'scalar_field': data_dict.pop('scalar_field') if 'scalar_field' in data_dict else array([])}
             at = visual_dict.pop('at')
             # Retrieve good indexing of Actors
-            actor_type, actor_id = table_name.split('_')
+            actor_type, factory_id, actor_id = table_name.split('_')
+            factory_id, actor_id = int(factory_id), int(actor_id)
             if at not in self.__actors:
                 self.__actors[at] = {}
                 instances[at] = []
             # Create Actor
-            self.__actors[at][actor_id] = VedoActor(self, actor_type, at)
-            self.__all_actors[actor_id] = self.__actors[at][actor_id]
-            instances[at].append(self.__actors[at][actor_id].create(data_dict).apply_cmap(cmap_dict))
+            self.__actors[at][(factory_id, actor_id)] = VedoActor(self, actor_type, at)
+            self.__all_actors[(factory_id, actor_id)] = self.__actors[at][(factory_id, actor_id)]
+            instances[at].append(self.__actors[at][(factory_id, actor_id)].create(data_dict).apply_cmap(cmap_dict))
 
         # 3. Create Plotter if offscreen is False
         if not self.__offscreen:
@@ -129,7 +142,9 @@ class VedoVisualizer:
             # Sort data
             cmap_dict = {'scalar_field': data_dict.pop('scalar_field')} if 'scalar_field' in data_dict else {}
             # Get Actor instance
-            actor = self.__all_actors[table_name.split('_')[1]]
+            _, factory_id, actor_id = table_name.split('_')
+            factory_id, actor_id = int(factory_id), int(actor_id)
+            actor = self.__all_actors[(factory_id, actor_id)]
             # If Actor cannot be updated, remove from Plotter
             if actor.actor_type in ['Arrows', 'Markers', 'Symbols'] and not self.__offscreen:
                 self.__plotter.remove(actor.instance, at=actor.at)

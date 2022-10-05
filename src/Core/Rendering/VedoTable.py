@@ -99,7 +99,7 @@ class VedoTable:
                                  visual_table: Optional[str] = None):
 
         self.database.create_table(table_name=self.table_name,
-                                   fields=[('normal_to', int),
+                                   fields=[('normal_to', ndarray),
                                            ('indices', ndarray),
                                            ('symbol', str),
                                            ('size', float),

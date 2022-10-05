@@ -34,7 +34,7 @@ class Database:
         self.__database: Optional[SqliteDatabase] = None
         self.__tables: Dict[str, type(AdaptiveTable)] = {}
         self.__fk: Dict[str, Dict[str, str]] = {}
-        self.__signals: List[Tuple[str, Signal, str, Callable]] = []
+        self.__signals: List[Tuple[str, Signal, str, Callable, str]] = []
         self.__exporters: Dict[str, Tuple[Type[Exporter], str]] = {'json': (ExporterJson, 'json'),
                                                                    'csv': (ExporterCSV, 'csv')}
 
@@ -250,29 +250,33 @@ class Database:
 
     def register_pre_save_signal(self,
                                  table_name: str,
-                                 handler: Callable):
+                                 handler: Callable,
+                                 name: Optional[str] = None):
         """
         Connect a pre_save signal from a Table to a handler.
 
         :param table_name: Name of the Table that will be sender.
         :param handler: Executable code.
+        :param name: Name of the signal.
         """
 
         table_name = self.make_name(table_name)
-        self.__signals.append(('pre_save', pre_save, table_name, self.__on_save_signal(handler)))
+        self.__signals.append(('pre_save', pre_save, table_name, self.__on_save_signal(handler), name))
 
     def register_post_save_signal(self,
                                   table_name: str,
-                                  handler: Callable):
+                                  handler: Callable,
+                                  name: Optional[str] = None):
         """
         Connect a post_save signal from a Table to a handler.
 
         :param table_name: Name of the Table that will be sender.
         :param handler: Executable code.
+        :param name: Name of the signal.
         """
 
         table_name = self.make_name(table_name)
-        self.__signals.append(('post_save', post_save, table_name, self.__on_save_signal(handler)))
+        self.__signals.append(('post_save', post_save, table_name, self.__on_save_signal(handler), name))
 
     @staticmethod
     def __on_save_signal(handler: Callable):
@@ -292,7 +296,7 @@ class Database:
         for signal in self.__signals:
 
             # Get the information of registered signals
-            signal_type, signal_class, table_name, handler = signal
+            signal_type, signal_class, table_name, handler, name = signal
 
             # Check if the Table has been created
             if table_name not in self.__tables:
@@ -300,7 +304,8 @@ class Database:
                       f"it was not created.")
             else:
                 signal_class.connect(receiver=handler,
-                                     sender=self.__tables[table_name])
+                                     sender=self.__tables[table_name],
+                                     name=name)
 
     def add_data(self,
                  table_name: str,
