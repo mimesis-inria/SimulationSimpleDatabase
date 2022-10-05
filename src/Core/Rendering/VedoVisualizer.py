@@ -10,6 +10,7 @@ class VedoVisualizer:
 
     def __init__(self,
                  database: Optional[Database] = None,
+                 database_dir: str = '',
                  database_name: Optional[str] = None,
                  remove_existing: bool = False,
                  offscreen: bool = False):
@@ -17,6 +18,7 @@ class VedoVisualizer:
         Manage the creation, update and rendering of Vedo Actors.
 
         :param database: Database to connect to.
+        :param database_dir: Directory which contains the Database file (used if 'database' is not defined).
         :param database_name: Name of the Database (used if 'database' is not defined).
         :param remove_existing: If True, overwrite a Database with the same path.
         :param offscreen: If True, visual data will be saved but not rendered.
@@ -26,7 +28,8 @@ class VedoVisualizer:
         if database is not None:
             self.__database: Database = database
         elif database_name is not None:
-            self.__database: Database = Database(database_name=database_name).new(remove_existing=remove_existing)
+            self.__database: Database = Database(database_dir=database_dir,
+                                                 database_name=database_name).new(remove_existing=remove_existing)
         else:
             raise ValueError("Both 'database' and 'database_name' are not defined.")
 

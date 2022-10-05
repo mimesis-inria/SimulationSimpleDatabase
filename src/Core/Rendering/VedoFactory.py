@@ -9,6 +9,7 @@ class VedoFactory:
 
     def __init__(self,
                  database: Optional[Database] = None,
+                 database_dir: str = '',
                  database_name: Optional[str] = None,
                  remove_existing: bool = False,
                  idx_instance: int = 0):
@@ -17,6 +18,7 @@ class VedoFactory:
         User interface to create and update Vedo objects.
 
         :param database: Database to connect to.
+        :param database_dir: Directory which contains the Database file (used if 'database' is not defined).
         :param database_name: Name of the Database to connect to (used if 'database' is not defined).
         :param remove_existing: If True, overwrite a Database with the same path.
         :param idx_instance: If several Factories must be created, specify the index of the Factory.
@@ -26,7 +28,8 @@ class VedoFactory:
         if database is not None:
             self.__database: Database = database
         elif database_name is not None:
-            self.__database: Database = Database(database_name=database_name).new(remove_existing=remove_existing)
+            self.__database: Database = Database(database_dir=database_dir,
+                                                 database_name=database_name).new(remove_existing=remove_existing)
         else:
             raise ValueError("Both 'database' and 'database_name' are not defined.")
 
