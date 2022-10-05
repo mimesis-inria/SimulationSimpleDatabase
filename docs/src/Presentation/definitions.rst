@@ -11,7 +11,7 @@ The data storage model is designed with the following concepts:
  * each *Table* contains several *Fields* (columns of the *Table*);
  * each row of the *Table* contains data.
 
-.. figure:: ../_static/image/overview_storage.png
+.. figure:: ../_static/images/overview_storage.png
     :alt: overview_storage.png
     :align: center
     :width: 85%
@@ -46,7 +46,7 @@ Other concepts are dedicated to the rendering part itself:
  * an *Actor* is the object API that create and update visual object instances;
  * a *Visualizer* is finally the rendering window manager.
 
-.. figure:: ../_static/image/overview_rendering.png
+.. figure:: ../_static/images/overview_rendering.png
     :alt: overview_rendering.png
     :align: center
     :width: 100%

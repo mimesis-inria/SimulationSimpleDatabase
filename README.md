@@ -1,6 +1,6 @@
 # SimulationSimpleDatabase (SSD)
 
-![logo](doc/src/_static/image/logo.svg)
+![logo](docs/src/_static/images/logo.svg)
 
 The **SSD** project provides Python3 tools allowing users to easily develop **data storage** strategies for their
 **numerical simulations**.
@@ -71,10 +71,10 @@ $ python3 dev.py set
 
 ## Gallery
 
-|                   **examples/SOFA/rendering-offscreen/replay.py**                    |
-|:------------------------------------------------------------------------------------:|
-| ![caduceus](http://mimesis.inria.fr/wp-content/uploads/2022/10/gallery_caduceus.gif) |
+|      **examples/SOFA/rendering-offscreen/replay.py**      |
+|:---------------------------------------------------------:|
+| ![caduceus](docs/src/_static/images/gallery_caduceus.png) |
 
-|                     **examples/SOFA/rendering/replay.py**                      |
-|:------------------------------------------------------------------------------:|
-| ![liver](http://mimesis.inria.fr/wp-content/uploads/2022/10/gallery_liver.gif) |
+|        **examples/SOFA/rendering/replay.py**        |
+|:---------------------------------------------------:|
+| ![liver](docs/src/_static/images/gallery_liver.png) |

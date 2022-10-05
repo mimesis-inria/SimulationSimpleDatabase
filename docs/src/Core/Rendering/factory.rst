@@ -163,7 +163,7 @@ Mesh
 
     See example in ``examples/Core/Rendering/mesh.py``.
 
-    .. figure:: ../../_static/image/vedo_visualizer_mesh.png
+    .. figure:: ../../_static/images/vedo_visualizer_mesh.png
         :alt: vedo_visualizer_mesh.png
         :width: 30%
 
@@ -228,7 +228,7 @@ Points
 
     See example in ``examples/Core/Rendering/points.py``.
 
-    .. figure:: ../../_static/image/vedo_visualizer_points.png
+    .. figure:: ../../_static/images/vedo_visualizer_points.png
         :alt: vedo_visualizer_points.png
         :width: 30%
 
@@ -299,7 +299,7 @@ Arrows
 
     See example in ``examples/Core/Rendering/arrows.py``.
 
-    .. figure:: ../../_static/image/vedo_visualizer_arrows.png
+    .. figure:: ../../_static/images/vedo_visualizer_arrows.png
         :alt: vedo_visualizer_arrows.png
         :width: 30%
 
@@ -382,7 +382,7 @@ Markers
 
     See example in ``examples/Core/Rendering/markers.py``.
 
-    .. figure:: ../../_static/image/vedo_visualizer_markers.png
+    .. figure:: ../../_static/images/vedo_visualizer_markers.png
         :alt: vedo_visualizer_markers.png
         :width: 30%
 
@@ -465,6 +465,6 @@ Symbols
 
     See example in ``examples/Core/Rendering/markers.py``.
 
-    .. figure:: ../../_static/image/vedo_visualizer_symbols.png
+    .. figure:: ../../_static/images/vedo_visualizer_symbols.png
         :alt: vedo_visualizer_symbols.png
         :width: 30%

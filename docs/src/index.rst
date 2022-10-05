@@ -1,4 +1,4 @@
-.. figure:: _static/image/logo.svg
+.. figure:: _static/images/logo.svg
 
 
 SSD - SimulationSimpleDatabase
