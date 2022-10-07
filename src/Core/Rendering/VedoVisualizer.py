@@ -40,6 +40,10 @@ class VedoVisualizer:
         self.__offscreen: bool = offscreen
         self.step: int = 0
 
+        self.__database.create_table(table_name='Sync',
+                                     storing_table=False,
+                                     fields=('step', str))
+
     def get_database(self):
         """
         Get the Database.
@@ -69,7 +73,6 @@ class VedoVisualizer:
         self.__database.connect_signals()
 
         # 2. Sort the Table names per factory and per object indices
-        table_names.remove('Visual')
         table_names.remove('Sync')
         sorted_table_names = []
         sorter: Dict[int, Dict[int, str]] = {}
@@ -86,14 +89,12 @@ class VedoVisualizer:
         instances = {}
         for table_name in sorted_table_names:
             # Get the full line of data
-            data_dict = self.__database.get_line(table_name=table_name,
-                                                 joins='Visual')
+            data_dict = self.__database.get_line(table_name=table_name)
             data_dict.pop('id')
             # Sort data
-            visual_dict = data_dict.pop('visual_fk')
-            cmap_dict = {'colormap': visual_dict.pop('colormap') if 'colormap' in visual_dict else 'jet',
+            cmap_dict = {'colormap': data_dict.pop('colormap') if 'colormap' in data_dict else 'jet',
                          'scalar_field': data_dict.pop('scalar_field') if 'scalar_field' in data_dict else array([])}
-            at = visual_dict.pop('at')
+            at = data_dict.pop('at')
             # Retrieve good indexing of Actors
             actor_type, factory_id, actor_id = table_name.split('_')
             factory_id, actor_id = int(factory_id), int(actor_id)
@@ -174,7 +175,6 @@ class VedoVisualizer:
 
         # 1. Retrieve visual data and update Actors (one Table per Actor)
         table_names = self.__database.get_tables()
-        table_names.remove('Visual')
         table_names.remove('Sync')
         for table_name in table_names:
             # Get the current step line in the Table

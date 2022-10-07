@@ -117,6 +117,13 @@ class Database:
 
         return self
 
+    def get_path(self):
+        """
+        Access the Database file path.
+        """
+
+        return self.__database_dir, self.__database_name
+
     def print_architecture(self):
         """
         Print the content of the Database with Table(s) and their Field(s).

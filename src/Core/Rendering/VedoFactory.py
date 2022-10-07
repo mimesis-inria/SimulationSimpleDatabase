@@ -38,14 +38,7 @@ class VedoFactory:
         self.__current_id: int = 0
         self.__idx: int = idx_instance
 
-        # Common data are stored in a dedicated Table
-        VedoTable(db=self.__database,
-                  table_name='Visual').create_columns()
-
         # ExchangeTable to synchronize Factory and Visualizer
-        self.__database.create_table(table_name='Sync',
-                                     storing_table=False,
-                                     fields=('step', str))
         self.__database.register_pre_save_signal(table_name='Sync',
                                                  handler=self.__sync_visualizer,
                                                  name=f'Factory_{self.__idx}')
@@ -86,7 +79,7 @@ class VedoFactory:
 
         # Create Table and register object
         factory = VedoTable(db=self.__database,
-                            table_name=table_name).create_columns(visual_table='Visual')
+                            table_name=table_name).create_columns()
         factory.send_data(data_dict=data_dict, update=False)
         self.__tables.append(factory)
         return self.__current_id - 1
