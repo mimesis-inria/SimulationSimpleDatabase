@@ -313,6 +313,7 @@ class Database:
                 signal_class.connect(receiver=handler,
                                      sender=self.__tables[table_name],
                                      name=name)
+        self.__signals = []
 
     def add_data(self,
                  table_name: str,

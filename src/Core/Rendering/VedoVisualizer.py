@@ -43,6 +43,8 @@ class VedoVisualizer:
         self.__database.create_table(table_name='Sync',
                                      storing_table=False,
                                      fields=('step', str))
+        self.__database.register_post_save_signal(table_name='Sync',
+                                                  handler=self.__sync_visualizer)
 
     def get_database(self):
         """
@@ -67,12 +69,10 @@ class VedoVisualizer:
         """
 
         # 1. Connect signals between the VedoFactory and the Visualizer
-        table_names = self.__database.get_tables()
-        self.__database.register_post_save_signal(table_name='Sync',
-                                                  handler=self.__sync_visualizer)
         self.__database.connect_signals()
 
         # 2. Sort the Table names per factory and per object indices
+        table_names = self.__database.get_tables()
         table_names.remove('Sync')
         sorted_table_names = []
         sorter: Dict[int, Dict[int, str]] = {}
