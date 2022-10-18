@@ -1,6 +1,6 @@
 from typing import Union, List, Type, Dict, Tuple, Optional, Any, Callable
 from os import remove, mkdir
-from os.path import exists, join, sep
+from os.path import exists, join, sep, getsize
 from playhouse.migrate import SqliteDatabase
 from playhouse.signals import Signal, pre_save, post_save
 from datetime import datetime
@@ -131,6 +131,18 @@ class Database:
 
         print(f'\nDATABASE {self.__database_name}.db')
         print(''.join([table.description(indent=True, name=name) for name, table in self.__tables.items()]))
+
+    def get_architecture(self):
+        """
+        Get the content of the Database with Table(s) and their Field(s).
+        """
+
+        architecture = {}
+        for table_name in self.__tables.keys():
+            description = self.__tables[table_name].description()
+            fields = description.split('  - ')
+            architecture[table_name] = [field[:-1] for field in fields[1:]]
+        return architecture
 
     def get_tables(self,
                    only_names: bool = True):
@@ -620,6 +632,14 @@ class Database:
 
         # Get the number of entries
         return self.__tables[table_name].select().count()
+
+    @property
+    def memory_size(self):
+        """
+        Return the Database file memory size in bytes.
+        """
+
+        return getsize(join(self.__database_dir, f'{self.__database_name}.db'))
 
     def close(self, erase_file: bool = False):
         """
