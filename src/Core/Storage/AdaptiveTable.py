@@ -139,7 +139,7 @@ class StoringTable(AdaptiveTable):
         if not batched:
             line = cls(**dict(zip(fields_names, fields_values)))
             line.save()
-            return line
+            return line.id
 
         else:
             fields = [getattr(cls, field) for field in fields_names]
