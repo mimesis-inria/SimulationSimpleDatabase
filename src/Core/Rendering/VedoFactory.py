@@ -51,6 +51,13 @@ class VedoFactory:
 
         return self.__database
 
+    def get_path(self):
+        """
+        Get the path to the Database.
+        """
+
+        return self.__database.get_path()
+
     def render(self):
         """
         Render the current state of Actors in the Plotter.

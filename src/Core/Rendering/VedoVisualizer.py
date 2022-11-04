@@ -53,6 +53,13 @@ class VedoVisualizer:
 
         return self.__database
 
+    def get_path(self):
+        """
+        Get the path to the Database.
+        """
+
+        return self.__database.get_path()
+
     def get_actor(self,
                   actor_id: ndarray):
         """
