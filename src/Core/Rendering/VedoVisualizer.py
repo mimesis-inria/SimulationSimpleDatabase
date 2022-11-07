@@ -94,6 +94,7 @@ class VedoVisualizer:
 
         # 3.  Retrieve visual data and create Actors (one Table per Actor)
         instances = {}
+        real_at = {}
         for table_name in sorted_table_names:
             # Get the full line of data
             data_dict = self.__database.get_line(table_name=table_name)
@@ -108,12 +109,27 @@ class VedoVisualizer:
             if at not in self.__actors:
                 self.__actors[at] = {}
                 instances[at] = []
+                real_at[at] = []
             # Create Actor
             self.__actors[at][(factory_id, actor_id)] = VedoActor(self, actor_type, at)
             self.__all_actors[(factory_id, actor_id)] = self.__actors[at][(factory_id, actor_id)]
             instances[at].append(self.__actors[at][(factory_id, actor_id)].create(data_dict).apply_cmap(cmap_dict))
+            real_at[at].append(table_name)
 
-        # 3. Create Plotter if offscreen is False
+        # 4. Update the 'at' values
+        for i, at in enumerate(sorted(self.__actors.keys())):
+            # Update in the Database
+            if i != at:
+                for table_name in real_at[at]:
+                    self.__database.update(table_name=table_name,
+                                           data={'at': i})
+            # Update in Actors container
+            instances[i] = instances.pop(at)
+            # Update in Actors
+            for idx in self.__actors[at]:
+                self.__all_actors[idx].at = i
+
+        # 5. Create Plotter if offscreen is False
         if not self.__offscreen:
             actors = []
             for window in sorted(instances.keys()):
