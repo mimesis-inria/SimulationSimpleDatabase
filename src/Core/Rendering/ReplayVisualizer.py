@@ -1,4 +1,4 @@
-from typing import Optional, Dict, List, Tuple
+from typing import Optional, Dict, Tuple
 from vedo import show, Plotter
 from numpy import array, ndarray
 
@@ -38,7 +38,6 @@ class ReplayVisualizer:
 
         # 1. Get the Tables of the Database, sort their names per factory and per object indices
         table_names = self.__database.get_tables()
-        table_names.remove('Visual')
         table_names.remove('Sync')
         sorted_table_names = []
         sorter: Dict[int, Dict[int, str]] = {}
@@ -59,14 +58,12 @@ class ReplayVisualizer:
                 self.__nb_sample = self.__database.nb_lines(table_name=table_name)
             # Get the full line of data
             data_dict = self.__database.get_line(table_name=table_name,
-                                                 joins='Visual',
                                                  line_id=1)
             data_dict.pop('id')
             # Sort data
-            visual_dict = data_dict.pop('visual_fk')
-            cmap_dict = {'colormap': visual_dict.pop('colormap') if 'colormap' in visual_dict else 'jet',
+            cmap_dict = {'colormap': data_dict.pop('colormap') if 'colormap' in data_dict else 'jet',
                          'scalar_field': data_dict.pop('scalar_field') if 'scalar_field' in data_dict else array([])}
-            at = visual_dict.pop('at')
+            at = data_dict.pop('at')
             # Retrieve good indexing of Actors
             actor_type, factory_id, actor_id = table_name.split('_')
             factory_id, actor_id = int(factory_id), int(actor_id)
@@ -91,9 +88,9 @@ class ReplayVisualizer:
                               interactive=False,
                               title='SofaVedo',
                               axes=4)
-        self.__plotter.timerCallback('create')
-        self.__plotter.addCallback('Timer', self.__update)
-        self.__plotter.addButton(self.__start, states=['start'])
+        self.__plotter.timer_callback('create')
+        self.__plotter.add_callback('Timer', self.__update)
+        self.__plotter.add_button(self.__start, states=['start'])
         self.__plotter.interactive()
 
     def get_actor(self,
@@ -117,7 +114,6 @@ class ReplayVisualizer:
 
             # 1. Get the Tables of the Database
             table_names = self.__database.get_tables()
-            table_names.remove('Visual')
             table_names.remove('Sync')
 
             # 2. Retrieve visual data and create Actors (one Table per Actor)

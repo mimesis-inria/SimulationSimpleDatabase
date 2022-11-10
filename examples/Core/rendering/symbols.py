@@ -14,7 +14,7 @@ factory = VedoFactory(database=visualizer.get_database())
 
 
 # 2. Create the object to render
-armadillo = Mesh('armadillo.obj').computeNormals()
+armadillo = Mesh('armadillo.obj').compute_normals()
 fingers = array([30, 33, 63, 900, 1150, 1218, 1727, 2002])
 
 

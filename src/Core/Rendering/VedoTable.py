@@ -1,5 +1,5 @@
 from typing import Dict, Any
-from numpy import array, ndarray, stack, zeros, c_
+from numpy import array, ndarray
 from vedo import utils
 
 from SSD.Core.Storage.Database import Database
@@ -202,8 +202,8 @@ class VedoTable:
                      coords: bool = True):
 
         # Ensure sequence format
-        if utils.isSequence(vec):
-            if len(vec) > 0 and not utils.isSequence(vec[0]):
+        if utils.is_sequence(vec):
+            if len(vec) > 0 and not utils.is_sequence(vec[0]):
                 vec = [vec]
             vec = array(vec)
 

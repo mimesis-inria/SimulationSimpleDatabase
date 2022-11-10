@@ -14,7 +14,7 @@ factory = VedoFactory(database=visualizer.get_database())
 
 
 # 2. Create the object to render
-armadillo = Mesh('armadillo.obj').computeNormals()
+armadillo = Mesh('armadillo.obj').compute_normals()
 
 
 # 3. Add objects to the Factory then init the rendering

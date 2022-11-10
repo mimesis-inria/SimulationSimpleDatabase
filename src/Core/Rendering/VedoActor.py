@@ -62,7 +62,7 @@ class VedoActor:
         self.instance = Mesh(inputobj=[data['positions'], data['cells']],
                              c=data['c'],
                              alpha=data['alpha'])
-        self.instance.computeNormals(data['compute_normals']).lw(data['line_width']).wireframe(data['wireframe'])
+        self.instance.compute_normals(data['compute_normals']).lw(data['line_width']).wireframe(data['wireframe'])
         return self
 
     def __update_mesh(self,
@@ -115,8 +115,8 @@ class VedoActor:
         # Register Actor data
         self.actor_data = data
         # Create instance
-        self.instance = Arrows(startPoints=data['positions'],
-                               endPoints=data['positions'] + data['vectors'],
+        self.instance = Arrows(start_pts=data['positions'],
+                               end_pts=data['positions'] + data['vectors'],
                                res=data['res'],
                                c=data['c'],
                                alpha=data['alpha'])
@@ -130,8 +130,8 @@ class VedoActor:
             if value is not None:
                 self.actor_data[key] = value
         # Re-create instance
-        self.instance = Arrows(startPoints=self.actor_data['positions'],
-                               endPoints=self.actor_data['positions'] + self.actor_data['vectors'],
+        self.instance = Arrows(start_pts=self.actor_data['positions'],
+                               end_pts=self.actor_data['positions'] + self.actor_data['vectors'],
                                res=self.actor_data['res'],
                                c=self.actor_data['c'],
                                alpha=self.actor_data['alpha'])
@@ -156,7 +156,7 @@ class VedoActor:
                         filled=data['filled']).orientation(newaxis=[1, 0, 0], rotation=90, rad=False)
         self.instance = Glyph(mesh=positions,
                               glyphObj=marker,
-                              orientationArray=orientations,
+                              orientation_array=orientations,
                               c=data['c'],
                               alpha=data['alpha'])
         return self
@@ -178,14 +178,14 @@ class VedoActor:
                         filled=self.actor_data['filled']).orientation(newaxis=[1, 0, 0], rotation=90, rad=False)
         self.instance = Glyph(mesh=positions,
                               glyphObj=marker,
-                              orientationArray=orientations,
+                              orientation_array=orientations,
                               c=self.actor_data['c'],
                               alpha=self.actor_data['alpha'])
         return self
 
-    ##################
-    # UPDATE METHODS #
-    ##################
+    ###########
+    # SYMBOLS #
+    ###########
 
     def __create_symbols(self,
                          data: Dict[str, Any]):
@@ -203,7 +203,7 @@ class VedoActor:
                         filled=data['filled']).orientation(newaxis=[1, 0, 0], rotation=90, rad=False)
         self.instance = Glyph(mesh=data['positions'],
                               glyphObj=marker,
-                              orientationArray=data['orientations'],
+                              orientation_array=data['orientations'],
                               c=data['c'],
                               alpha=data['alpha'])
         return self
@@ -229,7 +229,7 @@ class VedoActor:
                         filled=self.actor_data['filled']).orientation(newaxis=[1, 0, 0], rotation=90, rad=False)
         self.instance = Glyph(mesh=self.actor_data['positions'],
                               glyphObj=marker,
-                              orientationArray=self.actor_data['orientations'],
+                              orientation_array=self.actor_data['orientations'],
                               c=self.actor_data['c'],
                               alpha=self.actor_data['alpha'])
         return self
