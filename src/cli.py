@@ -1,8 +1,9 @@
 import os
 import sys
-from argparse import ArgumentParser
 import json
+from platform import system
 from shutil import copytree, rmtree
+from argparse import ArgumentParser
 
 
 def is_pip_installed():
@@ -26,7 +27,12 @@ def get_sources():
         return None
     with open(os.path.join(site_packages, metadata_repo, 'direct_url.json'), 'r') as file:
         direct_url = json.load(file)
-    return direct_url['url'].split('//')[1]
+    if system() == 'Linux':
+        return os.path.abspath(direct_url['url'].split('//')[1])
+    elif system() == 'Windows':
+        return os.path.abspath(direct_url['url'].split('///')[1])
+    else:
+        return os.path.abspath(direct_url['url'].split('///')[1])
 
 
 def is_SOFA_installed():
@@ -95,7 +101,7 @@ def execute_cli():
 
     # Get a copy of the example repository if pip installed from PyPi.org
     if args.get:
-        # Installed with dev.py
+        # Installed with setup_dev.py
         if not is_pip_installed():
             quit(print("The project was installed from sources in dev mode, examples will then be run in "
                        "'SSD.examples'."))
@@ -109,7 +115,7 @@ def execute_cli():
 
     # Clean the examples repository if pip installed from PyPi.org
     elif args.clean:
-        # Installed with dev.py
+        # Installed with setup_dev.py
         if not is_pip_installed():
             quit(print("The project was installed from sources in dev mode, you cannot clean 'SSD.examples'."))
         # Installed with pip from sources
@@ -152,9 +158,28 @@ def execute_cli():
                 print(f"The directory '{os.path.join(os.getcwd(), 'SSD_examples')}' does not exists.")
                 copy_examples_dir()
             examples_dir = os.path.join(os.getcwd(), 'SSD_examples')
-        root, repo, script, extension = examples[example].split('.')
-        os.chdir(os.path.join(examples_dir, root, repo))
-        os.system(f'{sys.executable} {script}.{extension}')
+        if type(examples[example]) == str:
+            root, repo, script, _ = examples[example].split('.')
+            os.chdir(os.path.join(examples_dir, root, repo))
+            os.system(f'{sys.executable} {script}.py')
+        else:
+            root, repo, example_record, extension = examples[example][0].split('.')
+            _, _, example_replay, _ = examples[example][1].split('.')
+            os.chdir(os.path.join(examples_dir, root, repo))
+            if example == 'caduceus':
+                if not os.path.exists('caduceus.db'):
+                    print("Recording data in offscreen mode, please wait...")
+                    os.system(f'{sys.executable} {example_record}.py')
+                os.system(f'{sys.executable} {example_replay}.py')
+            else:
+                if os.path.exists('liver.db'):
+                    user = input("An existing Database was found for this demo. Replay it (y/n):")
+                    if user.lower() in ['no', 'n']:
+                        os.system(f'{sys.executable} {example_record}.py')
+                    else:
+                        os.system(f'{sys.executable} {example_replay}.py')
+                else:
+                    os.system(f'{sys.executable} {example_record}.py')
         return
 
     # No command

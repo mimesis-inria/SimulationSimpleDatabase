@@ -42,11 +42,11 @@ Then, you should be able to run:
 
 .. code-block:: bash
 
-    $ pip3 show SSD
+    $ pip3 show SimulationSimpleDatabase
 
 .. code-block:: python
 
-    from SSD import *
+    import SSD
 
 
 Install from sources
@@ -61,29 +61,30 @@ Start by cloning the **SSD** source code from its Github repository:
 
 Then, you have two options to install the project:
 
- * (USERS) either by using ``pip`` to install it as non-editable in the site-packages;
+ * (USERS) either by using :guilabel:`pip` to install it as non-editable in the site-packages;
 
     .. code-block:: bash
 
         $ pip3 install .
 
- * (DEVELOPERS) either by running the ``dev.py`` script to link it as editable in the site-packages.
+ * (DEVELOPERS) either by running the ``setup_dev.py`` script to link it as editable in the site-packages.
 
     .. code-block:: bash
 
         # Create a link to SSD packages in the site-packages
-        $ python3 dev.py set
+        $ python3 setup_dev.py set
+
         # Remove the link to SSD packages in the site-packages
-        $ python3 dev.py del
+        $ python3 setup_dev.py del
 
 Then, you should be able to run:
 
 .. code-block:: bash
 
     # Only if installed with pip
-    $ pip3 show SSD
+    $ pip3 show SimulationSimpleDatabase
 
 .. code-block:: python
 
     # In both options
-    from SSD import *
+    import SSD
