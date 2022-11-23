@@ -1,11 +1,10 @@
 from sys import argv
 from os import symlink, unlink, mkdir, listdir, remove, sep
-from os.path import join, islink, isdir, isfile
+from os.path import join, islink, isdir, isfile, dirname
 from shutil import rmtree, which
 from pathlib import Path
 from site import USER_SITE
 from pip._internal.operations.install.wheel import PipScriptMaker
-from pip._internal.locations import get_scheme
 
 
 # Package information
@@ -44,12 +43,11 @@ if len(argv) == 1 or argv[1] == 'set':
     # Create the CLI
     if which('SSD') is None:
         # Generate the scripts
-        scheme = get_scheme('SSD', user=True)
-        maker = PipScriptMaker(None, scheme.scripts)
+        maker = PipScriptMaker(None, dirname(which('vedo')))
         generated_scripts = maker.make_multiple(['SSD = SSD.cli:execute_cli'])
         scripts = [script.split(sep)[-1] for script in generated_scripts]
         for script in generated_scripts:
-            if script.split(sep)[-1] != 'SSD':
+            if script.split(sep)[-1].split('.')[0] != 'SSD':
                 remove(script)
 
 # Option 2: remove the symbolic links

@@ -1,6 +1,8 @@
-import os
-import sys
-import json
+from os import listdir, chdir, getcwd, readlink
+from os.path import join, dirname, abspath, exists, isdir, islink
+from sys import executable
+from json import load
+from subprocess import run
 from platform import system
 from shutil import copytree, rmtree
 from argparse import ArgumentParser
@@ -9,30 +11,30 @@ from argparse import ArgumentParser
 def is_pip_installed():
 
     import SSD.Core
-    return not os.path.islink(SSD.Core.__path__[0])
+    return not islink(SSD.Core.__path__[0])
 
 
 def get_sources():
 
     import SSD
-    site_packages = os.path.dirname(SSD.__path__[0])
-    metadata_repo = [f for f in os.listdir(site_packages) if 'SimulationSimpleDatabase' in f and
+    site_packages = dirname(SSD.__path__[0])
+    metadata_repo = [f for f in listdir(site_packages) if 'SimulationSimpleDatabase' in f and
                      ('.dist-info' in f or '.egg-info' in f)]
     if len(metadata_repo) == 0:
         quit(print("The project does not seem to be properly installed. Try to re-install using 'pip'."))
     elif len(metadata_repo) > 1:
         quit(print("There might be several version of the project, try to clean your site-packages."))
     metadata_repo = metadata_repo.pop(0)
-    if 'direct_url.json' not in os.listdir(os.path.join(site_packages, metadata_repo)):
+    if 'direct_url.json' not in listdir(join(site_packages, metadata_repo)):
         return None
-    with open(os.path.join(site_packages, metadata_repo, 'direct_url.json'), 'r') as file:
-        direct_url = json.load(file)
+    with open(join(site_packages, metadata_repo, 'direct_url.json'), 'r') as file:
+        direct_url = load(file)
     if system() == 'Linux':
-        return os.path.abspath(direct_url['url'].split('//')[1])
+        return abspath(direct_url['url'].split('//')[1])
     elif system() == 'Windows':
-        return os.path.abspath(direct_url['url'].split('///')[1])
+        return abspath(direct_url['url'].split('///')[1])
     else:
-        return os.path.abspath(direct_url['url'].split('///')[1])
+        return abspath(direct_url['url'].split('///')[1])
 
 
 def is_SOFA_installed():
@@ -48,18 +50,18 @@ def copy_examples_dir():
 
     user = input(f"WARNING: The project was installed with pip, examples must be run in a new repository to avoid "
                  f"writing data in your installation of SSD. Allow the creation of this new repository "
-                 f"'{os.path.join(os.getcwd(), 'SSD_examples')}' to run examples (use 'SSD --clean' to cleanly"
+                 f"'{join(getcwd(), 'SSD_examples')}' to run examples (use 'SSD --clean' to cleanly"
                  f"remove it afterward) (y/n):")
     if user.lower() not in ['y', 'yes']:
         quit(print("Aborting."))
     import SSD.examples
     copytree(src=SSD.examples.__path__[0],
-             dst=os.path.join(os.getcwd(), 'SSD_examples'))
+             dst=join(getcwd(), 'SSD_examples'))
 
 
 def clean_examples_dir():
 
-    if not os.path.isdir(examples_dir := os.path.join(os.getcwd(), 'SSD_examples')):
+    if not isdir(examples_dir := join(getcwd(), 'SSD_examples')):
         quit(print(f"The directory '{examples_dir}' does not exists."))
     user = input(f"Do you want to remove the repository '{examples_dir}' (y/n):")
     if user.lower() not in ['y', 'yes']:
@@ -108,7 +110,7 @@ def execute_cli():
         # Installed with pip from sources
         if (source_dir := get_sources()) is not None:
             quit(print(f"The project was installed with pip from sources, examples will then be run in "
-                       f"'{os.path.join(source_dir, 'examples')}'."))
+                       f"'{join(source_dir, 'examples')}'."))
         # Installed with pip from PyPi
         copy_examples_dir()
         return
@@ -121,7 +123,7 @@ def execute_cli():
         # Installed with pip from sources
         if (source_dir := get_sources()) is not None:
             quit(print(f"The project was installed with pip from sources, you cannot clean "
-                       f"'{os.path.join(source_dir, 'examples')}'."))
+                       f"'{join(source_dir, 'examples')}'."))
         # Installed with pip from PyPi
         clean_examples_dir()
         return
@@ -149,37 +151,36 @@ def execute_cli():
         # Get the example directory
         if not is_pip_installed():
             import SSD.Core
-            source_dir = os.readlink(SSD.Core.__path__[0])
-            examples_dir = os.path.join(os.path.dirname(os.path.dirname(source_dir)), 'examples')
+            source_dir = readlink(SSD.Core.__path__[0])
+            examples_dir = join(dirname(dirname(source_dir)), 'examples')
         elif (source_dir := get_sources()) is not None:
-            examples_dir = os.path.join(source_dir, 'examples')
+            examples_dir = join(source_dir, 'examples')
         else:
-            if not os.path.isdir(os.path.join(os.getcwd(), 'SSD_examples')):
-                print(f"The directory '{os.path.join(os.getcwd(), 'SSD_examples')}' does not exists.")
+            if not isdir(join(getcwd(), 'SSD_examples')):
+                print(f"The directory '{join(getcwd(), 'SSD_examples')}' does not exists.")
                 copy_examples_dir()
-            examples_dir = os.path.join(os.getcwd(), 'SSD_examples')
+            examples_dir = join(getcwd(), 'SSD_examples')
         if type(examples[example]) == str:
             root, repo, script, _ = examples[example].split('.')
-            os.chdir(os.path.join(examples_dir, root, repo))
-            os.system(f'{sys.executable} {script}.py')
+            run([f'{executable}', f'{script}.py'], cwd=join(examples_dir, root, repo))
         else:
             root, repo, example_record, extension = examples[example][0].split('.')
             _, _, example_replay, _ = examples[example][1].split('.')
-            os.chdir(os.path.join(examples_dir, root, repo))
+            chdir(join(examples_dir, root, repo))
             if example == 'caduceus':
-                if not os.path.exists('caduceus.db'):
+                if not exists('caduceus.db'):
                     print("Recording data in offscreen mode, please wait...")
-                    os.system(f'{sys.executable} {example_record}.py')
-                os.system(f'{sys.executable} {example_replay}.py')
+                    run([f'{executable}', f'{example_record}.py'], cwd=join(examples_dir, root, repo))
+                run([f'{executable}', f'{example_replay}.py'], cwd=join(examples_dir, root, repo))
             else:
-                if os.path.exists('liver.db'):
+                if exists('liver.db'):
                     user = input("An existing Database was found for this demo. Replay it (y/n):")
                     if user.lower() in ['no', 'n']:
-                        os.system(f'{sys.executable} {example_record}.py')
+                        run([f'{executable}', f'{example_record}.py'], cwd=join(examples_dir, root, repo))
                     else:
-                        os.system(f'{sys.executable} {example_replay}.py')
+                        run([f'{executable}', f'{example_replay}.py'], cwd=join(examples_dir, root, repo))
                 else:
-                    os.system(f'{sys.executable} {example_record}.py')
+                    run([f'{executable}', f'{example_record}.py'], cwd=join(examples_dir, root, repo))
         return
 
     # No command
