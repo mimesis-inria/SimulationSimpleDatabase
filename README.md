@@ -65,7 +65,7 @@ $ cd SimpleSimulationDatabase
 $ pip3 install .
 
 # Option 2: Install as editable (developers)
-$ python3 dev.py set
+$ python3 setup_dev.py set
 ```
 
 
