@@ -144,10 +144,12 @@ def execute_cli():
 
     # Run a demo script
     if (example := args.run) is not None:
+
         # Check the example name
         if example.lower() not in examples.keys():
             print(f"Unknown demo '{example}'.")
             quit(print_available_examples(examples))
+
         # Get the example directory
         if not is_pip_installed():
             import SSD.Core
@@ -160,13 +162,25 @@ def execute_cli():
                 print(f"The directory '{join(getcwd(), 'SSD_examples')}' does not exists.")
                 copy_examples_dir()
             examples_dir = join(getcwd(), 'SSD_examples')
+
+        # Run the example
         if type(examples[example]) == str:
             root, repo, script, _ = examples[example].split('.')
+            # Check SOFA installation
+            if root == 'SOFA' and not is_SOFA_installed():
+                quit(print(f"SOFA bindings were not found, unable to run {example} example "
+                           f"({join(root, repo, script)}.py)"))
+            # Run example
             run([f'{executable}', f'{script}.py'], cwd=join(examples_dir, root, repo))
         else:
             root, repo, example_record, extension = examples[example][0].split('.')
             _, _, example_replay, _ = examples[example][1].split('.')
+            # Check SOFA installation
+            if root == 'SOFA' and not is_SOFA_installed():
+                quit(print(f"SOFA bindings were not found, unable to run {example} example "
+                           f"({join(root, repo, example_record)}.py)"))
             chdir(join(examples_dir, root, repo))
+            # Get user input between record and replay
             if example == 'caduceus':
                 if not exists('caduceus.db'):
                     print("Recording data in offscreen mode, please wait...")
@@ -181,7 +195,6 @@ def execute_cli():
                         run([f'{executable}', f'{example_replay}.py'], cwd=join(examples_dir, root, repo))
                 else:
                     run([f'{executable}', f'{example_record}.py'], cwd=join(examples_dir, root, repo))
-        return
 
     # No command
     else:
