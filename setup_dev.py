@@ -45,7 +45,6 @@ if len(argv) == 1 or argv[1] == 'set':
         # Generate the scripts
         maker = PipScriptMaker(None, dirname(which('vedo')))
         generated_scripts = maker.make_multiple(['SSD = SSD.cli:execute_cli'])
-        scripts = [script.split(sep)[-1] for script in generated_scripts]
         for script in generated_scripts:
             if script.split(sep)[-1].split('.')[0] != 'SSD':
                 remove(script)
