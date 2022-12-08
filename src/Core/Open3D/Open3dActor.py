@@ -11,7 +11,7 @@ class Open3dActor:
     def __init__(self,
                  actor_type: str,
                  actor_name: str,
-                 actor_group: int,):
+                 actor_group: int):
         """
 
         :param actor_type:
@@ -22,7 +22,7 @@ class Open3dActor:
         # Actor information
         self.type: str = actor_type
         self.name: str = actor_name
-        self.group: int = actor_group
+        self.group: str = str(actor_group)
         self.instance: Optional[o3d.geometry.Geometry3D] = None
         self.material = o3d.visualization.rendering.MaterialRecord()
 

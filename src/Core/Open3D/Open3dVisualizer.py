@@ -6,6 +6,7 @@ from sys import executable, argv
 import open3d as o3d
 from socket import socket, AF_INET, SOCK_STREAM, SOL_SOCKET, SO_REUSEADDR
 from struct import unpack
+from inspect import stack, getmodule
 
 from SSD.Core.Storage.Database import Database
 from Open3dActor import Open3dActor
@@ -19,7 +20,7 @@ class Open3dVisualizer:
                  database_name: Optional[str] = None,
                  remove_existing: bool = False,
                  offscreen: bool = False,
-                 fps: int = 30):
+                 fps: int = 20):
         """
         Manage the creation, update and rendering of Open3D Actors.
 
@@ -41,8 +42,9 @@ class Open3dVisualizer:
             raise ValueError("Both 'database' and 'database_name' are not defined.")
 
         # Information about Actors
-        self.__actors: Dict[int, Dict[Tuple[int, int], Open3dActor]] = {}
-        self.__groups: Dict[Tuple[int, int], int] = {}
+        self.__actors: Dict[int, Dict[str, Open3dActor]] = {}
+        self.__groups: Dict[str, int] = {}
+        self.__current_group: int = 0
         self.__plotter: Optional[o3d.visualization.O3DVisualizer] = None
         self.__offscreen: bool = offscreen
         self.__fps: float = 1 / min(max(1, abs(fps)), 50)
@@ -55,7 +57,7 @@ class Open3dVisualizer:
     @staticmethod
     def launch(database_path: Tuple[str, str],
                offscreen: bool = False,
-               fps: int = 30):
+               fps: int = 20):
         """
         Launch the Open3dVisualizer in a new process to keep it interactive.
 
@@ -98,20 +100,25 @@ class Open3dVisualizer:
         return self.__database.get_path()
 
     def get_actor(self,
-                  actor_id: Tuple[int, int]) -> Open3dActor:
+                  actor_name: str) -> Open3dActor:
         """
         Get an Actor instance.
 
-        :param actor_id: Index of the Actor.
+        :param actor_name: Name of the Actor.
         """
 
-        group = self.__groups[actor_id]
-        return self.__actors[group][actor_id]
+        group = self.__groups[actor_name]
+        return self.__actors[group][actor_name]
 
     def init_visualizer(self):
         """
         Initialize the Visualizer: create all Actors and render them in a Plotter.
         """
+
+        # 0. Check that the Open3D Visualizer was launched with the self.launch() method
+        if getmodule(stack()[-1][0]).__file__ != __file__:
+            quit(print("Warning: The Open3dVisualizer should be launched with the 'launch' method."
+                       "Check usage in documentation."))
 
         # 1. Connect to the Factory for synchronization
         self.__socket = socket(AF_INET, SOCK_STREAM)
@@ -141,18 +148,17 @@ class Open3dVisualizer:
             group = object_data.pop('at')
 
             # 3.2. Retrieve the good indexing of Actors
-            actor_type, factory_id, actor_id = table_name.split('_')
-            factory_id, actor_id = int(factory_id), int(actor_id)
+            actor_type = table_name.split('_')[0]
             if group not in self.__actors:
                 self.__actors[group] = {}
                 pre_groups[group] = []
 
             # 3.3. Create the Actor
-            self.__actors[group][(factory_id, actor_id)] = Open3dActor(actor_type=actor_type,
-                                                                       actor_name=table_name,
-                                                                       actor_group=group)
-            self.__actors[group][(factory_id, actor_id)].create(object_data=object_data)
-            self.__groups[(factory_id, actor_id)] = group
+            self.__actors[group][table_name] = Open3dActor(actor_type=actor_type,
+                                                           actor_name=table_name,
+                                                           actor_group=group)
+            self.__actors[group][table_name].create(object_data=object_data)
+            self.__groups[table_name] = group
             pre_groups[group].append(table_name)
 
         # 4. Update the group values
@@ -175,17 +181,20 @@ class Open3dVisualizer:
             # 5.1. Init Visualizer instance
             app = o3d.visualization.gui.Application.instance
             app.initialize()
+
             self.__plotter = o3d.visualization.O3DVisualizer()
             self.__plotter.set_on_close(self.__exit)
+            self.__plotter.add_action("Change group", self.__change_group)
 
             # 5.2. Add geometries to the Visualizer
-            for actor in self.__actors[0].values():
-                self.__plotter.add_geometry(name=actor.name,
-                                            geometry=actor.instance)
-                self.__plotter.reset_camera_to_default()
+            for actor in self.__actors[self.__current_group].values():
+                self.__plotter.add_geometry(actor.name, actor.instance, actor.material)
+            self.__plotter.reset_camera_to_default()
 
             # 5.3. Launch mainloop
             app.add_window(self.__plotter)
+            # Todo: deal with menu
+            app.menubar = o3d.visualization.gui.Menu()
             Thread(target=self.__update_thread).start()
             app.run()
 
@@ -213,8 +222,8 @@ class Open3dVisualizer:
                     o3d.visualization.gui.Application.instance.post_to_main_thread(self.__plotter,
                                                                                    self.__update_instances)
 
-                    if (dt := time() - process_time) < self.__fps:
-                        sleep(self.__fps - dt)
+                    dt = max(0., self.__fps - (time() - process_time))
+                    sleep(dt)
                 else:
                     self.__update_offscreen()
 
@@ -224,7 +233,7 @@ class Open3dVisualizer:
 
     def __update_instances(self):
 
-        for table_name in self.__database.get_tables():
+        for table_name in self.__actors[self.__current_group].keys():
             # Get the current step line in the Table
             object_data = self.__database.get_line(table_name=table_name,
                                                    line_id=self.__step)
@@ -232,12 +241,13 @@ class Open3dVisualizer:
             if object_data.pop('id') == self.__step:
                 if len(object_data.keys()) > 1:
                     # Update Actor instance
-                    _, factory_id, actor_id = table_name.split('_')
-                    actor = self.get_actor((int(factory_id), int(actor_id)))
+                    actor = self.get_actor(table_name)
                     actor.update(object_data=object_data)
                     # Update the geometry in the Visualizer
+                    is_visible = self.__plotter.get_geometry(actor.name).is_visible
                     self.__plotter.remove_geometry(actor.name)
-                    self.__plotter.add_geometry(actor.name, actor.instance, actor.material)
+                    self.__plotter.add_geometry(actor.name, actor.instance, actor.material,
+                                                is_visible=is_visible)
             # Otherwise, the Actor was not updated, then add an empty line
             else:
                 self.__database.add_data(table_name=table_name,
@@ -253,6 +263,23 @@ class Open3dVisualizer:
             if object_data.pop('id') != self.__step:
                 self.__database.add_data(table_name=table_name,
                                          data={})
+
+    def __change_group(self, vis):
+
+        o3d.visualization.gui.Application.instance.post_to_main_thread(self.__plotter,
+                                                                       self.__update_instances_group)
+
+    def __update_instances_group(self):
+
+        for table_name in self.__actors[self.__current_group].keys():
+            actor = self.get_actor(table_name)
+            self.__plotter.remove_geometry(actor.name)
+
+        self.__current_group = (self.__current_group + 1) % len(self.__groups.keys())
+
+        for table_name in self.__actors[self.__current_group].keys():
+            actor = self.get_actor(table_name)
+            self.__plotter.add_geometry(actor.name, actor.instance, actor.material)
 
     def __exit(self):
 
