@@ -135,26 +135,26 @@ class VedoVisualizer:
             actors = []
             for window in sorted(instances.keys()):
                 actors.append(instances[window])
-            plt = show(actors,
-                       new=True,
-                       N=len(actors),
-                       sharecam=True,
-                       interactive=False,
-                       title='SofaVedo',
-                       axes=4)
-            plt.addButton(plt.interactor.TerminateApp, states=["start"])
-            plt.interactive()
+            self.__plotter = show(actors,
+                                  new=True,
+                                  N=len(actors),
+                                  sharecam=True,
+                                  interactive=False,
+                                  title='SofaVedo',
+                                  axes=4)
+            self.__plotter.addButton(self.__plotter.interactor.TerminateApp, states=["start"])
+            self.__plotter.interactive()
             # Once the user closed the window, recreate a new Plotter
             if system() != 'Darwin':
-                camera = {'pos': plt.camera.GetPosition(),
-                          'focalPoint': plt.camera.GetFocalPoint()}
+                camera = {'pos': self.__plotter.camera.GetPosition(),
+                          'focalPoint': self.__plotter.camera.GetFocalPoint()}
                 self.__plotter = show(actors,
                                       new=True,
                                       N=len(actors),
                                       sharecam=True,
                                       interactive=False,
                                       title='SofaVedo',
-                                      axes=plt.axes,
+                                      axes=self.__plotter.axes,
                                       camera=camera)
 
     def update_instance(self,
