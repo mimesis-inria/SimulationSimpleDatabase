@@ -10,10 +10,10 @@ from inspect import stack, getmodule
 
 from SSD.Core.Storage.Database import Database
 from Open3dActor import Open3dActor
-from Settings import AppWindow
+from BaseApp import BaseApp
 
 
-class Open3dVisualizer(AppWindow):
+class Open3dVisualizer(BaseApp):
 
     def __init__(self,
                  database: Optional[Database] = None,
@@ -46,6 +46,8 @@ class Open3dVisualizer(AppWindow):
         self.__actors: Dict[int, Dict[str, Open3dActor]] = {}
         self.__groups: Dict[str, int] = {}
         self.__current_group: int = 0
+        self.__previous_group: int = 0
+        self.__group_change: bool = False
         self.__offscreen: bool = offscreen
         self.__fps: float = 1 / min(max(1, abs(fps)), 50)
 
@@ -179,7 +181,7 @@ class Open3dVisualizer(AppWindow):
         if not self.__offscreen:
 
             # 5.1. Init Visualizer instance
-            self._create_settings()
+            self._create_settings(len(self.__actors))
             self._window.set_on_close(self.__exit)
 
             # 5.2. Add geometries to the Visualizer
@@ -225,6 +227,15 @@ class Open3dVisualizer(AppWindow):
             o3d.visualization.gui.Application.instance.quit()
 
     def __update_instances(self):
+
+        if self.__group_change:
+            self.__group_change = False
+            for table_name in self.__actors[self.__previous_group].keys():
+                actor = self.get_actor(table_name)
+                self._scene.scene.remove_geometry(actor.name)
+            for table_name in self.__actors[self.__current_group].keys():
+                actor = self.get_actor(table_name)
+                self._scene.scene.add_geometry(actor.name, actor.instance, actor.material)
 
         for table_name in self.__actors[self.__current_group].keys():
             # Get the current step line in the Table
@@ -277,6 +288,12 @@ class Open3dVisualizer(AppWindow):
 
         self.__is_done = True
         return True
+
+    def _change_group(self, index):
+        if index != self.__current_group:
+            self.__previous_group = self.__current_group
+            self.__current_group = index
+            self.__group_change = True
 
 
 if __name__ == '__main__':
