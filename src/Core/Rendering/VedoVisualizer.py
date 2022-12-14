@@ -1,6 +1,7 @@
 from typing import Dict, Optional, Any, Tuple
 from numpy import array, ndarray
 from vedo import show, Plotter
+from platform import system
 
 from SSD.Core.Storage.Database import Database
 from SSD.Core.Rendering.VedoActor import VedoActor
@@ -144,16 +145,17 @@ class VedoVisualizer:
             plt.addButton(plt.interactor.TerminateApp, states=["start"])
             plt.interactive()
             # Once the user closed the window, recreate a new Plotter
-            camera = {'pos': plt.camera.GetPosition(),
-                      'focalPoint': plt.camera.GetFocalPoint()}
-            self.__plotter = show(actors,
-                                  new=True,
-                                  N=len(actors),
-                                  sharecam=True,
-                                  interactive=False,
-                                  title='SofaVedo',
-                                  axes=plt.axes,
-                                  camera=camera)
+            if system() != 'Darwin':
+                camera = {'pos': plt.camera.GetPosition(),
+                          'focalPoint': plt.camera.GetFocalPoint()}
+                self.__plotter = show(actors,
+                                      new=True,
+                                      N=len(actors),
+                                      sharecam=True,
+                                      interactive=False,
+                                      title='SofaVedo',
+                                      axes=plt.axes,
+                                      camera=camera)
 
     def update_instance(self,
                         table_name: str,
