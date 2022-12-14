@@ -182,7 +182,7 @@ class Open3dVisualizer(BaseApp):
 
             # 5.1. Init Visualizer instance
             self._create_settings(len(self.__actors))
-            self._window.set_on_close(self.__exit)
+            self._window.set_on_close(self._exit)
 
             # 5.2. Add geometries to the Visualizer
             for actor in self.__actors[self.__current_group].values():
@@ -209,7 +209,7 @@ class Open3dVisualizer(BaseApp):
             msg = self.__socket.recv(4)
             # Exit command
             if msg == b'exit':
-                self.__exit()
+                self._exit()
             # Render command (within step number)
             elif unpack('i', msg)[0] != self.__step:
                 self.__step += 1
@@ -284,7 +284,7 @@ class Open3dVisualizer(BaseApp):
             actor = self.get_actor(table_name)
             self._window.add_geometry(actor.name, actor.instance, actor.material)
 
-    def __exit(self):
+    def _exit(self):
 
         self.__is_done = True
         return True

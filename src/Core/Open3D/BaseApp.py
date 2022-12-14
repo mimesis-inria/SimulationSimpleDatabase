@@ -41,6 +41,7 @@ class BaseApp:
         self.__create_light_settings(em)
         self.__create_group_settings(nb_group, em)
         self.__apply_settings()
+        self.__create_menu()
 
         self._window.set_on_layout(self.__on_layout)
         self._window.add_child(self._scene)
@@ -163,9 +164,10 @@ class BaseApp:
 
         # Groups section
         separation_height = int(round(0.5 * em))
+        groups = gui.CollapsableVert('Groups', 0, gui.Margins(em, 0, 0, 0))
+        groups.set_is_open(False)
 
         # Groups settings
-        groups = gui.CollapsableVert('Groups', 0, gui.Margins(em, 0, 0, 0))
         line = gui.VGrid(2, 0.25 * em)
         line.add_child(gui.Label('Display group'))
         group_widget = gui.Combobox()
@@ -181,22 +183,25 @@ class BaseApp:
         self._settings_panel.add_child(groups)
 
     def __apply_settings(self):
-        bg_color = [self._settings.bg_color.red, self._settings.bg_color.green,
-                    self._settings.bg_color.blue, self._settings.bg_color.alpha]
+
+        # View settings
+        bg_color = [self._settings.bg_color.red, self._settings.bg_color.green, self._settings.bg_color.blue,
+                    self._settings.bg_color.alpha]
         self._scene.scene.set_background(bg_color)
         self._scene.scene.show_skybox(self._settings.show_skymap)
         self._scene.scene.show_axes(self._settings.show_axes)
         self._scene.scene.show_ground_plane(self._settings.show_ground, rendering.Scene.GroundPlane(0))
+
+        # Skymap light settings
         if self._settings.skymap_name is not None:
             self._scene.scene.scene.set_indirect_light(self._settings.skymap_name)
             self._settings.skymap_name = None
         self._scene.scene.scene.enable_indirect_light(self._settings.use_skymap_light)
         self._scene.scene.scene.set_indirect_light_intensity(self._settings.skymap_intensity)
-        sun_color = [self._settings.sun_color.red,
-                     self._settings.sun_color.green,
-                     self._settings.sun_color.blue]
-        self._scene.scene.scene.set_sun_light(self._settings.sun_dir, sun_color,
-                                              self._settings.sun_intensity)
+
+        # Sunlight settings
+        sun_color = [self._settings.sun_color.red, self._settings.sun_color.green, self._settings.sun_color.blue]
+        self._scene.scene.scene.set_sun_light(self._settings.sun_dir, sun_color, self._settings.sun_intensity)
         self._scene.scene.scene.enable_sun_light(self._settings.use_sun_light)
 
         # Update widgets
@@ -210,6 +215,21 @@ class BaseApp:
         self._sun_intensity_widget.int_value = self._settings.sun_intensity
         self._sun_dir_widget.vector_value = self._settings.sun_dir
         self._sun_color_widget.color_value = self._settings.sun_color
+
+    def __create_menu(self):
+
+        if gui.Application.instance.menubar is None:
+            app_menu = gui.Menu()
+            app_menu.add_item('Show Settings', 1)
+            app_menu.set_checked(1, True)
+            app_menu.add_separator()
+            app_menu.add_item('Quit', 2)
+            menu = gui.Menu()
+            menu.add_menu('Menu', app_menu)
+            gui.Application.instance.menubar = menu
+
+        self._window.set_on_menu_item_activated(1, self.__on_menu_show)
+        self._window.set_on_menu_item_activated(2, self.__on_menu_quit)
 
     def __on_layout(self, layout_context):
 
@@ -278,4 +298,14 @@ class BaseApp:
         self._change_group(index)
 
     def _change_group(self, index):
+        raise NotImplementedError
+
+    def __on_menu_show(self):
+        self._settings_panel.visible = not self._settings_panel.visible
+        gui.Application.instance.menubar.set_checked(1, self._settings_panel.visible)
+
+    def __on_menu_quit(self):
+        self._exit()
+
+    def _exit(self):
         raise NotImplementedError
