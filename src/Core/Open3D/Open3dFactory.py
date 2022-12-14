@@ -86,7 +86,12 @@ class Open3dFactory:
 
         # Send
         self.__step += 1
-        self.__visualizer_socket.send(bytearray(pack('i', self.__step)))
+        try:
+            self.__visualizer_socket.send(bytearray(pack('i', self.__step)))
+        except ConnectionResetError:
+            quit(print('Rendering window closed, shutting down.'))
+        except BrokenPipeError:
+            quit(print('Rendering window closed, shutting down.'))
 
     def __add_object(self,
                      object_type: str,

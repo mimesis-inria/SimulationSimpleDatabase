@@ -10,9 +10,10 @@ from inspect import stack, getmodule
 
 from SSD.Core.Storage.Database import Database
 from Open3dActor import Open3dActor
+from Settings import AppWindow
 
 
-class Open3dVisualizer:
+class Open3dVisualizer(AppWindow):
 
     def __init__(self,
                  database: Optional[Database] = None,
@@ -45,7 +46,6 @@ class Open3dVisualizer:
         self.__actors: Dict[int, Dict[str, Open3dActor]] = {}
         self.__groups: Dict[str, int] = {}
         self.__current_group: int = 0
-        self.__plotter: Optional[o3d.visualization.O3DVisualizer] = None
         self.__offscreen: bool = offscreen
         self.__fps: float = 1 / min(max(1, abs(fps)), 50)
 
@@ -179,24 +179,18 @@ class Open3dVisualizer:
         if not self.__offscreen:
 
             # 5.1. Init Visualizer instance
-            app = o3d.visualization.gui.Application.instance
-            app.initialize()
-
-            self.__plotter = o3d.visualization.O3DVisualizer()
-            self.__plotter.set_on_close(self.__exit)
-            self.__plotter.add_action("Change group", self.__change_group)
+            self._create_settings()
+            self._window.set_on_close(self.__exit)
 
             # 5.2. Add geometries to the Visualizer
             for actor in self.__actors[self.__current_group].values():
-                self.__plotter.add_geometry(actor.name, actor.instance, actor.material)
-            self.__plotter.reset_camera_to_default()
+                self._scene.scene.add_geometry(actor.name, actor.instance, actor.material)
+            bounds = self._scene.scene.bounding_box
+            self._scene.setup_camera(60, bounds, bounds.get_center())
 
             # 5.3. Launch mainloop
-            app.add_window(self.__plotter)
-            # Todo: deal with menu
-            app.menubar = o3d.visualization.gui.Menu()
             Thread(target=self.__update_thread).start()
-            app.run()
+            o3d.visualization.gui.Application.instance.run()
 
         # 5.b. Synchronize the Visualizer and the Factory if offscreen
         else:
@@ -219,9 +213,8 @@ class Open3dVisualizer:
                 self.__step += 1
                 if not self.__offscreen:
                     process_time = time()
-                    o3d.visualization.gui.Application.instance.post_to_main_thread(self.__plotter,
+                    o3d.visualization.gui.Application.instance.post_to_main_thread(self._window,
                                                                                    self.__update_instances)
-
                     dt = max(0., self.__fps - (time() - process_time))
                     sleep(dt)
                 else:
@@ -244,10 +237,9 @@ class Open3dVisualizer:
                     actor = self.get_actor(table_name)
                     actor.update(object_data=object_data)
                     # Update the geometry in the Visualizer
-                    is_visible = self.__plotter.get_geometry(actor.name).is_visible
-                    self.__plotter.remove_geometry(actor.name)
-                    self.__plotter.add_geometry(actor.name, actor.instance, actor.material,
-                                                is_visible=is_visible)
+                    if self._scene.scene.geometry_is_visible(actor.name):
+                        self._scene.scene.remove_geometry(actor.name)
+                        self._scene.scene.add_geometry(actor.name, actor.instance, actor.material)
             # Otherwise, the Actor was not updated, then add an empty line
             else:
                 self.__database.add_data(table_name=table_name,
@@ -266,20 +258,20 @@ class Open3dVisualizer:
 
     def __change_group(self, vis):
 
-        o3d.visualization.gui.Application.instance.post_to_main_thread(self.__plotter,
+        o3d.visualization.gui.Application.instance.post_to_main_thread(self._window,
                                                                        self.__update_instances_group)
 
     def __update_instances_group(self):
 
         for table_name in self.__actors[self.__current_group].keys():
             actor = self.get_actor(table_name)
-            self.__plotter.remove_geometry(actor.name)
+            self._window.remove_geometry(actor.name)
 
         self.__current_group = (self.__current_group + 1) % len(self.__groups.keys())
 
         for table_name in self.__actors[self.__current_group].keys():
             actor = self.get_actor(table_name)
-            self.__plotter.add_geometry(actor.name, actor.instance, actor.material)
+            self._window.add_geometry(actor.name, actor.instance, actor.material)
 
     def __exit(self):
 
