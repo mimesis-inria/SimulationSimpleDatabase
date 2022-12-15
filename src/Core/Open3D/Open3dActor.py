@@ -1,7 +1,7 @@
 from typing import Any, Optional, Dict
 import open3d as o3d
 from vedo.colors import get_color
-from numpy import array
+from numpy import array, ndarray, asarray, sort, concatenate, unique
 from matplotlib.colors import Normalize
 from matplotlib.pyplot import get_cmap
 
@@ -33,8 +33,10 @@ class Open3dActor:
         # Actor specialization methods
         create = {'Mesh': self.__create_mesh}
         update = {'Mesh': self.__update_mesh}
+        cmap = {'Mesh': self.__cmap_mesh}
         self.__create_object = create[self.type]
         self.__update_object = update[self.type]
+        self.__cmap_object = cmap[self.type]
 
     def create(self,
                object_data: Dict[str, Any]):
@@ -92,10 +94,9 @@ class Open3dActor:
             cmap_norm = Normalize(vmin=min(scalar_field[0]),
                                   vmax=max(scalar_field[0]))
             cmap = get_cmap(cmap_data['colormap'])
-            alpha = 1 if not 0. <= self.__object_data['alpha'] <= 1. else self.__object_data['alpha']
             vertex_colors = cmap(cmap_norm(scalar_field[0]))[:, 0:3]
-            self.instance.vertex_colors = o3d.utility.Vector3dVector(vertex_colors)
-            self.material.base_color = array([1., 1., 1.] + [alpha])
+            # Apply colors
+            self.__cmap_object(vertex_colors)
 
     ########
     # MESH #
@@ -105,17 +106,41 @@ class Open3dActor:
                       data: Dict[str, Any]):
 
         # Create the material
-        self.material.shader = 'defaultLitTransparency'
         alpha = 1 if not 0. <= data['alpha'] <= 1. else data['alpha']
         color = list(get_color(rgb=data['c']))
         self.material.base_color = array(color + [alpha])
+        self.material.shader = 'defaultLitTransparency'
 
         # Create instance
-        self.instance = o3d.geometry.TriangleMesh(vertices=o3d.utility.Vector3dVector(data['positions']),
-                                                  triangles=o3d.utility.Vector3iVector(data['cells']))
-        self.instance.compute_vertex_normals()
+        if data['wireframe']:
+            self.material.line_width = data['line_width']
+            self.material.shader = 'unlitLine'
+            edges = concatenate([sort(data['cells'][:, col], axis=1) for col in [[0, 1], [1, 2], [2, 0]]])
+            edges = unique(edges, axis=0)
+            self.instance = o3d.geometry.LineSet(points=o3d.utility.Vector3dVector(data['positions']),
+                                                 lines=o3d.utility.Vector2iVector(edges))
+        else:
+            self.instance = o3d.geometry.TriangleMesh(vertices=o3d.utility.Vector3dVector(data['positions']),
+                                                      triangles=o3d.utility.Vector3iVector(data['cells']))
+            self.instance.compute_vertex_normals()
 
     def __update_mesh(self,
                       data: Dict[str, Any]):
 
-        self.instance.vertices = o3d.utility.Vector3dVector(data['positions'])
+        if self.__object_data['wireframe']:
+            self.instance.points = o3d.utility.Vector3dVector(data['positions'])
+        else:
+            self.instance.vertices = o3d.utility.Vector3dVector(data['positions'])
+
+    def __cmap_mesh(self,
+                    vertex_colors: ndarray):
+
+        alpha = 1 if not 0. <= self.__object_data['alpha'] <= 1. else self.__object_data['alpha']
+
+        if self.__object_data['wireframe']:
+            line_color = vertex_colors[asarray(self.instance.lines)[:, 0]]
+            self.instance.colors = o3d.utility.Vector3dVector(line_color)
+            self.material.base_color = array([1., 1., 1.] + [alpha])
+        else:
+            self.instance.vertex_colors = o3d.utility.Vector3dVector(vertex_colors)
+            self.material.base_color = array([1., 1., 1.] + [alpha])

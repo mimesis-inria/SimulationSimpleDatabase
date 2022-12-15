@@ -155,7 +155,7 @@ class Open3dFactory:
                  scalar_field: ndarray = array([]),
                  wireframe: bool = False,
                  compute_normals: bool = True,
-                 line_width: float = 0.):
+                 line_width: float = 1.):
 
         return self.__add_object('Mesh', locals())
 
