@@ -1,4 +1,5 @@
 from vedo import Mesh
+from numpy import array
 from numpy.random import random
 
 from Open3dFactory import Open3dFactory
@@ -27,8 +28,11 @@ factory.add_points(positions=armadillo.points(),
                    at=2,
                    c='red',
                    point_size=5,
-                   scalar_field=armadillo.points()[:, 1],
                    alpha=0.8)
+factory.add_arrows(positions=armadillo.points()[0:2],
+                   vectors=array([armadillo.normals()[0], armadillo.normals()[1] * 5]),
+                   at=2,
+                   alpha=0.5)
 Open3dVisualizer.launch(database_path=factory.get_path(),
                         offscreen=False,
                         fps=20)

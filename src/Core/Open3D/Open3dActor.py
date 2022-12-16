@@ -1,7 +1,8 @@
 from typing import Any, Optional, Dict
 import open3d as o3d
 from vedo.colors import get_color
-from numpy import array, ndarray, asarray, sort, concatenate, unique
+from numpy import array, ndarray, asarray, sort, concatenate, unique, eye, arctan, cos, sin
+from numpy.linalg import norm
 from matplotlib.colors import Normalize
 from matplotlib.pyplot import get_cmap
 
@@ -31,15 +32,12 @@ class Open3dActor:
         self.__cmap_data: Optional[Dict[str, Any]] = None
 
         # Actor specialization methods
-        create = {'Mesh': self.__create_mesh,
-                  'Points': self.__create_points}
-        update = {'Mesh': self.__update_mesh,
-                  'Points': self.__update_points}
-        cmap = {'Mesh': self.__cmap_mesh,
-                'Points': self.__cmap_points}
-        self.__create_object = create[self.type]
-        self.__update_object = update[self.type]
-        self.__cmap_object = cmap[self.type]
+        spec = {'Mesh': (self.__create_mesh, self.__update_mesh, self.__cmap_mesh),
+                'Points': (self.__create_points, self.__update_points, self.__cmap_points),
+                'Arrows': (self.__create_arrows, self.__update_arrows, self.__cmap_arrows)}
+        self.__create_object = spec[self.type][0]
+        self.__update_object = spec[self.type][1]
+        self.__cmap_object = spec[self.type][2]
 
     def create(self,
                object_data: Dict[str, Any]):
@@ -176,3 +174,58 @@ class Open3dActor:
         alpha = 1 if not 0. <= self.__object_data['alpha'] <= 1. else self.__object_data['alpha']
         self.instance.colors = o3d.utility.Vector3dVector(vertex_colors)
         self.material.base_color = array([1., 1., 1.] + [alpha])
+
+    ##########
+    # ARROWS #
+    ##########
+
+    def __create_arrows(self,
+                        data: Dict[str, Any]):
+
+        # Create the material
+        alpha = 1 if not 0. <= data['alpha'] <= 1. else data['alpha']
+        color = list(get_color(rgb=data['c']))
+        self.material.base_color = array(color + [alpha])
+        self.material.shader = 'defaultLitTransparency'
+
+        # Create instance
+        for start, vec in zip(data['positions'], data['vectors']):
+            scale = norm(vec)
+            arrow = o3d.geometry.TriangleMesh().create_arrow(resolution=data['res'],
+                                                             cone_height=scale * 0.3,
+                                                             cone_radius=scale / 10,
+                                                             cylinder_height=scale * 0.7,
+                                                             cylinder_radius=scale / 20)
+            T = eye(4)
+            T[:3, -1] = start
+            gamma = arctan(vec[1] / vec[0])
+            Rz = array([[cos(gamma), -sin(gamma), 0],
+                        [sin(gamma), cos(gamma), 0],
+                        [0, 0, 1]])
+            vec = Rz.T @ vec.reshape(-1, 1)
+            vec = vec.reshape(-1)
+            beta = arctan(vec[0] / vec[2])
+            Ry = array([[cos(beta), 0, sin(beta)],
+                        [0, 1, 0],
+                        [-sin(beta), 0, cos(beta)]])
+            arrow.rotate(Ry, center=array([0, 0, 0]))
+            arrow.rotate(Rz, center=array([0, 0, 0]))
+            arrow.translate(start)
+            if self.instance is None:
+                self.instance = arrow
+            else:
+                self.instance += arrow
+        self.instance.compute_vertex_normals()
+
+    def __update_arrows(self,
+                        data: Dict[str, Any]):
+
+        pass
+
+    def __cmap_arrows(self,
+                      vertex_colors: ndarray):
+
+        pass
+
+
+

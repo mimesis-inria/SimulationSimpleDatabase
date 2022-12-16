@@ -18,9 +18,11 @@ class Open3dTable:
 
         # Select the good methods according to the Table type
         create_columns = {'Mesh': self.__create_mesh_columns,
-                          'Points': self.__create_points_columns}
+                          'Points': self.__create_points_columns,
+                          'Arrows': self.__create_arrows_columns}
         format_data = {'Mesh': self.__format_mesh_data,
-                       'Points': self.__format_points_data}
+                       'Points': self.__format_points_data,
+                       'Arrows': self.__format_arrows_data}
         self.create_columns = create_columns[self.table_type]
         self.format_data = format_data[self.table_type]
 
@@ -51,7 +53,8 @@ class Open3dTable:
                                            ('alpha', float),
                                            ('scalar_field', ndarray),
                                            ('at', int),
-                                           ('colormap', str)])
+                                           ('colormap', str)
+                                           ])
         return self
 
     def __create_points_columns(self):
@@ -63,7 +66,22 @@ class Open3dTable:
                                            ('alpha', float),
                                            ('scalar_field', ndarray),
                                            ('at', int),
-                                           ('colormap', str)])
+                                           ('colormap', str)
+                                           ])
+        return self
+
+    def __create_arrows_columns(self):
+
+        self.database.create_table(table_name=self.table_name,
+                                   fields=[('positions', ndarray),
+                                           ('vectors', ndarray),
+                                           ('res', int),
+                                           ('c', str),
+                                           ('alpha', float),
+                                           ('scalar_field', ndarray),
+                                           ('at', int, 0),
+                                           ('colormap', str, 'jet')
+                                           ])
         return self
 
     ###############
@@ -91,6 +109,18 @@ class Open3dTable:
             if value is None:
                 data_dict.pop(field)
             elif field in ['positions', 'scalar_field']:
+                data_dict[field] = cls.parse_vector(value)
+        return data_dict
+
+    @classmethod
+    def __format_arrows_data(cls,
+                             data_dict: Dict[str, Any]):
+
+        data_dict_copy = data_dict.copy()
+        for field, value in data_dict_copy.items():
+            if value is None:
+                data_dict.pop(field)
+            elif field in ['positions', 'vectors', 'scalar_field']:
                 data_dict[field] = cls.parse_vector(value)
         return data_dict
 

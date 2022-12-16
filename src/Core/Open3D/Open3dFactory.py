@@ -195,3 +195,31 @@ class Open3dFactory:
 
         object_id = self.__check_id(object_id, 'Points')
         return self.__update_object(object_id, locals())
+
+    ##########
+    # ARROWS #
+    ##########
+
+    def add_arrows(self,
+                   positions: ndarray,
+                   vectors: ndarray,
+                   at: int = 0,
+                   alpha: float = 1.,
+                   c: str = 'green',
+                   colormap: str = 'jet',
+                   scalar_field: ndarray = array([]),
+                   res: int = 12):
+
+        return self.__add_object('Arrows', locals())
+
+    def update_arrows(self,
+                      object_id: int,
+                      positions: Optional[ndarray] = None,
+                      vectors: Optional[ndarray] = None,
+                      alpha: Optional[float] = None,
+                      c: Optional[str] = None,
+                      scalar_field: Optional[ndarray] = None,
+                      res: Optional[int] = None):
+
+        object_id = self.__check_id(object_id, 'Arrows')
+        return self.__update_object(object_id, locals())
