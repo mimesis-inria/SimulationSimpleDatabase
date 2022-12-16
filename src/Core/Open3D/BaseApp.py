@@ -165,7 +165,7 @@ class BaseApp:
         # Groups section
         separation_height = int(round(0.5 * em))
         groups = gui.CollapsableVert('Groups', 0, gui.Margins(em, 0, 0, 0))
-        groups.set_is_open(False)
+        groups.set_is_open(True)
 
         # Groups settings
         line = gui.VGrid(2, 0.25 * em)

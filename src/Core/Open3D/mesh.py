@@ -23,6 +23,12 @@ factory.add_mesh(positions=armadillo.points(),
                  at=1,
                  c='green',
                  wireframe=True)
+factory.add_points(positions=armadillo.points(),
+                   at=2,
+                   c='red',
+                   point_size=5,
+                   scalar_field=armadillo.points()[:, 1],
+                   alpha=0.8)
 Open3dVisualizer.launch(database_path=factory.get_path(),
                         offscreen=False,
                         fps=20)
@@ -34,8 +40,7 @@ for step in range(500):
                         positions=armadillo.points() + 0.1 * random(dofs))
     factory.update_mesh(object_id=1,
                         positions=armadillo.points() + 0.1 * random(dofs))
-    if step == 50:
-        factory.update_mesh(object_id=0,
-                            scalar_field=-1. * armadillo.points()[:, 1])
+    factory.update_points(object_id=2,
+                          positions=armadillo.points() + 0.1 * random(dofs))
     factory.render()
 factory.close()

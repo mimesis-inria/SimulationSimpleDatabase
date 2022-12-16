@@ -17,8 +17,10 @@ class Open3dTable:
         self.table_type: str = table_name.split('_')[0]
 
         # Select the good methods according to the Table type
-        create_columns = {'Mesh': self.__create_mesh_columns}
-        format_data = {'Mesh': self.__format_mesh_data}
+        create_columns = {'Mesh': self.__create_mesh_columns,
+                          'Points': self.__create_points_columns}
+        format_data = {'Mesh': self.__format_mesh_data,
+                       'Points': self.__format_points_data}
         self.create_columns = create_columns[self.table_type]
         self.format_data = format_data[self.table_type]
 
@@ -52,6 +54,18 @@ class Open3dTable:
                                            ('colormap', str)])
         return self
 
+    def __create_points_columns(self):
+
+        self.database.create_table(table_name=self.table_name,
+                                   fields=[('positions', ndarray),
+                                           ('point_size', int),
+                                           ('c', str),
+                                           ('alpha', float),
+                                           ('scalar_field', ndarray),
+                                           ('at', int),
+                                           ('colormap', str)])
+        return self
+
     ###############
     # FORMAT DATA #
     ###############
@@ -65,6 +79,18 @@ class Open3dTable:
             if value is None:
                 data_dict.pop(field)
             elif field in ['positions', 'cells', 'scalar_field']:
+                data_dict[field] = cls.parse_vector(value)
+        return data_dict
+
+    @classmethod
+    def __format_points_data(cls,
+                             data_dict: Dict[str, Any]):
+
+        data_dict_copy = data_dict.copy()
+        for field, value in data_dict_copy.items():
+            if value is None:
+                data_dict.pop(field)
+            elif field in ['positions', 'scalar_field']:
                 data_dict[field] = cls.parse_vector(value)
         return data_dict
 

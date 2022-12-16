@@ -169,3 +169,29 @@ class Open3dFactory:
 
         object_id = self.__check_id(object_id, 'Mesh')
         return self.__update_object(object_id, locals())
+
+    ###############
+    # POINT CLOUD #
+    ###############
+
+    def add_points(self,
+                   positions: ndarray,
+                   at: int = 0,
+                   alpha: float = 1.,
+                   c: str = 'green',
+                   colormap: str = 'jet',
+                   scalar_field: ndarray = array([]),
+                   point_size: int = 4):
+
+        return self.__add_object('Points', locals())
+
+    def update_points(self,
+                      object_id: int,
+                      positions: Optional[ndarray] = None,
+                      alpha: Optional[float] = None,
+                      c: Optional[str] = None,
+                      scalar_field: Optional[ndarray] = None,
+                      point_size: Optional[int] = None):
+
+        object_id = self.__check_id(object_id, 'Points')
+        return self.__update_object(object_id, locals())

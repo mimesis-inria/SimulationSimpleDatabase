@@ -31,9 +31,12 @@ class Open3dActor:
         self.__cmap_data: Optional[Dict[str, Any]] = None
 
         # Actor specialization methods
-        create = {'Mesh': self.__create_mesh}
-        update = {'Mesh': self.__update_mesh}
-        cmap = {'Mesh': self.__cmap_mesh}
+        create = {'Mesh': self.__create_mesh,
+                  'Points': self.__create_points}
+        update = {'Mesh': self.__update_mesh,
+                  'Points': self.__update_points}
+        cmap = {'Mesh': self.__cmap_mesh,
+                'Points': self.__cmap_points}
         self.__create_object = create[self.type]
         self.__update_object = update[self.type]
         self.__cmap_object = cmap[self.type]
@@ -144,3 +147,32 @@ class Open3dActor:
         else:
             self.instance.vertex_colors = o3d.utility.Vector3dVector(vertex_colors)
             self.material.base_color = array([1., 1., 1.] + [alpha])
+
+    ###############
+    # POINT CLOUD #
+    ###############
+
+    def __create_points(self,
+                        data: Dict[str, Any]):
+
+        # Create the material
+        alpha = 1 if not 0. <= data['alpha'] <= 1. else data['alpha']
+        color = list(get_color(rgb=data['c']))
+        self.material.base_color = array(color + [alpha])
+        self.material.shader = 'defaultLitTransparency'
+        self.material.point_size = data['point_size']
+
+        # Create instance
+        self.instance = o3d.geometry.PointCloud(points=o3d.utility.Vector3dVector(data['positions']))
+
+    def __update_points(self,
+                        data: Dict[str, Any]):
+
+        self.instance.points = o3d.utility.Vector3dVector(data['positions'])
+
+    def __cmap_points(self,
+                      vertex_colors: ndarray):
+
+        alpha = 1 if not 0. <= self.__object_data['alpha'] <= 1. else self.__object_data['alpha']
+        self.instance.colors = o3d.utility.Vector3dVector(vertex_colors)
+        self.material.base_color = array([1., 1., 1.] + [alpha])
