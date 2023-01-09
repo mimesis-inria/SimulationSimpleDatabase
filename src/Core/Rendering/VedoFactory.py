@@ -391,3 +391,47 @@ class VedoFactory:
 
         object_id = self.__check_id(object_id, 'Symbols')
         return self.__update_object(object_id, locals())
+
+    ########
+    # TEXT #
+    ########
+
+    def add_text(self,
+                 content: str,
+                 at: int = 0,
+                 corner: str = 'BR',
+                 c: str = 'black',
+                 font: str = 'Arial',
+                 size: float = 1.,
+                 bold: bool = False,
+                 italic: bool = False):
+        """
+        Add new 2D Text to the Factory.
+
+        :param content: Content of the Text.
+        :param at: Index of the window in which the Text will be rendered.
+        :param corner: Horizontal and vertical positions of the Text between T (top), M (middle) and B (bottom) - for
+                       instance, 'BR' stands for 'bottom-right'.
+        :param c: Text color.
+        :param font: Font of the Text.
+        :param size: Size of the font.
+        :param bold: Apply bold style to the Text.
+        :param italic: Apply italic style to the Text.
+        """
+
+        return self.__add_object('Text', locals())
+
+    def update_text(self,
+                    object_id: int,
+                    content: Optional[str] = None,
+                    c: Optional[str] = None):
+        """
+        Update existing Text in the Factory.
+
+        :param object_id: Index of the object (follows the global order of creation).
+        :param content: Content of the Text.
+        :param c: Text color.
+        """
+
+        object_id = self.__check_id(object_id, 'Text')
+        return self.__update_object(object_id, locals())
