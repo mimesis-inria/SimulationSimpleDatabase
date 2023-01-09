@@ -21,12 +21,14 @@ class VedoTable:
                           'Points': self.__create_points_columns,
                           'Arrows': self.__create_arrows_columns,
                           'Markers': self.__create_markers_columns,
-                          'Symbols': self.__create_symbols_columns}
+                          'Symbols': self.__create_symbols_columns,
+                          'Text': self.__create_text_columns}
         format_data = {'Mesh': self.__format_mesh_data,
                        'Points': self.__format_points_data,
                        'Arrows': self.__format_arrows_data,
                        'Markers': self.__format_markers_data,
-                       'Symbols': self.__format_symbols_data}
+                       'Symbols': self.__format_symbols_data,
+                       'Text': self.__format_text_data}
         self.create_columns = create_columns[self.table_type]
         self.format_data = format_data[self.table_type]
 
@@ -126,6 +128,19 @@ class VedoTable:
                                            ])
         return self
 
+    def __create_text_columns(self):
+
+        self.database.create_table(table_name=self.table_name,
+                                   fields=[('content', str),
+                                           ('corner', str),
+                                           ('c', str),
+                                           ('font', str),
+                                           ('size', float),
+                                           ('bold', bool),
+                                           ('italic', bool),
+                                           ('at', int, 0)])
+        return self
+
     #######################
     # FORMAT DATA METHODS #
     #######################
@@ -194,6 +209,16 @@ class VedoTable:
                 data_dict.pop(field)
             elif field in ['positions', 'orientations', 'scalar_field']:
                 data_dict[field] = cls.parse_vector(value, coords=field in ['positions', 'orientations'])
+        return data_dict
+
+    @classmethod
+    def __format_text_data(cls,
+                           data_dict: Dict[str, Any]):
+
+        data_dict_copy = data_dict.copy()
+        for field, value in data_dict_copy.items():
+            if value is None:
+                data_dict.pop(field)
         return data_dict
 
     @classmethod
