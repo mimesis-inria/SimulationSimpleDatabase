@@ -1,6 +1,6 @@
 from typing import Any, Optional, Dict
 from numpy import array, tile
-from vedo import Mesh, Points, Arrows, Marker, Glyph
+from vedo import Mesh, Points, Arrows, Marker, Glyph, Text2D
 
 
 class VedoActor:
@@ -23,12 +23,14 @@ class VedoActor:
                   'Points': self.__create_points,
                   'Arrows': self.__create_arrows,
                   'Markers': self.__create_markers,
-                  'Symbols': self.__create_symbols}
+                  'Symbols': self.__create_symbols,
+                  'Text': self.__create_text}
         update = {'Mesh': self.__update_mesh,
                   'Points': self.__update_points,
                   'Arrows': self.__update_arrows,
                   'Markers': self.__update_markers,
-                  'Symbols': self.__update_symbols}
+                  'Symbols': self.__update_symbols,
+                  'Text': self.__update_text}
         self.create = create[self.actor_type]
         self.update = update[self.actor_type]
 
@@ -232,4 +234,41 @@ class VedoActor:
                               orientation_array=self.actor_data['orientations'],
                               c=self.actor_data['c'],
                               alpha=self.actor_data['alpha'])
+        return self
+
+    ########
+    # TEXT #
+    ########
+
+    def __create_text(self,
+                      data: Dict[str, Any]):
+
+        # Register Actor data
+        self.actor_data = data
+
+        # Get Text position
+        coord = {'B': 'bottom', 'L': 'left', 'M': 'middle', 'R': 'right', 'T': 'top'}
+        corner = data['corner']
+        pos = f'{coord[corner[0].upper()]}-{coord[corner[1].upper()]}'
+
+        # Create instance
+        self.instance = Text2D(txt=data['content'],
+                               pos=pos,
+                               s=data['size'],
+                               font=data['font'],
+                               bold=data['bold'],
+                               italic=data['italic'],
+                               c=data['c'])
+        return self
+
+    def __update_text(self,
+                      data: Dict[str, Any]):
+
+        # Register Actor data
+        for key, value in data.items():
+            if value is not None:
+                self.actor_data[key] = value
+
+        # Update instance
+        self.instance.text(self.actor_data['content']).c(self.actor_data['c'])
         return self

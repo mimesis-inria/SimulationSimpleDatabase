@@ -27,7 +27,7 @@ with open('README.md') as f:
 
 # Installation
 setup(name='SimulationSimpleDatabase',
-      version='22.12',
+      version='22.12.3',
       description='A simplified API to use SQL Databases with numerical simulation.',
       long_description=long_description,
       long_description_content_type='text/markdown',
