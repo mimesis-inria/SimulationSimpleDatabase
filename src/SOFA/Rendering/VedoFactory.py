@@ -505,3 +505,57 @@ class VedoFactory(Sofa.Core.Controller):
                                       symbol=symbol,
                                       size=size,
                                       filled=filled)
+
+    ########
+    # TEXT #
+    ########
+
+    def add_text(self,
+                 content: str,
+                 at: int = 0,
+                 corner: str = 'BR',
+                 c: str = 'black',
+                 font: str = 'Arial',
+                 size: float = 1.,
+                 bold: bool = False,
+                 italic: bool = False):
+        """
+        Add new 2D Text to the Factory.
+
+        :param content: Content of the Text.
+        :param at: Index of the window in which the Text will be rendered.
+        :param corner: Horizontal and vertical positions of the Text between T (top), M (middle) and B (bottom) - for
+                       instance, 'BR' stands for 'bottom-right'.
+        :param c: Text color.
+        :param font: Font of the Text.
+        :param size: Size of the font.
+        :param bold: Apply bold style to the Text.
+        :param italic: Apply italic style to the Text.
+        """
+
+        # Add object
+        idx = self.__factory.add_text(content=content,
+                                      at=at,
+                                      corner=corner,
+                                      c=c,
+                                      font=font,
+                                      size=size,
+                                      bold=bold,
+                                      italic=italic)
+        return idx
+
+    def update_text(self,
+                    object_id: int,
+                    content: Optional[str] = None,
+                    c: Optional[str] = None):
+        """
+        Update existing Text in the Factory.
+
+        :param object_id: Index of the object (follows the global order of creation).
+        :param content: Content of the Text.
+        :param c: Text color.
+        """
+
+        self.__factory.update_text(object_id=object_id,
+                                   content=content,
+                                   c=c)
