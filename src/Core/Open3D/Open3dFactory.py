@@ -80,8 +80,10 @@ class Open3dFactory:
         Render the current state of Actors in the Visualizer.
         """
 
-        # Reset all the update flags
+        # Add empty lines to non-updated objects & reset all the update flags
         for i in self.__update.keys():
+            if not self.__update[i]:
+                self.__tables[i].send_data(data_dict={}, update=False)
             self.__update[i] = False
 
         # Send

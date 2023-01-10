@@ -47,6 +47,7 @@ for step in range(200):
     factory.update_points(object_id=2,
                           positions=armadillo.points() + 0.1 * random(dofs))
     if step == 100:
+        print('change')
         factory.update_mesh(object_id=0,
                             scalar_field=armadillo.points()[:, 2],
                             wireframe=False,
@@ -55,6 +56,10 @@ for step in range(200):
                             c='yellow4',
                             alpha=0.9,
                             wireframe=False)
+        factory.update_points(object_id=2,
+                              c='blue',
+                              alpha=0.5,
+                              point_size=6)
         factory.update_arrows(object_id=3,
                               scalar_field=array([1., 0.5, 0, -0.5, -1.]))
     factory.render()

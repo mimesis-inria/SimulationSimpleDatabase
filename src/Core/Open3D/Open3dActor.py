@@ -182,7 +182,17 @@ class Open3dActor:
                         data: Dict[str, Any],
                         updated_fields: List[str]):
 
-        self.instance.points = o3d.utility.Vector3dVector(data['positions'])
+        # Update material
+        if 'alpha' in updated_fields or 'c' in updated_fields:
+            alpha = 1 if not 0. <= data['alpha'] <= 1. else data['alpha']
+            color = list(get_color(rgb=data['c']))
+            self.material.base_color = array(color + [alpha])
+        if 'point_size' in updated_fields:
+            self.material.point_size = data['point_size']
+
+        # Update positions
+        if 'positions' in updated_fields:
+            self.instance.points = o3d.utility.Vector3dVector(data['positions'])
 
     def __cmap_points(self,
                       vertex_colors: ndarray):
