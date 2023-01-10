@@ -221,6 +221,8 @@ class Open3dVisualizer(BaseApp):
                     sleep(dt)
                 else:
                     self.__update_offscreen()
+            # Done
+            self.__socket.send(b'done')
 
         # 3. Close the Visualizer
         if not self.__offscreen:
@@ -228,6 +230,7 @@ class Open3dVisualizer(BaseApp):
 
     def __update_instances(self):
 
+        # 1. If the group ID changed, change the visibility of Actors
         if self.__group_change:
             self.__group_change = False
             for table_name in self.__actors[self.__previous_group].keys():
@@ -237,24 +240,34 @@ class Open3dVisualizer(BaseApp):
                 actor = self.get_actor(table_name)
                 self._scene.scene.add_geometry(actor.name, actor.instance, actor.material)
 
-        for table_name in self.__actors[self.__current_group].keys():
-            # Get the current step line in the Table
-            object_data = self.__database.get_line(table_name=table_name,
-                                                   line_id=self.__step)
-            # If the ID of the line is correct, the Actor was updated
-            if object_data.pop('id') == self.__step:
-                if len(object_data.keys()) > 1:
-                    # Update Actor instance
-                    actor = self.get_actor(table_name)
-                    actor.update(object_data=object_data)
-                    # Update the geometry in the Visualizer
-                    if self._scene.scene.geometry_is_visible(actor.name):
-                        self._scene.scene.remove_geometry(actor.name)
-                        self._scene.scene.add_geometry(actor.name, actor.instance, actor.material)
-            # Otherwise, the Actor was not updated, then add an empty line
-            else:
-                self.__database.add_data(table_name=table_name,
-                                         data={})
+        # 2. Update all the Actors
+        for group_id in self.__actors.keys():
+            for table_name in self.__actors[group_id].keys():
+
+                # 2.1. Get the current step line in the Table
+                object_data = self.__database.get_line(table_name=table_name,
+                                                       line_id=self.__step)
+                object_data = dict(filter(lambda item: item[1] is not None, object_data.items()))
+                # Update non-visible Actors only if style changed
+                if group_id != self.__current_group and 'positions' in object_data:
+                    object_data.pop('positions')
+
+                # 2.2. If the ID of the line is correct, the Actor was updated, then update it
+                if object_data['id'] == self.__step:
+                    object_data.pop('id')
+                    if len(object_data.keys()) > 0:
+                        # Update Actor instance
+                        actor = self.get_actor(table_name)
+                        actor.update(object_data=object_data)
+                        # Update the geometry in the Visualizer
+                        if group_id == self.__current_group and self._scene.scene.geometry_is_visible(actor.name):
+                            self._scene.scene.remove_geometry(actor.name)
+                            self._scene.scene.add_geometry(actor.name, actor.instance, actor.material)
+
+                # 2.3. Otherwise, the Actor was not updated, then add an empty line in the Database
+                else:
+                    self.__database.add_data(table_name=table_name,
+                                             data={})
 
     def __update_offscreen(self):
 

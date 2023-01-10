@@ -1,7 +1,7 @@
-from typing import Any, Optional, Dict
+from typing import Any, Optional, Dict, List
 import open3d as o3d
 from vedo.colors import get_color
-from numpy import array, ndarray, asarray, sort, concatenate, unique, eye, arctan, cos, sin
+from numpy import array, ndarray, asarray, sort, concatenate, unique, tile, eye, arctan, cos, sin
 from numpy.linalg import norm
 from matplotlib.colors import Normalize
 from matplotlib.pyplot import get_cmap
@@ -70,14 +70,15 @@ class Open3dActor:
         # Sort data
         cmap_data = {'scalar_field': object_data.pop('scalar_field')} if 'scalar_field' in object_data else {}
         # Register Actor data
+        updated_object_fields = []
         for key, value in object_data.items():
-            if value is not None:
-                self.__object_data[key] = value
+            self.__object_data[key] = value
+            updated_object_fields.append(key)
         for key, value in cmap_data.items():
-            if value is not None:
-                self.__cmap_data[key] = value
+            self.__cmap_data[key] = value
         # Update the object
-        self.__update_object(self.__object_data)
+        if len(object_data.keys()) > 0:
+            self.__update_object(self.__object_data, updated_object_fields)
         # Apply the colormap
         if len(cmap_data.keys()) > 0:
             self.apply_cmap(self.__cmap_data)
@@ -110,12 +111,11 @@ class Open3dActor:
         alpha = 1 if not 0. <= data['alpha'] <= 1. else data['alpha']
         color = list(get_color(rgb=data['c']))
         self.material.base_color = array(color + [alpha])
-        self.material.shader = 'defaultLitTransparency'
+        self.material.shader = 'unlitLine' if data['wireframe'] else 'defaultLitTransparency'
 
         # Create instance
         if data['wireframe']:
             self.material.line_width = data['line_width']
-            self.material.shader = 'unlitLine'
             edges = concatenate([sort(data['cells'][:, col], axis=1) for col in [[0, 1], [1, 2], [2, 0]]])
             edges = unique(edges, axis=0)
             self.instance = o3d.geometry.LineSet(points=o3d.utility.Vector3dVector(data['positions']),
@@ -126,12 +126,27 @@ class Open3dActor:
             self.instance.compute_vertex_normals()
 
     def __update_mesh(self,
-                      data: Dict[str, Any]):
+                      data: Dict[str, Any],
+                      updated_fields: List[str]):
 
-        if self.__object_data['wireframe']:
-            self.instance.points = o3d.utility.Vector3dVector(data['positions'])
-        else:
-            self.instance.vertices = o3d.utility.Vector3dVector(data['positions'])
+        # Check wireframe change
+        if 'wireframe' in updated_fields:
+            if (data['wireframe'] and self.material.shader == 'defaultLitTransparency') or \
+                    (not data['wireframe'] and self.material.shader == 'unlitLine'):
+                self.__create_object(self.__object_data)
+
+        # Update the material
+        if 'alpha' in updated_fields or 'c' in updated_fields:
+            alpha = 1 if not 0. <= data['alpha'] <= 1. else data['alpha']
+            color = list(get_color(rgb=data['c']))
+            self.material.base_color = array(color + [alpha])
+
+        # Update positions
+        if 'positions' in updated_fields:
+            if self.__object_data['wireframe']:
+                self.instance.points = o3d.utility.Vector3dVector(data['positions'])
+            else:
+                self.instance.vertices = o3d.utility.Vector3dVector(data['positions'])
 
     def __cmap_mesh(self,
                     vertex_colors: ndarray):
@@ -141,10 +156,10 @@ class Open3dActor:
         if self.__object_data['wireframe']:
             line_color = vertex_colors[asarray(self.instance.lines)[:, 0]]
             self.instance.colors = o3d.utility.Vector3dVector(line_color)
-            self.material.base_color = array([1., 1., 1.] + [alpha])
+            self.material.base_color = array([1., 1., 1., alpha])
         else:
             self.instance.vertex_colors = o3d.utility.Vector3dVector(vertex_colors)
-            self.material.base_color = array([1., 1., 1.] + [alpha])
+            self.material.base_color = array([1., 1., 1., alpha])
 
     ###############
     # POINT CLOUD #
@@ -164,7 +179,8 @@ class Open3dActor:
         self.instance = o3d.geometry.PointCloud(points=o3d.utility.Vector3dVector(data['positions']))
 
     def __update_points(self,
-                        data: Dict[str, Any]):
+                        data: Dict[str, Any],
+                        updated_fields: List[str]):
 
         self.instance.points = o3d.utility.Vector3dVector(data['positions'])
 
@@ -173,7 +189,7 @@ class Open3dActor:
 
         alpha = 1 if not 0. <= self.__object_data['alpha'] <= 1. else self.__object_data['alpha']
         self.instance.colors = o3d.utility.Vector3dVector(vertex_colors)
-        self.material.base_color = array([1., 1., 1.] + [alpha])
+        self.material.base_color = array([1., 1., 1., alpha])
 
     ##########
     # ARROWS #
@@ -218,14 +234,17 @@ class Open3dActor:
         self.instance.compute_vertex_normals()
 
     def __update_arrows(self,
-                        data: Dict[str, Any]):
+                        data: Dict[str, Any],
+                        updated_fields: List[str]):
 
         pass
 
     def __cmap_arrows(self,
                       vertex_colors: ndarray):
 
-        pass
-
-
-
+        nb_arrow = vertex_colors.shape[0]
+        nb_dof_arrow = asarray(self.instance.vertices).shape[0] // nb_arrow
+        alpha = 1 if not 0. <= self.__object_data['alpha'] <= 1. else self.__object_data['alpha']
+        transformed_vertex_color = concatenate(tuple(tile(color, (nb_dof_arrow, 1)) for color in vertex_colors))
+        self.instance.vertex_colors = o3d.utility.Vector3dVector(transformed_vertex_color)
+        self.material.base_color = array([1., 1., 1., alpha])
