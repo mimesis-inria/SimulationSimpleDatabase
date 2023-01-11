@@ -303,7 +303,7 @@ class Open3dVisualizer(BaseApp):
             self.__group_change = True
 
 
-if __name__ == '__main__':
+def launch_subprocess():
 
     db_path = argv[1].split('%%')
     db = Database(database_dir=db_path[0],
@@ -312,3 +312,7 @@ if __name__ == '__main__':
                                   offscreen=argv[2] == 'True',
                                   fps=int(argv[3]))
     visualizer.init_visualizer()
+
+
+if __name__ == '__main__':
+    launch_subprocess()

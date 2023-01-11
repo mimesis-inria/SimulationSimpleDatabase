@@ -1,10 +1,12 @@
 from typing import Any, Optional, Dict, List
 import open3d as o3d
 from vedo.colors import get_color
-from numpy import array, ndarray, asarray, sort, concatenate, unique, tile, eye, arctan, cos, sin
+from numpy import array, ndarray, asarray, sort, concatenate, unique, tile
 from numpy.linalg import norm
 from matplotlib.colors import Normalize
 from matplotlib.pyplot import get_cmap
+
+from utils import get_rotation_matrix
 
 
 class Open3dActor:
@@ -80,7 +82,7 @@ class Open3dActor:
         if len(object_data.keys()) > 0:
             self.__update_object(self.__object_data, updated_object_fields)
         # Apply the colormap
-        if len(cmap_data.keys()) > 0:
+        if len(cmap_data.keys()) > 0 or len(self.__cmap_data['scalar_field']) > 0:
             self.apply_cmap(self.__cmap_data)
 
     def apply_cmap(self,
@@ -219,23 +221,11 @@ class Open3dActor:
             scale = norm(vec)
             arrow = o3d.geometry.TriangleMesh().create_arrow(resolution=data['res'],
                                                              cone_height=scale * 0.3,
-                                                             cone_radius=scale / 10,
+                                                             cone_radius=scale * 0.1,
                                                              cylinder_height=scale * 0.7,
-                                                             cylinder_radius=scale / 20)
-            T = eye(4)
-            T[:3, -1] = start
-            gamma = arctan(vec[1] / vec[0])
-            Rz = array([[cos(gamma), -sin(gamma), 0],
-                        [sin(gamma), cos(gamma), 0],
-                        [0, 0, 1]])
-            vec = Rz.T @ vec.reshape(-1, 1)
-            vec = vec.reshape(-1)
-            beta = arctan(vec[0] / vec[2])
-            Ry = array([[cos(beta), 0, sin(beta)],
-                        [0, 1, 0],
-                        [-sin(beta), 0, cos(beta)]])
-            arrow.rotate(Ry, center=array([0, 0, 0]))
-            arrow.rotate(Rz, center=array([0, 0, 0]))
+                                                             cylinder_radius=scale * 0.05)
+            R = get_rotation_matrix(vec)
+            arrow.rotate(R, center=array([0., 0., 0.]))
             arrow.translate(start)
             if self.instance is None:
                 self.instance = arrow
@@ -247,7 +237,16 @@ class Open3dActor:
                         data: Dict[str, Any],
                         updated_fields: List[str]):
 
-        pass
+        # Update vectors
+        if 'positions' in updated_fields or 'vectors' in updated_fields:
+            self.instance = None
+            self.__create_object(self.__object_data)
+
+        # Update material
+        elif 'alpha' in updated_fields or 'c' in updated_fields:
+            alpha = 1 if not 0. <= data['alpha'] <= 1. else data['alpha']
+            color = list(get_color(rgb=data['c']))
+            self.material.base_color = array(color + [alpha])
 
     def __cmap_arrows(self,
                       vertex_colors: ndarray):
