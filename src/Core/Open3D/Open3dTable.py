@@ -19,12 +19,9 @@ class Open3dTable:
         # Select the good methods according to the Table type
         create_columns = {'Mesh': self.__create_mesh_columns,
                           'Points': self.__create_points_columns,
-                          'Arrows': self.__create_arrows_columns}
-        format_data = {'Mesh': self.__format_mesh_data,
-                       'Points': self.__format_points_data,
-                       'Arrows': self.__format_arrows_data}
+                          'Arrows': self.__create_arrows_columns,
+                          'Markers': self.__create_markers_columns}
         self.create_columns = create_columns[self.table_type]
-        self.format_data = format_data[self.table_type]
 
     def send_data(self,
                   data_dict: Dict[str, Any],
@@ -32,10 +29,10 @@ class Open3dTable:
 
         if update:
             self.database.update(table_name=self.table_name,
-                                 data=self.format_data(data_dict=data_dict))
+                                 data=self.__format_data(data_dict=data_dict))
         else:
             self.database.add_data(table_name=self.table_name,
-                                   data=self.format_data(data_dict=data_dict))
+                                   data=self.__format_data(data_dict=data_dict))
 
     ##################
     # CREATE COLUMNS #
@@ -79,8 +76,24 @@ class Open3dTable:
                                            ('c', str),
                                            ('alpha', float),
                                            ('scalar_field', ndarray),
-                                           ('at', int, 0),
-                                           ('colormap', str, 'jet')
+                                           ('at', int),
+                                           ('colormap', str)
+                                           ])
+        return self
+
+    def __create_markers_columns(self):
+
+        self.database.create_table(table_name=self.table_name,
+                                   fields=[('normal_to', str),
+                                           ('indices', ndarray),
+                                           ('symbol', str),
+                                           ('size', float),
+                                           ('filled', bool),
+                                           ('c', str),
+                                           ('alpha', float),
+                                           ('scalar_field', ndarray),
+                                           ('at', int),
+                                           ('colormap', str)
                                            ])
         return self
 
@@ -89,38 +102,14 @@ class Open3dTable:
     ###############
 
     @classmethod
-    def __format_mesh_data(cls,
-                           data_dict: Dict[str, Any]):
+    def __format_data(cls,
+                      data_dict: Dict[str, Any]):
 
         data_dict_copy = data_dict.copy()
         for field, value in data_dict_copy.items():
             if value is None:
                 data_dict.pop(field)
-            elif field in ['positions', 'cells', 'scalar_field']:
-                data_dict[field] = cls.parse_vector(value)
-        return data_dict
-
-    @classmethod
-    def __format_points_data(cls,
-                             data_dict: Dict[str, Any]):
-
-        data_dict_copy = data_dict.copy()
-        for field, value in data_dict_copy.items():
-            if value is None:
-                data_dict.pop(field)
-            elif field in ['positions', 'scalar_field']:
-                data_dict[field] = cls.parse_vector(value)
-        return data_dict
-
-    @classmethod
-    def __format_arrows_data(cls,
-                             data_dict: Dict[str, Any]):
-
-        data_dict_copy = data_dict.copy()
-        for field, value in data_dict_copy.items():
-            if value is None:
-                data_dict.pop(field)
-            elif field in ['positions', 'vectors', 'scalar_field']:
+            elif field in ['positions', 'cells', 'scalar_field', 'vectors', 'indices']:
                 data_dict[field] = cls.parse_vector(value)
         return data_dict
 

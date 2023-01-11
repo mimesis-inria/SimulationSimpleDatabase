@@ -226,3 +226,45 @@ class Open3dFactory:
 
         object_id = self.__check_id(object_id, 'Arrows')
         return self.__update_object(object_id, locals())
+
+    ###########
+    # MARKERS #
+    ###########
+
+    def add_markers(self,
+                    normal_to: int,
+                    indices: ndarray,
+                    at: int = 0,
+                    alpha: float = 1.,
+                    c: str = 'green',
+                    colormap: str = 'jet',
+                    scalar_field: ndarray = array([]),
+                    symbol: str = 'o',
+                    size: float = 0.1,
+                    filled: bool = True):
+
+        normal_to = self.__check_normal_to(normal_to)
+        return self.__add_object('Markers', locals())
+
+    def update_markers(self,
+                       object_id: int,
+                       normal_to: Optional[int] = None,
+                       indices: Optional[ndarray] = None,
+                       alpha: Optional[float] = None,
+                       c: Optional[str] = None,
+                       scalar_field: Optional[ndarray] = None,
+                       symbol: Optional[str] = None,
+                       size: Optional[float] = None,
+                       filled: Optional[bool] = None):
+
+        object_id = self.__check_id(object_id, 'Markers')
+        normal_to = self.__check_normal_to(normal_to) if normal_to is not None else None
+        return self.__update_object(object_id, locals())
+
+    def __check_normal_to(self,
+                          normal_to: int) -> str:
+
+        if (table_type := self.__tables[normal_to].table_type) not in ['Mesh', 'Points']:
+            raise ValueError(f"A Marker object can only be associated with a Mesh or Points object. "
+                             f"The current Marker was associated to object n°{normal_to} with type {table_type}.")
+        return f'{table_type}_{self.__idx}_{normal_to}'

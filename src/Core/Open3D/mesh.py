@@ -32,6 +32,13 @@ factory.add_arrows(positions=armadillo.points()[0:5],
                    vectors=armadillo.normals()[0:5] * 2,
                    at=2,
                    alpha=0.8,)
+factory.add_markers(normal_to=1,
+                    indices=arange(0, 5),
+                    at=1,
+                    alpha=0.6,
+                    c='red',
+                    size=2,
+                    symbol='0')
 Open3dVisualizer.launch(database_path=factory.get_path(),
                         offscreen=False,
                         fps=20)
@@ -43,12 +50,15 @@ i = len(A) // 2
 for step in range(200):
     factory.update_mesh(object_id=0,
                         positions=armadillo.points() + 0.1 * random(dofs))
-    factory.update_mesh(object_id=1,
-                        positions=armadillo.points() + 0.1 * random(dofs))
+    if 50 < step < 150:
+        factory.update_mesh(object_id=1,
+                            positions=armadillo.points() + 0.1 * random(dofs))
     factory.update_points(object_id=2,
                           positions=armadillo.points() + 0.1 * random(dofs))
     factory.update_arrows(object_id=3,
                           vectors=armadillo.normals()[0:5] * A[i])
+    factory.update_markers(object_id=4,
+                           indices=arange(step, step + 5))
     i = (i + 1) % len(A)
     if step == 100:
         print('change')
@@ -67,5 +77,8 @@ for step in range(200):
         factory.update_arrows(object_id=3,
                               c='blue',
                               alpha=0.6)
+        factory.update_markers(object_id=4,
+                               symbol='o',
+                               size=1.5)
     factory.render()
 factory.close()

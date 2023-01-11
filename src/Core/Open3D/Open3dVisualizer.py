@@ -160,6 +160,8 @@ class Open3dVisualizer(BaseApp):
             self.__actors[group][table_name] = Open3dActor(actor_type=actor_type,
                                                            actor_name=table_name,
                                                            actor_group=group)
+            if actor_type == 'Markers':
+                object_data['normal_to'] = self.get_actor(object_data['normal_to'])
             self.__actors[group][table_name].create(object_data=object_data)
             self.__groups[table_name] = group
             pre_groups[group].append(table_name)
@@ -254,9 +256,11 @@ class Open3dVisualizer(BaseApp):
 
                 # 2.2. If the line contains fields, the Actor was updated, then update it
                 object_data.pop('id')
-                if len(object_data.keys()) > 0:
+                if len(object_data.keys()) > 0 or 'Markers' in table_name:
                     # Update Actor instance
                     actor = self.get_actor(table_name)
+                    if actor.type == 'Markers' and 'normal_to' in object_data.keys():
+                        object_data['normal_to'] = self.get_actor(object_data['normal_to'])
                     actor.update(object_data=object_data)
                     # Update the geometry in the Visualizer
                     if group_id == self.__current_group and self._scene.scene.geometry_is_visible(actor.name):

@@ -1,5 +1,6 @@
 from typing import Any, Optional, Dict, List
 import open3d as o3d
+from vedo import Marker, Glyph
 from vedo.colors import get_color
 from numpy import array, ndarray, asarray, sort, concatenate, unique, tile
 from numpy.linalg import norm
@@ -28,6 +29,8 @@ class Open3dActor:
         self.group: str = str(actor_group)
         self.instance: Optional[o3d.geometry.Geometry3D] = None
         self.material = o3d.visualization.rendering.MaterialRecord()
+        self.utils: Optional[Any] = None
+        self.updated_fields = []
 
         # Actor data
         self.__object_data: Optional[Dict[str, Any]] = None
@@ -36,7 +39,8 @@ class Open3dActor:
         # Actor specialization methods
         spec = {'Mesh': (self.__create_mesh, self.__update_mesh, self.__cmap_mesh),
                 'Points': (self.__create_points, self.__update_points, self.__cmap_points),
-                'Arrows': (self.__create_arrows, self.__update_arrows, self.__cmap_arrows)}
+                'Arrows': (self.__create_arrows, self.__update_arrows, self.__cmap_arrows),
+                'Markers': (self.__create_markers, self.__update_markers, self.__cmap_markers)}
         self.__create_object = spec[self.type][0]
         self.__update_object = spec[self.type][1]
         self.__cmap_object = spec[self.type][2]
@@ -72,15 +76,15 @@ class Open3dActor:
         # Sort data
         cmap_data = {'scalar_field': object_data.pop('scalar_field')} if 'scalar_field' in object_data else {}
         # Register Actor data
-        updated_object_fields = []
+        self.updated_fields = []
         for key, value in object_data.items():
             self.__object_data[key] = value
-            updated_object_fields.append(key)
+            self.updated_fields.append(key)
         for key, value in cmap_data.items():
             self.__cmap_data[key] = value
         # Update the object
-        if len(object_data.keys()) > 0:
-            self.__update_object(self.__object_data, updated_object_fields)
+        if len(object_data.keys()) > 0 or self.type == 'Markers':
+            self.__update_object(self.__object_data, self.updated_fields)
         # Apply the colormap
         if len(cmap_data.keys()) > 0 or len(self.__cmap_data['scalar_field']) > 0:
             self.apply_cmap(self.__cmap_data)
@@ -118,10 +122,10 @@ class Open3dActor:
         # Create instance
         if data['wireframe']:
             self.material.line_width = data['line_width']
-            edges = concatenate([sort(data['cells'][:, col], axis=1) for col in [[0, 1], [1, 2], [2, 0]]])
-            edges = unique(edges, axis=0)
-            self.instance = o3d.geometry.LineSet(points=o3d.utility.Vector3dVector(data['positions']),
-                                                 lines=o3d.utility.Vector2iVector(edges))
+            self.utils = o3d.geometry.TriangleMesh(vertices=o3d.utility.Vector3dVector(data['positions']),
+                                                   triangles=o3d.utility.Vector3iVector(data['cells']))
+            self.utils.compute_vertex_normals()
+            self.instance = o3d.geometry.LineSet().create_from_triangle_mesh(self.utils)
         else:
             self.instance = o3d.geometry.TriangleMesh(vertices=o3d.utility.Vector3dVector(data['positions']),
                                                       triangles=o3d.utility.Vector3iVector(data['cells']))
@@ -135,7 +139,7 @@ class Open3dActor:
         if 'wireframe' in updated_fields:
             if (data['wireframe'] and self.material.shader == 'defaultLitTransparency') or \
                     (not data['wireframe'] and self.material.shader == 'unlitLine'):
-                self.__create_object(self.__object_data)
+                self.__create_object(data)
 
         # Update the material
         if 'alpha' in updated_fields or 'c' in updated_fields:
@@ -146,9 +150,12 @@ class Open3dActor:
         # Update positions
         if 'positions' in updated_fields:
             if self.__object_data['wireframe']:
+                self.utils.vertices = o3d.utility.Vector3dVector(data['positions'])
                 self.instance.points = o3d.utility.Vector3dVector(data['positions'])
+                self.utils.compute_vertex_normals()
             else:
                 self.instance.vertices = o3d.utility.Vector3dVector(data['positions'])
+                self.instance.compute_vertex_normals()
 
     def __cmap_mesh(self,
                     vertex_colors: ndarray):
@@ -240,7 +247,7 @@ class Open3dActor:
         # Update vectors
         if 'positions' in updated_fields or 'vectors' in updated_fields:
             self.instance = None
-            self.__create_object(self.__object_data)
+            self.__create_object(data)
 
         # Update material
         elif 'alpha' in updated_fields or 'c' in updated_fields:
@@ -255,5 +262,62 @@ class Open3dActor:
         nb_dof_arrow = asarray(self.instance.vertices).shape[0] // nb_arrow
         alpha = 1 if not 0. <= self.__object_data['alpha'] <= 1. else self.__object_data['alpha']
         transformed_vertex_color = concatenate(tuple(tile(color, (nb_dof_arrow, 1)) for color in vertex_colors))
+        self.instance.vertex_colors = o3d.utility.Vector3dVector(transformed_vertex_color)
+        self.material.base_color = array([1., 1., 1., alpha])
+
+    ###########
+    # MARKERS #
+    ###########
+
+    def __create_markers(self,
+                         data: Dict[str, Any]):
+
+        # Create the material
+        alpha = 1 if not 0. <= data['alpha'] <= 1. else data['alpha']
+        color = list(get_color(rgb=data['c']))
+        self.material.base_color = array(color + [alpha])
+        self.material.shader = 'defaultLitTransparency'
+        self.material.shader = 'defaultLitTransparency' if data['filled'] else 'unlitLine'
+
+        # Get position and orientation information
+        normal_to = data['normal_to']
+        if normal_to.type == 'Mesh':
+            if normal_to.material.shader == 'defaultLitTransparency':
+                positions = asarray(normal_to.instance.vertices)[data['indices']][0]
+                orientations = asarray(normal_to.instance.vertex_normals)[data['indices']][0]
+            else:
+                positions = asarray(normal_to.utils.vertices)[data['indices']][0]
+                orientations = asarray(normal_to.utils.vertex_normals)[data['indices']][0]
+        elif normal_to.type == 'Points':
+            positions = asarray(normal_to.instance.points)[data['indices']][0]
+            orientations = asarray(normal_to.instance.normals)[data['indices']][0]
+        else:
+            raise ValueError
+
+        # Create the Marker mesh
+        vedo_marker = Marker(symbol=data['symbol'],
+                             s=data['size']).orientation(newaxis=[1, 0, 0], rotation=90, rad=False)
+        vedo_glyph = Glyph(mesh=positions,
+                           glyph=vedo_marker,
+                           orientation_array=orientations).triangulate()
+        self.instance = o3d.geometry.TriangleMesh(vertices=o3d.utility.Vector3dVector(vedo_glyph.points()),
+                                                  triangles=o3d.utility.Vector3iVector(array(vedo_glyph.cells())))
+        self.instance.compute_vertex_normals()
+
+    def __update_markers(self,
+                         data: Dict[str, Any],
+                         updated_fields: List[str]):
+
+        if len(updated_fields) > 0 or 'positions' in data['normal_to'].updated_fields:
+            self.instance = None
+            self.__create_object(data)
+
+    def __cmap_markers(self,
+                       vertex_colors: ndarray):
+
+        nb_marker = vertex_colors.shape[0]
+        nb_dof_marker = asarray(self.instance.vertices).shape[0] // nb_marker
+        alpha = 1 if not 0. <= self.__object_data['alpha'] <= 1. else self.__object_data['alpha']
+        transformed_vertex_color = concatenate(tuple(tile(color, (nb_dof_marker, 1)) for color in vertex_colors))
         self.instance.vertex_colors = o3d.utility.Vector3dVector(transformed_vertex_color)
         self.material.base_color = array([1., 1., 1., alpha])
