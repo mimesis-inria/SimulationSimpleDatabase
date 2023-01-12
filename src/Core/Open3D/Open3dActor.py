@@ -1,5 +1,6 @@
 from typing import Any, Optional, Dict, List
 import open3d as o3d
+import open3d.visualization.gui as gui
 from vedo import Marker, Glyph
 from vedo.colors import get_color
 from numpy import array, ndarray, asarray, sort, concatenate, unique, tile
@@ -40,7 +41,8 @@ class Open3dActor:
         spec = {'Mesh': (self.__create_mesh, self.__update_mesh, self.__cmap_mesh),
                 'Points': (self.__create_points, self.__update_points, self.__cmap_points),
                 'Arrows': (self.__create_arrows, self.__update_arrows, self.__cmap_arrows),
-                'Markers': (self.__create_markers, self.__update_markers, self.__cmap_markers)}
+                'Markers': (self.__create_markers, self.__update_markers, self.__cmap_markers),
+                'Text': (self.__create_text, self.__update_text, self.__cmap_text)}
         self.__create_object = spec[self.type][0]
         self.__update_object = spec[self.type][1]
         self.__cmap_object = spec[self.type][2]
@@ -86,8 +88,9 @@ class Open3dActor:
         if len(object_data.keys()) > 0 or self.type == 'Markers':
             self.__update_object(self.__object_data, self.updated_fields)
         # Apply the colormap
-        if len(cmap_data.keys()) > 0 or len(self.__cmap_data['scalar_field']) > 0:
-            self.apply_cmap(self.__cmap_data)
+        if self.type != 'Text':
+            if len(cmap_data.keys()) > 0 or len(self.__cmap_data['scalar_field']) > 0:
+                self.apply_cmap(self.__cmap_data)
 
     def apply_cmap(self,
                    cmap_data: Dict[str, Any]):
@@ -321,3 +324,63 @@ class Open3dActor:
         transformed_vertex_color = concatenate(tuple(tile(color, (nb_dof_marker, 1)) for color in vertex_colors))
         self.instance.vertex_colors = o3d.utility.Vector3dVector(transformed_vertex_color)
         self.material.base_color = array([1., 1., 1., alpha])
+
+    ########
+    # TEXT #
+    ########
+
+    def __create_text(self,
+                      data: Dict[str, Any]):
+
+        # Create font style
+        # if data['bold'] and data['italic']:
+        #     style = gui.FontStyle.BOLD_ITALIC
+        # elif data['bold'] or data['italic']:
+        #     style = gui.FontStyle.BOLD if data['bold'] else gui.FontStyle.ITALIC
+        # else:
+        #     style = gui.FontStyle.NORMAL
+        # font = gui.FontDescription(typeface=data['font'].lower(), style=style, point_size=data['size'])
+        # font_id = gui.Application.instance.add_font(font)
+
+        # Get color
+        color = list(get_color(rgb=data['c']))
+
+        # Create instance
+        self.instance = gui.Label(data['content'])
+        # self.instance.font_id = font_id
+        self.instance.background_color = gui.Color(a=0)
+        self.instance.text_color = gui.Color(*color)
+
+    def __update_text(self,
+                      data: Dict[str, Any],
+                      updated_fields: List[str]):
+
+        # Update content
+        if 'content' in updated_fields:
+            self.instance.text = data['content']
+
+        # Update position
+        if 'gui' in updated_fields:
+            size, rect = data['gui']
+            # Avoid to print on settings
+            data['corner'] = 'BR' if data['corner'] == 'TR' else data['corner']
+            # X position
+            if data['corner'][1] == 'L':
+                x = rect.get_left()
+            elif data['corner'][1] == 'M':
+                x = (rect.get_right() - size.width) / 2
+            else:
+                x = rect.get_right() - size.width
+            # Y position
+            if data['corner'][0] == 'T':
+                y = rect.get_top()
+            elif data['corner'][0] == 'M':
+                y = (rect.get_bottom() - size.height) / 2
+            else:
+                y = rect.get_bottom() - size.height
+
+            self.instance.frame = gui.Rect(x, y, 2 * size.width, 2 * size.height)
+
+    def __cmap_text(self,
+                    vertex_colors: ndarray):
+        pass

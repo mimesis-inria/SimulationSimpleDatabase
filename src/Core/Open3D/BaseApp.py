@@ -23,6 +23,7 @@ class Settings:
 
 
 class BaseApp:
+    additional_labels = {}
 
     def _create_settings(self, nb_group):
 
@@ -236,10 +237,13 @@ class BaseApp:
         r = self._window.content_rect
         self._scene.frame = r
         width = 17 * layout_context.theme.font_size
-        height = min(r.height,
-                     self._settings_panel.calc_preferred_size(layout_context,
-                                                              o3d.visualization.gui.Widget.Constraints()).height)
+        height = min(r.height, self._settings_panel.calc_preferred_size(layout_context,
+                                                                        gui.Widget.Constraints()).height)
         self._settings_panel.frame = o3d.visualization.gui.Rect(r.get_right() - width, r.y, width, height)
+
+        for actor in self.additional_labels.values():
+            size = actor.instance.calc_preferred_size(layout_context, gui.Widget.Constraints())
+            actor.update(object_data={'gui': [size, r]})
 
     def __on_mouse_mode_model(self):
         self._scene.set_view_controls(gui.SceneWidget.Controls.ROTATE_CAMERA)

@@ -55,6 +55,7 @@ class Open3dFactory:
             client.send(b'D')
         clients.pop(temp_client_id).close()
         self.__visualizer_socket = clients[0]
+        self.__visualizer_socket.settimeout(3.)
 
     def close(self):
 
@@ -94,6 +95,8 @@ class Open3dFactory:
         except ConnectionResetError:
             quit(print('Rendering window closed, shutting down.'))
         except BrokenPipeError:
+            quit(print('Rendering window closed, shutting down.'))
+        except TimeoutError:
             quit(print('Rendering window closed, shutting down.'))
 
     def __add_object(self,
@@ -268,3 +271,27 @@ class Open3dFactory:
             raise ValueError(f"A Marker object can only be associated with a Mesh or Points object. "
                              f"The current Marker was associated to object n°{normal_to} with type {table_type}.")
         return f'{table_type}_{self.__idx}_{normal_to}'
+
+    ########
+    # TEXT #
+    ########
+
+    def add_text(self,
+                 content: str,
+                 at: int = 0,
+                 corner: str = 'BR',
+                 c: str = 'black',
+                 font: str = 'monospace',
+                 size: int = 10,
+                 bold: bool = False,
+                 italic: bool = False):
+
+        return self.__add_object('Text', locals())
+
+    def update_text(self,
+                    object_id: int,
+                    content: Optional[str] = None,
+                    c: Optional[str] = None):
+
+        object_id = self.__check_id(object_id, 'Text')
+        return self.__update_object(object_id, locals())

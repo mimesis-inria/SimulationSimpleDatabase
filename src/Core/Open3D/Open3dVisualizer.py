@@ -162,6 +162,8 @@ class Open3dVisualizer(BaseApp):
                                                            actor_group=group)
             if actor_type == 'Markers':
                 object_data['normal_to'] = self.get_actor(object_data['normal_to'])
+            elif actor_type == 'Text':
+                self.additional_labels[table_name] = self.__actors[group][table_name]
             self.__actors[group][table_name].create(object_data=object_data)
             self.__groups[table_name] = group
             pre_groups[group].append(table_name)
@@ -187,13 +189,21 @@ class Open3dVisualizer(BaseApp):
             self._create_settings(len(self.__actors))
             self._window.set_on_close(self._exit)
 
-            # 5.2. Add geometries to the Visualizer
+            # 5.2 Add all Text
+            for actor in self.additional_labels.values():
+                self._window.add_child(actor.instance)
+                actor.instance.visible = False
+
+            # 5.3. Add geometries to the Visualizer
             for actor in self.__actors[self.__current_group].values():
-                self._scene.scene.add_geometry(actor.name, actor.instance, actor.material)
+                if actor.type == 'Text':
+                    actor.instance.visible = True
+                else:
+                    self._scene.scene.add_geometry(actor.name, actor.instance, actor.material)
             bounds = self._scene.scene.bounding_box
             self._scene.setup_camera(60, bounds, bounds.get_center())
 
-            # 5.3. Launch mainloop
+            # 5.4. Launch mainloop
             Thread(target=self.__update_thread).start()
             o3d.visualization.gui.Application.instance.run()
 
@@ -238,12 +248,20 @@ class Open3dVisualizer(BaseApp):
         # 1. If the group ID changed, change the visibility of Actors
         if self.__group_change:
             self.__group_change = False
+            # Remove previous group
             for table_name in self.__actors[self.__previous_group].keys():
                 actor = self.get_actor(table_name)
-                self._scene.scene.remove_geometry(actor.name)
+                if actor.type == 'Text':
+                    actor.instance.visible = False
+                else:
+                    self._scene.scene.remove_geometry(actor.name)
+            # Add new group
             for table_name in self.__actors[self.__current_group].keys():
                 actor = self.get_actor(table_name)
-                self._scene.scene.add_geometry(actor.name, actor.instance, actor.material)
+                if actor.type == 'Text':
+                    actor.instance.visible = True
+                else:
+                    self._scene.scene.add_geometry(actor.name, actor.instance, actor.material)
 
         # 2. Update all the Actors
         for group_id in self.__actors.keys():
@@ -263,9 +281,12 @@ class Open3dVisualizer(BaseApp):
                         object_data['normal_to'] = self.get_actor(object_data['normal_to'])
                     actor.update(object_data=object_data)
                     # Update the geometry in the Visualizer
-                    if group_id == self.__current_group and self._scene.scene.geometry_is_visible(actor.name):
-                        self._scene.scene.remove_geometry(actor.name)
-                        self._scene.scene.add_geometry(actor.name, actor.instance, actor.material)
+                    if group_id == self.__current_group:
+                        if actor.type == 'Text':
+                            pass
+                        else:
+                            self._scene.scene.remove_geometry(actor.name)
+                            self._scene.scene.add_geometry(actor.name, actor.instance, actor.material)
 
     def __update_offscreen(self):
 
@@ -278,26 +299,10 @@ class Open3dVisualizer(BaseApp):
                 self.__database.add_data(table_name=table_name,
                                          data={})
 
-    def __change_group(self, vis):
-
-        o3d.visualization.gui.Application.instance.post_to_main_thread(self._window,
-                                                                       self.__update_instances_group)
-
-    def __update_instances_group(self):
-
-        for table_name in self.__actors[self.__current_group].keys():
-            actor = self.get_actor(table_name)
-            self._window.remove_geometry(actor.name)
-
-        self.__current_group = (self.__current_group + 1) % len(self.__groups.keys())
-
-        for table_name in self.__actors[self.__current_group].keys():
-            actor = self.get_actor(table_name)
-            self._window.add_geometry(actor.name, actor.instance, actor.material)
-
     def _exit(self):
 
         self.__is_done = True
+        self.__socket.send(b'done')
         return True
 
     def _change_group(self, index):

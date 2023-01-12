@@ -39,6 +39,9 @@ factory.add_markers(normal_to=1,
                     c='red',
                     size=2,
                     symbol='0')
+factory.add_text(content='0',
+                 at=1,
+                 corner='BR')
 Open3dVisualizer.launch(database_path=factory.get_path(),
                         offscreen=False,
                         fps=20)
@@ -59,6 +62,8 @@ for step in range(200):
                           vectors=armadillo.normals()[0:5] * A[i])
     factory.update_markers(object_id=4,
                            indices=arange(step, step + 5))
+    factory.update_text(object_id=5,
+                        content=f'{step}')
     i = (i + 1) % len(A)
     if step == 100:
         print('change')

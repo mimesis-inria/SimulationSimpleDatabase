@@ -20,7 +20,8 @@ class Open3dTable:
         create_columns = {'Mesh': self.__create_mesh_columns,
                           'Points': self.__create_points_columns,
                           'Arrows': self.__create_arrows_columns,
-                          'Markers': self.__create_markers_columns}
+                          'Markers': self.__create_markers_columns,
+                          'Text': self.__create_text_columns}
         self.create_columns = create_columns[self.table_type]
 
     def send_data(self,
@@ -94,6 +95,20 @@ class Open3dTable:
                                            ('scalar_field', ndarray),
                                            ('at', int),
                                            ('colormap', str)
+                                           ])
+        return self
+
+    def __create_text_columns(self):
+
+        self.database.create_table(table_name=self.table_name,
+                                   fields=[('content', str),
+                                           ('corner', str),
+                                           ('c', str),
+                                           ('font', str),
+                                           ('size', int),
+                                           ('bold', bool),
+                                           ('italic', bool),
+                                           ('at', int)
                                            ])
         return self
 
