@@ -8,10 +8,11 @@ from numpy.linalg import norm
 from matplotlib.colors import Normalize
 from matplotlib.pyplot import get_cmap
 
-from utils import get_rotation_matrix
+from SSD.Core.Rendering._ressources._Actor import _Actor
+from SSD.Core.Rendering._ressources.Open3dUtils import get_rotation_matrix
 
 
-class Open3dActor:
+class Open3dActor(_Actor):
 
     def __init__(self,
                  actor_type: str,
@@ -24,90 +25,35 @@ class Open3dActor:
         :param actor_group:
         """
 
+        _Actor.__init__(self, actor_type=actor_type, actor_name=actor_name, actor_group=actor_group)
+
         # Actor information
-        self.type: str = actor_type
-        self.name: str = actor_name
-        self.group: str = str(actor_group)
         self.instance: Optional[o3d.geometry.Geometry3D] = None
         self.material = o3d.visualization.rendering.MaterialRecord()
         self.utils: Optional[Any] = None
-        self.updated_fields = []
 
-        # Actor data
-        self.__object_data: Optional[Dict[str, Any]] = None
-        self.__cmap_data: Optional[Dict[str, Any]] = None
-
-        # Actor specialization methods
+        # Actor specialization
         spec = {'Mesh': (self.__create_mesh, self.__update_mesh, self.__cmap_mesh),
                 'Points': (self.__create_points, self.__update_points, self.__cmap_points),
                 'Arrows': (self.__create_arrows, self.__update_arrows, self.__cmap_arrows),
                 'Markers': (self.__create_markers, self.__update_markers, self.__cmap_markers),
                 'Text': (self.__create_text, self.__update_text, self.__cmap_text)}
-        self.__create_object = spec[self.type][0]
-        self.__update_object = spec[self.type][1]
-        self.__cmap_object = spec[self.type][2]
-
-    def create(self,
-               object_data: Dict[str, Any]):
-        """
-
-        :param object_data:
-        """
-
-        # Sort data
-        cmap_data = {}
-        for field in ['colormap', 'scalar_field']:
-            if field in object_data:
-                cmap_data[field] = object_data.pop(field)
-        # Register Actor data
-        self.__object_data = object_data
-        self.__cmap_data = cmap_data
-        # Create the object
-        self.__create_object(self.__object_data)
-        # Apply the colormap
-        if len(cmap_data.keys()) > 1:
-            self.apply_cmap(self.__cmap_data)
-
-    def update(self,
-               object_data: Dict[str, Any]):
-        """
-
-        :param object_data:
-        """
-
-        # Sort data
-        cmap_data = {'scalar_field': object_data.pop('scalar_field')} if 'scalar_field' in object_data else {}
-        # Register Actor data
-        self.updated_fields = []
-        for key, value in object_data.items():
-            self.__object_data[key] = value
-            self.updated_fields.append(key)
-        for key, value in cmap_data.items():
-            self.__cmap_data[key] = value
-        # Update the object
-        if len(object_data.keys()) > 0 or self.type == 'Markers':
-            self.__update_object(self.__object_data, self.updated_fields)
-        # Apply the colormap
-        if self.type != 'Text':
-            if len(cmap_data.keys()) > 0 or len(self.__cmap_data['scalar_field']) > 0:
-                self.apply_cmap(self.__cmap_data)
+        self._create_object = spec[self.type][0]
+        self._update_object = spec[self.type][1]
+        self._cmap_object = spec[self.type][2]
 
     def apply_cmap(self,
-                   cmap_data: Dict[str, Any]):
-        """
+                   data: Dict[str, Any]) -> None:
 
-        :param cmap_data:
-        """
-
-        scalar_field = cmap_data['scalar_field']
+        scalar_field = data['scalar_field']
         if len(scalar_field) > 0:
             # Normalize scalar field
             cmap_norm = Normalize(vmin=min(scalar_field[0]),
                                   vmax=max(scalar_field[0]))
-            cmap = get_cmap(cmap_data['colormap'])
+            cmap = get_cmap(data['colormap'])
             vertex_colors = cmap(cmap_norm(scalar_field[0]))[:, 0:3]
             # Apply colors
-            self.__cmap_object(vertex_colors)
+            self._cmap_object(vertex_colors)
 
     ########
     # MESH #
@@ -142,7 +88,7 @@ class Open3dActor:
         if 'wireframe' in updated_fields:
             if (data['wireframe'] and self.material.shader == 'defaultLitTransparency') or \
                     (not data['wireframe'] and self.material.shader == 'unlitLine'):
-                self.__create_object(data)
+                self._create_object(data)
 
         # Update the material
         if 'alpha' in updated_fields or 'c' in updated_fields:
@@ -152,7 +98,7 @@ class Open3dActor:
 
         # Update positions
         if 'positions' in updated_fields:
-            if self.__object_data['wireframe']:
+            if self._object_data['wireframe']:
                 self.utils.vertices = o3d.utility.Vector3dVector(data['positions'])
                 self.instance.points = o3d.utility.Vector3dVector(data['positions'])
                 self.utils.compute_vertex_normals()
@@ -163,9 +109,9 @@ class Open3dActor:
     def __cmap_mesh(self,
                     vertex_colors: ndarray):
 
-        alpha = 1 if not 0. <= self.__object_data['alpha'] <= 1. else self.__object_data['alpha']
+        alpha = 1 if not 0. <= self._object_data['alpha'] <= 1. else self._object_data['alpha']
 
-        if self.__object_data['wireframe']:
+        if self._object_data['wireframe']:
             line_color = vertex_colors[asarray(self.instance.lines)[:, 0]]
             self.instance.colors = o3d.utility.Vector3dVector(line_color)
             self.material.base_color = array([1., 1., 1., alpha])
@@ -209,7 +155,7 @@ class Open3dActor:
     def __cmap_points(self,
                       vertex_colors: ndarray):
 
-        alpha = 1 if not 0. <= self.__object_data['alpha'] <= 1. else self.__object_data['alpha']
+        alpha = 1 if not 0. <= self._object_data['alpha'] <= 1. else self._object_data['alpha']
         self.instance.colors = o3d.utility.Vector3dVector(vertex_colors)
         self.material.base_color = array([1., 1., 1., alpha])
 
@@ -250,7 +196,7 @@ class Open3dActor:
         # Update vectors
         if 'positions' in updated_fields or 'vectors' in updated_fields:
             self.instance = None
-            self.__create_object(data)
+            self._create_object(data)
 
         # Update material
         elif 'alpha' in updated_fields or 'c' in updated_fields:
@@ -263,7 +209,7 @@ class Open3dActor:
 
         nb_arrow = vertex_colors.shape[0]
         nb_dof_arrow = asarray(self.instance.vertices).shape[0] // nb_arrow
-        alpha = 1 if not 0. <= self.__object_data['alpha'] <= 1. else self.__object_data['alpha']
+        alpha = 1 if not 0. <= self._object_data['alpha'] <= 1. else self._object_data['alpha']
         transformed_vertex_color = concatenate(tuple(tile(color, (nb_dof_arrow, 1)) for color in vertex_colors))
         self.instance.vertex_colors = o3d.utility.Vector3dVector(transformed_vertex_color)
         self.material.base_color = array([1., 1., 1., alpha])
@@ -311,16 +257,16 @@ class Open3dActor:
                          data: Dict[str, Any],
                          updated_fields: List[str]):
 
-        if len(updated_fields) > 0 or 'positions' in data['normal_to'].updated_fields:
+        if len(updated_fields) > 0 or 'positions' in data['normal_to']._updated_fields:
             self.instance = None
-            self.__create_object(data)
+            self._create_object(data)
 
     def __cmap_markers(self,
                        vertex_colors: ndarray):
 
         nb_marker = vertex_colors.shape[0]
         nb_dof_marker = asarray(self.instance.vertices).shape[0] // nb_marker
-        alpha = 1 if not 0. <= self.__object_data['alpha'] <= 1. else self.__object_data['alpha']
+        alpha = 1 if not 0. <= self._object_data['alpha'] <= 1. else self._object_data['alpha']
         transformed_vertex_color = concatenate(tuple(tile(color, (nb_dof_marker, 1)) for color in vertex_colors))
         self.instance.vertex_colors = o3d.utility.Vector3dVector(transformed_vertex_color)
         self.material.base_color = array([1., 1., 1., alpha])

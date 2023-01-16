@@ -243,7 +243,7 @@ class BaseApp:
 
         for actor in self.additional_labels.values():
             size = actor.instance.calc_preferred_size(layout_context, gui.Widget.Constraints())
-            actor.update(object_data={'gui': [size, r]})
+            actor.update(data={'gui': [size, r]})
 
     def __on_mouse_mode_model(self):
         self._scene.set_view_controls(gui.SceneWidget.Controls.ROTATE_CAMERA)

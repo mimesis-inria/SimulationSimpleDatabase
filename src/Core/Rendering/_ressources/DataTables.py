@@ -5,14 +5,20 @@ from vedo.utils import is_sequence
 from SSD.Core.Storage.Database import Database
 
 
-class Open3dTable:
+class DataTables:
 
     def __init__(self,
-                 db: Database,
+                 database: Database,
                  table_name: str):
-
+        """
+        The DataTables are used to create a specific Table in the Database for each object type.
+        
+        :param database: Database to connect to.
+        :param table_name: Name of the Table to create. Should be '<obj_type>_<factory_idx>_<obj_idx>'.
+        """
+        
         # Table information
-        self.database: Database = db
+        self.database: Database = database
         self.table_name: str = table_name
         self.table_type: str = table_name.split('_')[0]
 
@@ -23,21 +29,23 @@ class Open3dTable:
                           'Markers': self.__create_markers_columns,
                           'Text': self.__create_text_columns}
         self.create_columns = create_columns[self.table_type]
-
+        
     def send_data(self,
-                  data_dict: Dict[str, Any],
-                  update: bool):
+                  data: Dict[str, Any],
+                  update: bool) -> None:
+        """
+        Create a new line in the Table or update the last one.
+
+        :param data: Data to send to the Database.
+        :param update: If False, create a new line in the Table.
+        """
 
         if update:
             self.database.update(table_name=self.table_name,
-                                 data=self.__format_data(data_dict=data_dict))
+                                 data=self.__format_data(data=data))
         else:
             self.database.add_data(table_name=self.table_name,
-                                   data=self.__format_data(data_dict=data_dict))
-
-    ##################
-    # CREATE COLUMNS #
-    ##################
+                                   data=self.__format_data(data=data))
 
     def __create_mesh_columns(self):
 
@@ -112,28 +120,25 @@ class Open3dTable:
                                            ])
         return self
 
-    ###############
-    # FORMAT DATA #
-    ###############
-
     @classmethod
     def __format_data(cls,
-                      data_dict: Dict[str, Any]):
+                      data: Dict[str, Any]) -> Dict[str, Any]:
 
-        data_dict_copy = data_dict.copy()
-        for field, value in data_dict_copy.items():
+        data_copy = data.copy()
+        for field, value in data_copy.items():
             if value is None:
-                data_dict.pop(field)
+                data.pop(field)
             elif field in ['positions', 'cells', 'scalar_field', 'vectors', 'indices']:
-                data_dict[field] = cls.parse_vector(value)
-        return data_dict
+                data[field] = cls.__parse_vector(value)
+        return data
 
     @classmethod
-    def parse_vector(cls,
-                     vec: Any):
+    def __parse_vector(cls,
+                       vec: Any) -> ndarray:
 
         if is_sequence(vec):
             if len(vec) > 0 and not is_sequence(vec[0]):
                 vec = [vec]
             vec = array(vec)
         return vec
+        
