@@ -1,7 +1,7 @@
-from typing import Dict, Any, Callable, Optional
+from typing import Dict, Any, Callable, Optional, List
 
 
-class _Actor:
+class BaseActor:
 
     def __init__(self,
                  actor_type: str,
@@ -22,6 +22,18 @@ class _Actor:
         self._create_object: Optional[Callable] = None
         self._update_object: Optional[Callable] = None
         self._cmap_object: Optional[Callable] = None
+        
+    @property
+    def object_data(self) -> Dict[str, Any]:
+        return self._object_data.copy()
+    
+    @property
+    def cmap_data(self) -> Dict[str, Any]:
+        return self._cmap_data.copy()
+    
+    @property
+    def updated_fields(self) -> List[str]:
+        return self._updated_fields.copy()
 
     def create(self,
                data: Dict[str, Any]) -> None:
@@ -69,4 +81,5 @@ class _Actor:
 
     def apply_cmap(self,
                    data: Dict[str, Any]) -> None:
+
         raise NotImplementedError

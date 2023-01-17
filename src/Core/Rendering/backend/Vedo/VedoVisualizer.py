@@ -1,21 +1,14 @@
-from typing import Dict, Optional, Any, Tuple
-from threading import Thread
-from subprocess import run
-from sys import executable, argv
+from typing import Dict, Optional, Any, Tuple, List
 from struct import unpack
-from copy import copy
-from time import time, sleep
-from numpy import array, ndarray
 from socket import socket, AF_INET, SOCK_STREAM, SOL_SOCKET, SO_REUSEADDR
 from vedo import show, Plotter
-from platform import system
 
 from SSD.Core.Storage.Database import Database
-from SSD.Core.Rendering._ressources.VedoActor import VedoActor
-from SSD.Core.Rendering._ressources._Visualizer import _Visualizer
+from SSD.Core.Rendering.backend.BaseVisualizer import BaseVisualizer
+from SSD.Core.Rendering.backend.Vedo.VedoActor import VedoActor
 
 
-class VedoVisualizer(_Visualizer):
+class VedoVisualizer(BaseVisualizer):
 
     def __init__(self,
                  database: Optional[Database] = None,
@@ -25,7 +18,7 @@ class VedoVisualizer(_Visualizer):
                  offscreen: bool = False,
                  fps: int = 20):
         """
-        Manage the creation, update and rendering of Vedo Actors.
+        The VedoVisualizer is used to manage the creation, update and rendering of Vedo Actors.
 
         :param database: Database to connect to.
         :param database_dir: Directory which contains the Database file (used if 'database' is not defined).
@@ -35,8 +28,13 @@ class VedoVisualizer(_Visualizer):
         :param fps: Max frame rate.
         """
 
-        _Visualizer.__init__(self, database=database, database_dir=database_dir, database_name=database_name,
-                             remove_existing=remove_existing, offscreen=offscreen, fps=fps)
+        BaseVisualizer.__init__(self,
+                                database=database,
+                                database_dir=database_dir,
+                                database_name=database_name,
+                                remove_existing=remove_existing,
+                                offscreen=offscreen,
+                                fps=fps)
 
         # Define Database
         if database is not None:
@@ -48,13 +46,13 @@ class VedoVisualizer(_Visualizer):
         # Information about Actors
         self.__actors: Dict[int, Dict[str, VedoActor]] = {}
         self.__groups: Dict[str, int] = {}
-        self.__all_actors: Dict[str, VedoActor] = {}
+
+        # Information about the Plotter
         self.__plotter: Optional[Plotter] = None
         self.__offscreen: bool = offscreen
         self.__fps: float = 1 / min(max(1, abs(fps)), 50)
 
-        self.__step: int = 0
-        self.__is_done = False
+        # Synchronization with the Factory
         self.__socket: Optional[socket] = None
         self.__clients: List[socket] = []
 
@@ -84,12 +82,14 @@ class VedoVisualizer(_Visualizer):
         return self.__actors[group][actor_name]
 
     def init_visualizer(self,
-                        nb_clients: int):
+                        nb_clients: int) -> None:
         """
         Initialize the Visualizer: create all Actors and render them in a Plotter.
+
+        :param nb_clients: Number of Factories to connect to.
         """
 
-        # 1. Connect signals between the VedoFactory and the Visualizer
+        # 1. Connect to the Factory for synchronization
         self.__socket = socket(AF_INET, SOCK_STREAM)
         self.__socket.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
         self.__socket.bind(('localhost', 20000))
@@ -152,11 +152,15 @@ class VedoVisualizer(_Visualizer):
 
         # 5. Create Visualizer if not offscreen
         if not self.__offscreen:
+
+            # 5.1. Create the list of actors to render
             actors = []
             for group in self.__actors.keys():
                 actors.append([])
                 for actor in self.__actors[group].values():
                     actors[-1].append(actor.instance)
+
+            # 5.2. Create a non-interactive Plotter instance
             self.__plotter = show(actors,
                                   new=True,
                                   N=len(actors),
@@ -164,17 +168,21 @@ class VedoVisualizer(_Visualizer):
                                   interactive=False,
                                   title='SofaVedo',
                                   axes=4)
+
+            # 5.3. Add a timer callback and set the Plotter in interactive mode
             self.__plotter.add_callback('timer', self.__update_thread)
             self.__plotter.timer_callback('create', dt=int(self.__fps * 1e3))
             for client in self.__clients:
                 client.send(b'done')
             self.__plotter.interactive()
 
+        # 6. The window was closed
         self.__exit()
 
-    def __update_thread(self, _):
+    def __update_thread(self, _) -> None:
 
         for i, client in enumerate(self.__clients):
+            # Get the message from the Factory
             msg = client.recv(4)
             # Exit command
             if msg == b'exit':
@@ -183,61 +191,66 @@ class VedoVisualizer(_Visualizer):
             else:
                 step = unpack('i', msg)[0]
                 if not self.__offscreen:
-                    self.__update_instances(step, i)
+                    self.__update_instances(step=step, idx_factory=i)
                 client.send(b'done')
 
-    def __update_instances(self, step, idx):
-        """
-        Update an Actor instance with updated data.
+    def __update_instances(self,
+                           step: int,
+                           idx_factory: int) -> None:
 
-        :param table_name: Name of the Table (one Table per Actor).
-        :param data_dict: Updated data of the Actor.
-        """
-
-        # 1. Retrieve visual data and update Actors (one Table per Actor)
+        # Retrieve visual data and update Actors (one Table per Actor)
         for group in self.__actors.keys():
             for table_name in self.__actors[group].keys():
-                if f'_{idx}_' in table_name:
+                if f'_{idx_factory}_' in table_name:
 
-                    # 2.1. Get the current step line in the Table
+                    # Get the current step line in the Table
                     object_data = self.__database.get_line(table_name=table_name,
                                                            line_id=step)
                     object_data = dict(filter(lambda item: item[1] is not None, object_data.items()))
-
-                    # 2.2. If the line contains fields, the Actor was updated, then update it
                     object_data.pop('id')
+
+                    # Update the Actor and its visualization
                     if len(object_data.keys()) > 0 or 'Markers' in table_name:
-                        # Update Actor instance
                         actor = self.get_actor(table_name)
+                        # Markers are updated if their associated object was updated
                         if actor.type == 'Markers' and 'normal_to' in object_data.keys():
                             object_data['normal_to'] = self.get_actor(object_data['normal_to'])
+                        # Some Actors must be removed from the Plotter to be visually updated
                         removed = False
-                        if do_remove(actor, object_data):
+                        if _do_remove(actor, object_data):
                             self.__plotter.remove(actor.instance, at=actor.group)
                             removed = True
-                        # if actor.type in ['Arrows', 'Markers'] and not self.__offscreen:
-                        #     self.__plotter.remove(actor.instance, at=actor.group)
+                        # Update Actor
                         actor.update(data=object_data)
                         if removed:
                             self.__plotter.add(actor.instance, at=actor.group)
+
+        # Render the new set of Actors
         self.__plotter.render()
 
-    def __exit(self):
+    def __exit(self) -> None:
 
+        # Close the socket
         if self.__socket is not None:
             self.__socket.close()
             self.__socket = None
+
+        # Close the Plotter
         if self.__plotter is not None:
             self.__plotter.break_interaction()
             self.__plotter.close()
             self.__plotter = None
 
 
-def do_remove(actor, data):
+def _do_remove(actor: VedoActor,
+               data: Dict[str, Any]) -> bool:
 
+    # Arrows must be re-added to update the vectors
     if actor.type == 'Arrows' and ('positions' in data.keys() or 'vectors' in data.keys()):
         return True
-    elif actor.type == 'Markers' and (len(data) > 0 or 'positions' in actor._object_data['normal_to']._updated_fields):
-        return True
-    return False
 
+    # Markers must be re-added to update the positions
+    elif actor.type == 'Markers' and (len(data) > 0 or 'positions' in actor.object_data['normal_to'].updated_fields):
+        return True
+
+    return False

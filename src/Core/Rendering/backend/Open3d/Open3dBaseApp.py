@@ -1,4 +1,3 @@
-import open3d as o3d
 import open3d.visualization.gui as gui
 import open3d.visualization.rendering as rendering
 from glob import glob
@@ -31,8 +30,8 @@ class BaseApp:
         app.initialize()
 
         self._window = self.__window = app.create_window("Open3D", 1080, 720)
-        self._scene = o3d.visualization.gui.SceneWidget()
-        self._scene.scene = o3d.visualization.rendering.Open3DScene(self._window.renderer)
+        self._scene = gui.SceneWidget()
+        self._scene.scene = rendering.Open3DScene(self._window.renderer)
         self._scene.set_on_sun_direction_changed(self.__on_sun_dir)
 
         em = self._window.theme.font_size
@@ -239,7 +238,7 @@ class BaseApp:
         width = 17 * layout_context.theme.font_size
         height = min(r.height, self._settings_panel.calc_preferred_size(layout_context,
                                                                         gui.Widget.Constraints()).height)
-        self._settings_panel.frame = o3d.visualization.gui.Rect(r.get_right() - width, r.y, width, height)
+        self._settings_panel.frame = gui.Rect(r.get_right() - width, r.y, width, height)
 
         for actor in self.additional_labels.values():
             size = actor.instance.calc_preferred_size(layout_context, gui.Widget.Constraints())
@@ -262,7 +261,7 @@ class BaseApp:
         self._settings.show_skymap = show
         self.__apply_settings()
 
-    def __on_skymap_name(self, name, index):
+    def __on_skymap_name(self, name, _):
         self._settings.skymap_name = gui.Application.instance.resource_path + "/" + name
         self.__apply_settings()
 
@@ -298,7 +297,7 @@ class BaseApp:
         self._settings.sun_color = color
         self.__apply_settings()
 
-    def __on_group(self, name, index):
+    def __on_group(self, _, index):
         self._change_group(index)
 
     def _change_group(self, index):

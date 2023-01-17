@@ -1,21 +1,18 @@
-from typing import Dict, Optional, Any, Tuple
+from typing import Dict, Optional, Tuple, List
 from threading import Thread
-from subprocess import run
-from sys import executable, argv
 from struct import unpack
 from copy import copy
 from time import time, sleep
-from numpy import array, ndarray
 from socket import socket, AF_INET, SOCK_STREAM, SOL_SOCKET, SO_REUSEADDR
 import open3d as o3d
 
 from SSD.Core.Storage.Database import Database
-from SSD.Core.Rendering._ressources._Visualizer import _Visualizer
-from SSD.Core.Rendering._ressources.Open3dActor import Open3dActor
-from SSD.Core.Rendering._ressources.Open3dBaseApp import BaseApp
+from SSD.Core.Rendering.backend.BaseVisualizer import BaseVisualizer
+from SSD.Core.Rendering.backend.Open3d.Open3dActor import Open3dActor
+from SSD.Core.Rendering.backend.Open3d.Open3dBaseApp import BaseApp
 
 
-class Open3dVisualizer(BaseApp, _Visualizer):
+class Open3dVisualizer(BaseApp, BaseVisualizer):
 
     def __init__(self,
                  database: Optional[Database] = None,
@@ -25,7 +22,7 @@ class Open3dVisualizer(BaseApp, _Visualizer):
                  offscreen: bool = False,
                  fps: int = 20):
         """
-        Manage the creation, update and rendering of Open3D Actors.
+        The Open3dVisualizer is used to manage the creation, update and rendering of Open3D Actors.
 
         :param database: Database to connect to.
         :param database_dir: Directory which contains the Database file (used if 'database' is not defined).
@@ -35,8 +32,13 @@ class Open3dVisualizer(BaseApp, _Visualizer):
         :param fps: Max frame rate.
         """
 
-        _Visualizer.__init__(self, database=database, database_dir=database_dir, database_name=database_name,
-                             remove_existing=remove_existing, offscreen=offscreen, fps=fps)
+        BaseVisualizer.__init__(self,
+                                database=database,
+                                database_dir=database_dir,
+                                database_name=database_name,
+                                remove_existing=remove_existing,
+                                offscreen=offscreen,
+                                fps=fps)
 
         # Define Database
         if database is not None:
@@ -51,9 +53,12 @@ class Open3dVisualizer(BaseApp, _Visualizer):
         self.__current_group: int = 0
         self.__previous_group: int = 0
         self.__group_change: bool = False
+
+        # Information about the Plotter
         self.__offscreen: bool = offscreen
         self.__fps: float = 1 / min(max(1, abs(fps)), 50)
 
+        # Synchronization with the Factory
         self.__step: Tuple[int, int] = (1, 1)
         self.__is_done = False
         self.__socket: Optional[socket] = None
@@ -85,9 +90,11 @@ class Open3dVisualizer(BaseApp, _Visualizer):
         return self.__actors[group][actor_name]
 
     def init_visualizer(self,
-                        nb_clients: int):
+                        nb_clients: int) -> None:
         """
         Initialize the Visualizer: create all Actors and render them in a Plotter.
+
+        :param nb_clients: Number of Factories to connect to.
         """
 
         # 1. Connect to the Factory for synchronization
@@ -158,7 +165,7 @@ class Open3dVisualizer(BaseApp, _Visualizer):
 
             # 5.1. Init Visualizer instance
             self._create_settings(len(self.__actors))
-            self._window.set_on_close(self.__exit)
+            self._window.set_on_close(self._exit)
 
             # 5.2 Add all Text
             for actor in self.additional_labels.values():
@@ -178,7 +185,7 @@ class Open3dVisualizer(BaseApp, _Visualizer):
             Thread(target=self.__update_thread).start()
             o3d.visualization.gui.Application.instance.run()
 
-    def __update_thread(self):
+    def __update_thread(self) -> None:
 
         # 1. The Visualizer is ready, synchronize with the Factory
         for client in self.__clients:
@@ -187,10 +194,11 @@ class Open3dVisualizer(BaseApp, _Visualizer):
         # 2. Render at each Factory.render() call
         while not self.__is_done:
             for i, client in enumerate(self.__clients):
+                # Get the message from the Factory
                 msg = client.recv(4)
                 # Exit command
                 if msg == b'exit':
-                    self.__exit()
+                    self._exit()
                 # Step command
                 else:
                     self.__step = (unpack('i', msg)[0], i)
@@ -198,6 +206,7 @@ class Open3dVisualizer(BaseApp, _Visualizer):
                         process_time = time()
                         o3d.visualization.gui.Application.instance.post_to_main_thread(self._window,
                                                                                        self.__update_instances)
+                        # Respect frame rate
                         dt = max(0., self.__fps - (time() - process_time))
                         sleep(dt)
 
@@ -205,9 +214,9 @@ class Open3dVisualizer(BaseApp, _Visualizer):
         if not self.__offscreen:
             o3d.visualization.gui.Application.instance.quit()
 
-    def __update_instances(self):
+    def __update_instances(self) -> None:
 
-        step, idx = copy(self.__step)
+        step, idx_actory = copy(self.__step)
 
         # 1. If the group ID changed, change the visibility of Actors
         if self.__group_change:
@@ -230,7 +239,7 @@ class Open3dVisualizer(BaseApp, _Visualizer):
         # 2. Update all the Actors
         for group_id in self.__actors.keys():
             for table_name in self.__actors[group_id].keys():
-                if f'_{idx}_' in table_name:
+                if f'_{idx_actory}_' in table_name:
 
                     # 2.1. Get the current step line in the Table
                     object_data = self.__database.get_line(table_name=table_name,
@@ -254,20 +263,22 @@ class Open3dVisualizer(BaseApp, _Visualizer):
                                 self._scene.scene.add_geometry(actor.name, actor.instance, actor.material)
 
         # 3. Done
-        self.__clients[idx].send(b'done')
+        self.__clients[idx_actory].send(b'done')
 
-    def __exit(self):
+    def _exit(self) -> None:
 
+        # Tell the Plotter to stop
         self.__is_done = True
+
+        # Close the socket
         if self.__socket is not None:
             self.__socket.close()
             self.__socket = None
 
-    def _change_group(self, index):
+    def _change_group(self,
+                      index: int) -> None:
+
         if index != self.__current_group:
             self.__previous_group = self.__current_group
             self.__current_group = index
             self.__group_change = True
-
-
-

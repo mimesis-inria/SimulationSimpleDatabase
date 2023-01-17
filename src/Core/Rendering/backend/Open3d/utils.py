@@ -22,7 +22,7 @@ def get_rotation_matrix(vec: ndarray) -> ndarray:
     return R
 
 
-def get_cross_product(vec):
+def get_cross_product(vec: ndarray):
 
     return array([[0.,      -vec[2], vec[1]],
                   [vec[2],  0,       -vec[0]],

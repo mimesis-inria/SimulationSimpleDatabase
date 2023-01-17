@@ -1,9 +1,9 @@
-from typing import Dict, Optional, Any, Tuple, Union
+from typing import Optional, Any, Tuple
 
 from SSD.Core.Storage.Database import Database
 
 
-class _Visualizer:
+class BaseVisualizer:
 
     def __init__(self,
                  database: Optional[Database] = None,
@@ -17,13 +17,17 @@ class _Visualizer:
             raise ValueError("Both 'database' and 'database_name' are not defined.")
 
     def get_database(self) -> Database:
+
         raise NotImplementedError
 
     def get_database_path(self) -> Tuple[str]:
+
         raise NotImplementedError
 
     def get_actor(self, actor_name: str) -> Any:
+
         raise NotImplementedError
 
     def init_visualizer(self, nb_clients: int) -> None:
+
         raise NotImplementedError

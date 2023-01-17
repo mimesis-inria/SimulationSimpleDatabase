@@ -5,7 +5,7 @@ from struct import pack
 
 from SSD.Core.Storage.Database import Database
 from SSD.Core.Rendering.Visualizer import Visualizer
-from SSD.Core.Rendering._ressources.DataTables import DataTables
+from SSD.Core.Rendering.backend.DataTables import DataTables
 
 
 class UserAPI:
@@ -18,7 +18,7 @@ class UserAPI:
                  remove_existing: bool = False,
                  idx_instance: int = 0):
         """
-        The UserAPI is used to easily create and update visual objects in the Visualizer.
+        The UserAPI is a Factory used to easily create and update visual objects in the Visualizer.
 
         :param backend: The name of the Visualizer to use (either 'vedo' or 'open3d').
         :param database: Database to connect to.
@@ -48,7 +48,7 @@ class UserAPI:
         self.__idx: int = idx_instance
         self.__step: int = 1
 
-        # Connect the Factory to the Visualizer
+        # Synchronization between the Factory and the Visualizer
         self.__update: Dict[int, bool] = {}
         self.__socket: Optional[socket] = None
 
@@ -66,7 +66,46 @@ class UserAPI:
 
         return self.__database.get_path()
 
-    def render(self):
+    def launch_visualizer(self,
+                          offscreen: bool = False,
+                          fps: int = 20) -> None:
+        """
+        Launch the Visualizer.
+
+        :param offscreen: If True, the visualization is done offscreen.
+        :param fps: Max frame rate.
+        """
+
+        # Launch the Visualizer
+        database_path = self.get_database_path()
+        Visualizer.launch(backend=self.__backend,
+                          database_dir=database_path[0],
+                          database_name=database_path[1],
+                          offscreen=offscreen,
+                          fps=fps)
+        # Connect the Factory to the Visualizer
+        self.connect_visualizer()
+
+    def connect_visualizer(self):
+        """
+        Connect the Factory to an existing Visualizer.
+        """
+
+        # Connect the Factory to the Visualizer
+        self.__socket = socket(AF_INET, SOCK_STREAM)
+        self.__socket.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
+        # Connection attempts while the server is not running on the Visualizer side
+        connected = False
+        while not connected:
+            try:
+                self.__socket.connect(('localhost', 20000))
+                connected = True
+            except ConnectionRefusedError:
+                pass
+        # Server is ready
+        self.__socket.recv(4)
+
+    def render(self) -> None:
         """
         Render the current state of visual objects.
         """
@@ -77,12 +116,12 @@ class UserAPI:
                 self.__tables[i].send_data(data={}, update=False)
             self.__update[i] = False
 
-        # Send
+        # Send the index of the step to render
         self.__step += 1
         try:
             self.__socket.send(bytearray(pack('i', self.__step)))
+            # Server is ready
             self.__socket.recv(4)
-
         except ConnectionResetError:
             quit(print('Rendering window closed, shutting down.'))
         except BrokenPipeError:
@@ -96,29 +135,9 @@ class UserAPI:
         self.__socket.send(b'exit')
         self.__socket.close()
 
-    def launch_visualizer(self,
-                          offscreen: bool = False,
-                          fps: int = 20):
-        database_path = self.get_database_path()
-        Visualizer.launch(backend=self.__backend,
-                          database_dir=database_path[0],
-                          database_name=database_path[1],
-                          offscreen=offscreen,
-                          fps=fps)
-        self.connect_visualizer()
-
-    def connect_visualizer(self):
-
-        self.__socket = socket(AF_INET, SOCK_STREAM)
-        self.__socket.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
-        connected = False
-        while not connected:
-            try:
-                self.__socket.connect(('localhost', 20000))
-                connected = True
-            except ConnectionRefusedError:
-                pass
-        self.__socket.recv(4)
+    # ###########################
+    # OBJECTS CREATION & UPDATE #
+    #############################
 
     def __add_object(self,
                      object_type: str,
@@ -168,6 +187,7 @@ class UserAPI:
     ########
     # MESH #
     ########
+
     def add_mesh(self,
                  positions: ndarray,
                  cells: ndarray,
@@ -177,7 +197,6 @@ class UserAPI:
                  colormap: str = 'jet',
                  scalar_field: ndarray = array([]),
                  wireframe: bool = False,
-                 compute_normals: bool = True,
                  line_width: float = -1.) -> int:
         """
         Add a new Mesh to the Factory.
@@ -190,7 +209,6 @@ class UserAPI:
         :param colormap: Colormap scheme name.
         :param scalar_field: Scalar values used to color the Mesh regarding the colormap.
         :param wireframe: If True, the Mesh will be rendered as wireframe.
-        :param compute_normals: If True, the normals of the Mesh are pre-computed.
         :param line_width: Width of the edges of the faces.
         """
 

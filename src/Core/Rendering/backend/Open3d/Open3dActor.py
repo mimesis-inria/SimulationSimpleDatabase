@@ -3,29 +3,33 @@ import open3d as o3d
 import open3d.visualization.gui as gui
 from vedo import Marker, Glyph
 from vedo.colors import get_color
-from numpy import array, ndarray, asarray, sort, concatenate, unique, tile
+from numpy import array, ndarray, asarray, concatenate, tile
 from numpy.linalg import norm
 from matplotlib.colors import Normalize
 from matplotlib.pyplot import get_cmap
 
-from SSD.Core.Rendering._ressources._Actor import _Actor
-from SSD.Core.Rendering._ressources.Open3dUtils import get_rotation_matrix
+from SSD.Core.Rendering.backend.BaseActor import BaseActor
+from SSD.Core.Rendering.backend.Open3d.utils import get_rotation_matrix
 
 
-class Open3dActor(_Actor):
+class Open3dActor(BaseActor):
 
     def __init__(self,
                  actor_type: str,
                  actor_name: str,
                  actor_group: int):
         """
+        The Open3dActor is used to create and update Open3D object instances.
 
-        :param actor_type:
-        :param actor_name:
-        :param actor_group:
+        :param actor_type: Type of the Actor.
+        :param actor_name: Name of the Actor.
+        :param actor_group: Index of the group of the Actor.
         """
 
-        _Actor.__init__(self, actor_type=actor_type, actor_name=actor_name, actor_group=actor_group)
+        BaseActor.__init__(self,
+                           actor_type=actor_type,
+                           actor_name=actor_name,
+                           actor_group=actor_group)
 
         # Actor information
         self.instance: Optional[o3d.geometry.Geometry3D] = None
@@ -44,13 +48,20 @@ class Open3dActor(_Actor):
 
     def apply_cmap(self,
                    data: Dict[str, Any]) -> None:
+        """
+        General colormap apply method.
+
+        :param data: Colormap data.
+        """
 
         scalar_field = data['scalar_field']
         if len(scalar_field) > 0:
             # Normalize scalar field
             cmap_norm = Normalize(vmin=min(scalar_field[0]),
                                   vmax=max(scalar_field[0]))
+            # Get the colormap
             cmap = get_cmap(data['colormap'])
+            # Create color vector
             vertex_colors = cmap(cmap_norm(scalar_field[0]))[:, 0:3]
             # Apply colors
             self._cmap_object(vertex_colors)
@@ -60,7 +71,7 @@ class Open3dActor(_Actor):
     ########
 
     def __create_mesh(self,
-                      data: Dict[str, Any]):
+                      data: Dict[str, Any]) -> None:
 
         # Create the material
         alpha = 1 if not 0. <= data['alpha'] <= 1. else data['alpha']
@@ -82,7 +93,7 @@ class Open3dActor(_Actor):
 
     def __update_mesh(self,
                       data: Dict[str, Any],
-                      updated_fields: List[str]):
+                      updated_fields: List[str]) -> None:
 
         # Check wireframe change
         if 'wireframe' in updated_fields:
@@ -107,10 +118,9 @@ class Open3dActor(_Actor):
                 self.instance.compute_vertex_normals()
 
     def __cmap_mesh(self,
-                    vertex_colors: ndarray):
+                    vertex_colors: ndarray) -> None:
 
         alpha = 1 if not 0. <= self._object_data['alpha'] <= 1. else self._object_data['alpha']
-
         if self._object_data['wireframe']:
             line_color = vertex_colors[asarray(self.instance.lines)[:, 0]]
             self.instance.colors = o3d.utility.Vector3dVector(line_color)
@@ -124,7 +134,7 @@ class Open3dActor(_Actor):
     ###############
 
     def __create_points(self,
-                        data: Dict[str, Any]):
+                        data: Dict[str, Any]) -> None:
 
         # Create the material
         alpha = 1 if not 0. <= data['alpha'] <= 1. else data['alpha']
@@ -138,7 +148,7 @@ class Open3dActor(_Actor):
 
     def __update_points(self,
                         data: Dict[str, Any],
-                        updated_fields: List[str]):
+                        updated_fields: List[str]) -> None:
 
         # Update material
         if 'alpha' in updated_fields or 'c' in updated_fields:
@@ -153,7 +163,7 @@ class Open3dActor(_Actor):
             self.instance.points = o3d.utility.Vector3dVector(data['positions'])
 
     def __cmap_points(self,
-                      vertex_colors: ndarray):
+                      vertex_colors: ndarray) -> None:
 
         alpha = 1 if not 0. <= self._object_data['alpha'] <= 1. else self._object_data['alpha']
         self.instance.colors = o3d.utility.Vector3dVector(vertex_colors)
@@ -164,7 +174,7 @@ class Open3dActor(_Actor):
     ##########
 
     def __create_arrows(self,
-                        data: Dict[str, Any]):
+                        data: Dict[str, Any]) -> None:
 
         # Create the material
         alpha = 1 if not 0. <= data['alpha'] <= 1. else data['alpha']
@@ -191,7 +201,7 @@ class Open3dActor(_Actor):
 
     def __update_arrows(self,
                         data: Dict[str, Any],
-                        updated_fields: List[str]):
+                        updated_fields: List[str]) -> None:
 
         # Update vectors
         if 'positions' in updated_fields or 'vectors' in updated_fields:
@@ -205,7 +215,7 @@ class Open3dActor(_Actor):
             self.material.base_color = array(color + [alpha])
 
     def __cmap_arrows(self,
-                      vertex_colors: ndarray):
+                      vertex_colors: ndarray) -> None:
 
         nb_arrow = vertex_colors.shape[0]
         nb_dof_arrow = asarray(self.instance.vertices).shape[0] // nb_arrow
@@ -219,7 +229,7 @@ class Open3dActor(_Actor):
     ###########
 
     def __create_markers(self,
-                         data: Dict[str, Any]):
+                         data: Dict[str, Any]) -> None:
 
         # Create the material
         alpha = 1 if not 0. <= data['alpha'] <= 1. else data['alpha']
@@ -255,14 +265,14 @@ class Open3dActor(_Actor):
 
     def __update_markers(self,
                          data: Dict[str, Any],
-                         updated_fields: List[str]):
+                         updated_fields: List[str]) -> None:
 
         if len(updated_fields) > 0 or 'positions' in data['normal_to']._updated_fields:
             self.instance = None
             self._create_object(data)
 
     def __cmap_markers(self,
-                       vertex_colors: ndarray):
+                       vertex_colors: ndarray) -> None:
 
         nb_marker = vertex_colors.shape[0]
         nb_dof_marker = asarray(self.instance.vertices).shape[0] // nb_marker
@@ -276,7 +286,7 @@ class Open3dActor(_Actor):
     ########
 
     def __create_text(self,
-                      data: Dict[str, Any]):
+                      data: Dict[str, Any]) -> None:
 
         # Create font style
         # if data['bold'] and data['italic']:
@@ -299,7 +309,7 @@ class Open3dActor(_Actor):
 
     def __update_text(self,
                       data: Dict[str, Any],
-                      updated_fields: List[str]):
+                      updated_fields: List[str]) -> None:
 
         # Update content
         if 'content' in updated_fields:
@@ -328,5 +338,5 @@ class Open3dActor(_Actor):
             self.instance.frame = gui.Rect(x, y, 2 * size.width, 2 * size.height)
 
     def __cmap_text(self,
-                    vertex_colors: ndarray):
+                    vertex_colors: ndarray) -> None:
         pass

@@ -40,9 +40,11 @@ class DataTables:
         :param update: If False, create a new line in the Table.
         """
 
+        # Update the current line of the Table
         if update:
             self.database.update(table_name=self.table_name,
                                  data=self.__format_data(data=data))
+        # Create a new line in the Table
         else:
             self.database.add_data(table_name=self.table_name,
                                    data=self.__format_data(data=data))
@@ -53,7 +55,6 @@ class DataTables:
                                    fields=[('positions', ndarray),
                                            ('cells', ndarray),
                                            ('wireframe', bool),
-                                           ('compute_normals', bool),
                                            ('line_width', float),
                                            ('c', str),
                                            ('alpha', float),
