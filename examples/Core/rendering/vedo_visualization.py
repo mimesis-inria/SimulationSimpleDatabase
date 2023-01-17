@@ -7,7 +7,7 @@ from SSD.Core.Rendering.UserAPI import UserAPI
 
 # 1. Create the visualization API
 visu = UserAPI(backend='vedo',
-               database_name='example',
+               database_name='vedo_example',
                remove_existing=True)
 
 # 2. Create the object to render
@@ -85,7 +85,9 @@ for step in range(100):
                      content=f'{step}')
     if step == 50:
         visu.update_text(object_id=4,
-                         c='grey')
+                         c='grey',
+                         bold=False,
+                         italic=True)
 
     # 5.6. Call a rendering step
     visu.render()

@@ -426,13 +426,17 @@ class UserAPI:
     def update_text(self,
                     object_id: int,
                     content: Optional[str] = None,
-                    c: Optional[str] = None):
+                    c: Optional[str] = None,
+                    bold: Optional[bool] = None,
+                    italic: Optional[bool] = None):
         """
         Update existing Text in the Factory.
 
         :param object_id: Index of the object (follows the global order of creation).
         :param content: Content of the Text.
         :param c: Text color.
+        :param bold: Apply bold style to the Text.
+        :param italic: Apply italic style to the Text.
         """
 
         object_id = self.__check_id(object_id, 'Text')

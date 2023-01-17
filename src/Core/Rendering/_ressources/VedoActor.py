@@ -1,6 +1,9 @@
 from typing import Any, Optional, Dict, List
 from numpy import array, tile
 from vedo import Mesh, Points, Arrows, Marker, Glyph, Text2D
+from numpy.linalg import norm
+from matplotlib.colors import Normalize
+from matplotlib.pyplot import get_cmap
 
 from SSD.Core.Rendering._ressources._Actor import _Actor
 
@@ -35,8 +38,14 @@ class VedoActor(_Actor):
     def apply_cmap(self,
                    data: Dict[str, Any]) -> None:
 
-        self.instance.cmap(cname=data['colormap'],
-                           input_array=data['scalar_field'][0])
+        if self.type in ['Mesh', 'Points']:
+            self.instance.cmap(cname=data['colormap'],
+                               input_array=data['scalar_field'][0])
+        elif self.type in ['Arrows', 'Markers']:
+            full_data = self._object_data.copy()
+            for key, value in data.items():
+                full_data[key] = value
+            self._create_object(full_data)
 
     ########
     # MESH #
@@ -96,10 +105,19 @@ class VedoActor(_Actor):
                         data: Dict[str, Any]):
 
         # Create instance
+        if 'scalar_field' in data:
+            scalar_field = data['scalar_field']
+            cmap_norm = Normalize(vmin=min(scalar_field[0]),
+                                  vmax=max(scalar_field[0]))
+            cmap = get_cmap(data['colormap'])
+            applied_colors = cmap(cmap_norm(scalar_field[0]))[:, 0:3]
+        else:
+            applied_colors = data['c']
+
         self.instance = Arrows(start_pts=data['positions'],
                                end_pts=data['positions'] + data['vectors'],
                                res=data['res'],
-                               c=data['c'],
+                               c=applied_colors,
                                alpha=data['alpha'])
 
     def __update_arrows(self,
@@ -127,10 +145,19 @@ class VedoActor(_Actor):
         marker = Marker(symbol=data['symbol'],
                         s=data['size'],
                         filled=data['filled']).orientation(newaxis=[1, 0, 0], rotation=90, rad=False)
+        if 'scalar_field' in data:
+            scalar_field = data['scalar_field']
+            cmap_norm = Normalize(vmin=min(scalar_field[0]),
+                                  vmax=max(scalar_field[0]))
+            cmap = get_cmap(data['colormap'])
+            applied_colors = cmap(cmap_norm(scalar_field[0]))[:, 0:3]
+        else:
+            applied_colors = data['c']
+
         self.instance = Glyph(mesh=positions,
                               glyph=marker,
                               orientation_array=orientations,
-                              c=data['c'],
+                              c=applied_colors,
                               alpha=data['alpha'])
 
     def __update_markers(self,
@@ -160,6 +187,7 @@ class VedoActor(_Actor):
                                bold=data['bold'],
                                italic=data['italic'],
                                c=data['c'])
+        self.instance.bold()
 
     def __update_text(self,
                       data: Dict[str, Any],
@@ -170,3 +198,5 @@ class VedoActor(_Actor):
             self.instance.text(data['content'])
         if 'c' in updated_fields:
             self.instance.c(data['c'])
+        if 'bold' in updated_fields or 'italic' in updated_fields:
+            self.instance.bold(data['bold']).italic(data['italic'])
