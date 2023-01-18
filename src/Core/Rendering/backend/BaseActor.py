@@ -61,6 +61,7 @@ class BaseActor:
 
         # Sort data
         cmap_data = {'scalar_field': data.pop('scalar_field')} if 'scalar_field' in data else {}
+        cmap_data = cmap_data if 'scalar_field' in cmap_data and len(cmap_data['scalar_field']) > 0 else {}
 
         # Register Actor data
         self._updated_fields = []

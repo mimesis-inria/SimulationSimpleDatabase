@@ -166,7 +166,7 @@ class VedoVisualizer(BaseVisualizer):
                                   N=len(actors),
                                   sharecam=True,
                                   interactive=False,
-                                  title='SofaVedo',
+                                  title='SSD',
                                   axes=4)
 
             # 5.3. Add a timer callback and set the Plotter in interactive mode

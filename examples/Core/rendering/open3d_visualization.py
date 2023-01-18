@@ -5,8 +5,8 @@ from numpy.random import random
 from SSD.Core.Rendering.UserAPI import UserAPI
 
 # 1. Create the visualization API
-visu = UserAPI(backend='vedo',
-               database_name='vedo_example',
+visu = UserAPI(backend='open3d',
+               database_name='open3d_example',
                remove_existing=True)
 
 # 2. Create the object to render
