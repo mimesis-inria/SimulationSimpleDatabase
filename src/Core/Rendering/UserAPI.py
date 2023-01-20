@@ -99,6 +99,7 @@ class UserAPI:
         while not connected:
             try:
                 self.__socket.connect(('localhost', 20000))
+                self.__socket.send(bytearray(pack('i', self.__idx)))
                 connected = True
             except ConnectionRefusedError:
                 pass
@@ -117,14 +118,18 @@ class UserAPI:
             self.__update[i] = False
 
         # Send the index of the step to render
-        self.__step += 1
-        try:
-            self.__socket.send(bytearray(pack('i', self.__step)))
-            # Server is ready
-            self.__socket.recv(4)
-        except ConnectionResetError:
-            quit(print('Rendering window closed, shutting down.'))
-        except BrokenPipeError:
+        if self.__socket is not None:
+            self.__step += 1
+            try:
+                self.__socket.send(bytearray(pack('i', self.__step)))
+                if self.__socket.recv(4) == b'exit':
+                    self.__socket.close()
+                    self.__socket = None
+            except ConnectionResetError:
+                quit(print('Rendering window closed, shutting down.'))
+            except BrokenPipeError:
+                quit(print('Rendering window closed, shutting down.'))
+        else:
             quit(print('Rendering window closed, shutting down.'))
 
     def close(self):
@@ -132,8 +137,10 @@ class UserAPI:
         Close the Visualization.
         """
 
-        self.__socket.send(b'exit')
-        self.__socket.close()
+        if self.__socket is not None:
+            self.__socket.send(b'exit')
+            self.__socket.close()
+            self.__socket = None
 
     # ###########################
     # OBJECTS CREATION & UPDATE #

@@ -5,6 +5,7 @@ from copy import copy
 from time import time, sleep
 from socket import socket, AF_INET, SOCK_STREAM, SOL_SOCKET, SO_REUSEADDR
 import open3d as o3d
+from threading import Thread
 
 from SSD.Core.Storage.Database import Database
 from SSD.Core.Rendering.backend.BaseVisualizer import BaseVisualizer
@@ -60,9 +61,10 @@ class Open3dVisualizer(BaseApp, BaseVisualizer):
 
         # Synchronization with the Factory
         self.__step: Tuple[int, int] = (1, 1)
-        self.__is_done = False
+        self.__is_done: List[bool] = []
         self.__socket: Optional[socket] = None
         self.__clients: List[socket] = []
+        self.__requests: List[Tuple[int, int]] = []
 
     def get_database(self) -> Database:
         """
@@ -102,9 +104,14 @@ class Open3dVisualizer(BaseApp, BaseVisualizer):
         self.__socket.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
         self.__socket.bind(('localhost', 20000))
         self.__socket.listen()
+        clients = {}
         for _ in range(nb_clients):
             client, _ = self.__socket.accept()
-            self.__clients.append(client)
+            idx_client: int = unpack('i', client.recv(4))[0]
+            clients[idx_client] = client
+        for idx_client in sorted(clients.keys()):
+            self.__clients.append(clients[idx_client])
+            self.__is_done.append(False)
 
         # 2. Sort the Tables names per factory and per object indices
         table_names = self.__database.get_tables()
@@ -182,33 +189,40 @@ class Open3dVisualizer(BaseApp, BaseVisualizer):
             self._scene.setup_camera(60, bounds, bounds.get_center())
 
             # 5.4. Launch mainloop
+            for i, client in enumerate(self.__clients):
+                Thread(target=self.__listen_client, args=(i,)).start()
+                client.send(b'done')
             Thread(target=self.__update_thread).start()
             o3d.visualization.gui.Application.instance.run()
 
+    def __listen_client(self, idx_client: int):
+
+        while not self.__is_done[idx_client]:
+            msg = self.__clients[idx_client].recv(4)
+            if len(msg) == 0:
+                pass
+            elif msg == b'exit':
+                self.__is_done[idx_client] = True
+                self._exit(force_quit=False)
+            else:
+                step = unpack('i', msg)[0]
+                self.__requests.append((idx_client, step))
+
     def __update_thread(self) -> None:
 
-        # 1. The Visualizer is ready, synchronize with the Factory
-        for client in self.__clients:
-            client.send(b'done')
-
         # 2. Render at each Factory.render() call
-        while not self.__is_done:
-            for i, client in enumerate(self.__clients):
-                # Get the message from the Factory
-                msg = client.recv(4)
-                # Exit command
-                if msg == b'exit':
-                    self._exit()
-                # Step command
-                else:
-                    self.__step = (unpack('i', msg)[0], i)
-                    if not self.__offscreen:
-                        process_time = time()
-                        o3d.visualization.gui.Application.instance.post_to_main_thread(self._window,
-                                                                                       self.__update_instances)
-                        # Respect frame rate
-                        dt = max(0., self.__fps - (time() - process_time))
-                        sleep(dt)
+        while False in self.__is_done:
+
+            if len(self.__requests) > 0:
+                self.__step = self.__requests.pop(0)
+
+                if not self.__offscreen:
+                    process_time = time()
+                    o3d.visualization.gui.Application.instance.post_to_main_thread(self._window,
+                                                                                   self.__update_instances)
+                    # Respect frame rate
+                    dt = max(0., self.__fps - (time() - process_time))
+                    sleep(dt)
 
         # 3. Close the Visualizer
         if not self.__offscreen:
@@ -216,7 +230,7 @@ class Open3dVisualizer(BaseApp, BaseVisualizer):
 
     def __update_instances(self) -> None:
 
-        step, idx_actory = copy(self.__step)
+        idx_factory, step = copy(self.__step)
 
         # 1. If the group ID changed, change the visibility of Actors
         if self.__group_change:
@@ -239,7 +253,7 @@ class Open3dVisualizer(BaseApp, BaseVisualizer):
         # 2. Update all the Actors
         for group_id in self.__actors.keys():
             for table_name in self.__actors[group_id].keys():
-                if f'_{idx_actory}_' in table_name:
+                if f'_{idx_factory}_' in table_name:
 
                     # 2.1. Get the current step line in the Table
                     object_data = self.__database.get_line(table_name=table_name,
@@ -263,17 +277,22 @@ class Open3dVisualizer(BaseApp, BaseVisualizer):
                                 self._scene.scene.add_geometry(actor.name, actor.instance, actor.material)
 
         # 3. Done
-        self.__clients[idx_actory].send(b'done')
+        self.__clients[idx_factory].send(b'done')
 
-    def _exit(self) -> None:
+    def _exit(self,
+              force_quit: bool = True) -> None:
 
-        # Tell the Plotter to stop
-        self.__is_done = True
+        if force_quit:
+            for i, client in enumerate(self.__clients):
+                client.send(b'exit')
+                self.__is_done[i] = True
 
-        # Close the socket
-        if self.__socket is not None:
-            self.__socket.close()
-            self.__socket = None
+        if False not in self.__is_done:
+
+            # Close the socket
+            if self.__socket is not None:
+                self.__socket.close()
+                self.__socket = None
 
     def _change_group(self,
                       index: int) -> None:

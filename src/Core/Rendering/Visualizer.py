@@ -32,6 +32,7 @@ class Visualizer:
         :param remove_existing: If True, overwrite a Database with the same path.
         :param offscreen: If True, visual data will be saved but not rendered.
         :param fps: Max frame rate.
+        :param nb_clients: Number of Factories to connect to.
         """
 
         # Check backend
@@ -66,7 +67,7 @@ class Visualizer:
 
         # Check that the Visualizer was launched with Visualizer.launch() method
         if getmodule(stack()[-1][0]).__file__ != __file__:
-            quit(print("Warning: The Open3dVisualizer should be launched with the 'launch' method."
+            quit(print("Warning: The Visualizer should be launched with the 'launch' method. "
                        "Check usage in documentation."))
         self.__visualizer.init_visualizer(nb_clients)
 
@@ -75,7 +76,8 @@ class Visualizer:
                database_dir: str = '',
                database_name: str = '',
                offscreen: bool = False,
-               fps: int = 20) -> None:
+               fps: int = 20,
+               nb_clients: int = 1) -> None:
         """
         Launch the Open3dVisualizer in a new process to keep it interactive.
 
@@ -84,19 +86,23 @@ class Visualizer:
         :param database_name: Name of the Database (used if 'database' is not defined).
         :param offscreen: If True, visual data will be saved but not rendered.
         :param fps: Max frame rate.
+        :param nb_clients: Number of Factories to connect to.
         """
 
         # Launch a new process
-        Thread(target=Visualizer.__launch, args=(backend, database_dir, database_name, offscreen, fps,)).start()
+        Thread(target=Visualizer.__launch,
+               args=(backend, database_dir, database_name, offscreen, fps, nb_clients)).start()
 
     @staticmethod
     def __launch(backend: str,
                  database_dir: str,
                  database_name: str,
                  offscreen: bool,
-                 fps: int) -> None:
+                 fps: int,
+                 nb_clients: int) -> None:
 
-        run([executable, __file__, backend, f'{database_dir}%%{database_name}', str(offscreen), str(fps)])
+        run([executable, __file__,
+             backend, f'{database_dir}%%{database_name}', str(offscreen), str(fps), str(nb_clients)])
 
 
 def __launch_subprocess():
@@ -109,7 +115,8 @@ def __launch_subprocess():
     Visualizer(backend=argv[1],
                database=db,
                offscreen=argv[3] == 'True',
-               fps=int(argv[4]))
+               fps=int(argv[4]),
+               nb_clients=int(argv[5]))
 
 
 if __name__ == '__main__':

@@ -2,6 +2,7 @@ from typing import Dict, Optional, Any, Tuple, List
 from struct import unpack
 from socket import socket, AF_INET, SOCK_STREAM, SOL_SOCKET, SO_REUSEADDR
 from vedo import show, Plotter
+from threading import Thread
 
 from SSD.Core.Storage.Database import Database
 from SSD.Core.Rendering.backend.BaseVisualizer import BaseVisualizer
@@ -55,6 +56,8 @@ class VedoVisualizer(BaseVisualizer):
         # Synchronization with the Factory
         self.__socket: Optional[socket] = None
         self.__clients: List[socket] = []
+        self.__is_done: List[bool] = []
+        self.__requests: List[Tuple[int, int]] = []
 
     def get_database(self) -> Database:
         """
@@ -94,9 +97,14 @@ class VedoVisualizer(BaseVisualizer):
         self.__socket.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
         self.__socket.bind(('localhost', 20000))
         self.__socket.listen()
+        clients = {}
         for _ in range(nb_clients):
             client, _ = self.__socket.accept()
-            self.__clients.append(client)
+            idx_client: int = unpack('i', client.recv(4))[0]
+            clients[idx_client] = client
+        for idx_client in sorted(clients.keys()):
+            self.__clients.append(clients[idx_client])
+            self.__is_done.append(False)
 
         # 2. Sort the Table names per factory and per object indices
         table_names = self.__database.get_tables()
@@ -171,28 +179,35 @@ class VedoVisualizer(BaseVisualizer):
 
             # 5.3. Add a timer callback and set the Plotter in interactive mode
             self.__plotter.add_callback('timer', self.__update_thread)
-            self.__plotter.timer_callback('create', dt=int(self.__fps * 1e3))
-            for client in self.__clients:
+            self.__plotter.timer_callback('create', dt=int(self.__fps * 1e3) // nb_clients)
+            for i, client in enumerate(self.__clients):
                 client.send(b'done')
+                Thread(target=self.__listen_client, args=(i,)).start()
             self.__plotter.interactive()
 
         # 6. The window was closed
-        self.__exit()
+        self.__exit(force_quit=True)
+
+    def __listen_client(self, idx_client: int):
+
+        while not self.__is_done[idx_client]:
+            msg = self.__clients[idx_client].recv(4)
+            if len(msg) == 0:
+                pass
+            elif msg == b'exit':
+                self.__is_done[idx_client] = True
+                self.__exit()
+            else:
+                step = unpack('i', msg)[0]
+                self.__requests.append((idx_client, step))
 
     def __update_thread(self, _) -> None:
 
-        for i, client in enumerate(self.__clients):
-            # Get the message from the Factory
-            msg = client.recv(4)
-            # Exit command
-            if msg == b'exit':
-                self.__exit()
-            # Step command
-            else:
-                step = unpack('i', msg)[0]
-                if not self.__offscreen:
-                    self.__update_instances(step=step, idx_factory=i)
-                client.send(b'done')
+        if len(self.__requests) > 0:
+            i, step = self.__requests.pop(0)
+            if not self.__offscreen:
+                self.__update_instances(step=step, idx_factory=i)
+            self.__clients[i].send(b'done')
 
     def __update_instances(self,
                            step: int,
@@ -228,18 +243,27 @@ class VedoVisualizer(BaseVisualizer):
         # Render the new set of Actors
         self.__plotter.render()
 
-    def __exit(self) -> None:
+    def __exit(self,
+               force_quit: bool = False) -> None:
 
-        # Close the socket
-        if self.__socket is not None:
-            self.__socket.close()
-            self.__socket = None
+        if force_quit:
+            for i, client in enumerate(self.__clients):
+                client.send(b'exit')
+                self.__is_done[i] = True
 
-        # Close the Plotter
-        if self.__plotter is not None:
-            self.__plotter.break_interaction()
-            self.__plotter.close()
-            self.__plotter = None
+        if False not in self.__is_done:
+
+            # Close the socket
+            if self.__socket is not None:
+                self.__socket.close()
+                self.__socket = None
+
+            # Close the Plotter
+            if self.__plotter is not None:
+                self.__plotter.timer_callback('destroy', timerId=2)
+                self.__plotter.break_interaction()
+                self.__plotter.close()
+                self.__plotter = None
 
 
 def _do_remove(actor: VedoActor,

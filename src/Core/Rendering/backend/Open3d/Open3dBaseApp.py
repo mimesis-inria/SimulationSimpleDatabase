@@ -310,5 +310,5 @@ class BaseApp:
     def __on_menu_quit(self):
         self._exit()
 
-    def _exit(self):
+    def _exit(self, force_quit: bool = True):
         raise NotImplementedError
