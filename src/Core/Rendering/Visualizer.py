@@ -46,30 +46,35 @@ class Visualizer:
                                                                        remove_existing=remove_existing,
                                                                        offscreen=offscreen,
                                                                        fps=fps)
-        self.__init_visualizer(nb_clients=nb_clients)
+        self.__start_visualizer(nb_clients=nb_clients)
 
     def get_database(self) -> Database:
         """
         Get the Database instance.
         """
 
-        return self.__visualizer.get_database()
+        return self.__visualizer.database
 
     def get_database_path(self) -> Tuple[str]:
         """
         Get the path to the Database.
         """
 
-        return self.__visualizer.get_database_path()
+        return self.__visualizer.database_path
 
-    def __init_visualizer(self,
-                          nb_clients: int) -> None:
+    def __start_visualizer(self,
+                           nb_clients: int) -> None:
+        """
+        Start the Visualizer: create all Actors and render them.
+
+        :param nb_clients: Number of Factories to connect to.
+        """
 
         # Check that the Visualizer was launched with Visualizer.launch() method
         if getmodule(stack()[-1][0]).__file__ != __file__:
             quit(print("Warning: The Visualizer should be launched with the 'launch' method. "
                        "Check usage in documentation."))
-        self.__visualizer.init_visualizer(nb_clients)
+        self.__visualizer.start_visualizer(nb_clients)
 
     @staticmethod
     def launch(backend: str = 'vedo',

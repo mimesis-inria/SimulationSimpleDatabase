@@ -39,5 +39,7 @@ setup(name='SimulationSimpleDatabase',
       package_data={f'{PROJECT}.examples.Core.rendering': ['armadillo.obj']},
       install_requires=['numpy >= 1.23.5',
                         'peewee >= 3.15.1',
-                        'vedo >= 2022.4.1'],
+                        'vedo >= 2022.4.1',
+                        'matplotlib >= 3.6.2',
+                        'open3d >= 0.16.0'],
       entry_points={'console_scripts': ['SSD=SSD.cli:execute_cli']})

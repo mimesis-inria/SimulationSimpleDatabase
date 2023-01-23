@@ -11,7 +11,6 @@ class VedoFactory(Sofa.Core.Controller):
 
     def __init__(self,
                  root: Sofa.Core.Node,
-                 backend: str = 'vedo',
                  database: Optional[Database] = None,
                  database_dir: str = '',
                  database_name: Optional[str] = None,
@@ -37,8 +36,7 @@ class VedoFactory(Sofa.Core.Controller):
         self.root.addChild('factory')
         self.root.factory.addObject(self)
 
-        self.__factory: _UserAPI = _UserAPI(backend=backend,
-                                            database=database,
+        self.__factory: _UserAPI = _UserAPI(database=database,
                                             database_dir=database_dir,
                                             database_name=database_name,
                                             remove_existing=remove_existing,

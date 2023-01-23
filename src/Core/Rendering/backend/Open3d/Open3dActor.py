@@ -268,7 +268,7 @@ class Open3dActor(BaseActor):
                          data: Dict[str, Any],
                          updated_fields: List[str]) -> None:
 
-        if len(updated_fields) > 0 or 'positions' in data['normal_to']._updated_fields:
+        if len(updated_fields) > 0 or 'positions' in data['normal_to'].updated_fields:
             self.instance = None
             self._create_object(data)
 

@@ -242,7 +242,8 @@ class BaseApp:
 
         for actor in self.additional_labels.values():
             size = actor.instance.calc_preferred_size(layout_context, gui.Widget.Constraints())
-            actor.update(data={'gui': [size, r]})
+            actor.update_data(data={'gui': [size, r]})
+            actor.update()
 
     def __on_mouse_mode_model(self):
         self._scene.set_view_controls(gui.SceneWidget.Controls.ROTATE_CAMERA)
@@ -308,7 +309,7 @@ class BaseApp:
         gui.Application.instance.menubar.set_checked(1, self._settings_panel.visible)
 
     def __on_menu_quit(self):
-        self._exit()
+        self.exit()
 
-    def _exit(self, force_quit: bool = True):
-        raise NotImplementedError
+    def exit(self, force_quit: bool = True):
+        pass

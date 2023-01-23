@@ -28,12 +28,12 @@ class Replay:
         database = Database(database_dir=database_dir, database_name=database_name).load()
 
         # Create the Visualizer
-        self.__visualizer: BaseReplay = available[backend.lower()](database=database,
-                                                                   fps=fps)
+        self.__replay: BaseReplay = available[backend.lower()](database=database,
+                                                               fps=fps)
 
     def launch(self):
         """
         Initialize the Visualizer: create all Actors and render them in a Plotter.
         """
 
-        self.__visualizer.launch()
+        self.__replay.start_replay()

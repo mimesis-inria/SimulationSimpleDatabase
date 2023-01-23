@@ -1,7 +1,7 @@
 from vedo import Mesh
 from numpy.random import random
 from threading import Thread
-from time import sleep, time
+from time import time
 
 from SSD.Core.Storage.Database import Database
 from SSD.Core.Rendering.UserAPI import UserAPI
