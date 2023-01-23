@@ -1,7 +1,5 @@
 from SSD.Core.Storage.Database import Database
 from SSD.Core.Rendering.backend.BaseReplay import BaseReplay
-from SSD.Core.Rendering.backend.Vedo.VedoReplay import VedoReplay
-from SSD.Core.Rendering.backend.Open3d.Open3dReplay import Open3dReplay
 
 
 class Replay:
@@ -21,15 +19,22 @@ class Replay:
         """
 
         # Check backend
-        if backend.lower() not in (available := {'vedo': VedoReplay, 'open3d': Open3dReplay}):
+        if backend.lower() not in (available := ['vedo', 'open3d']):
             raise ValueError(f"The backend '{backend}' is not available. Must be in {available}")
 
         # Load the Database
         database = Database(database_dir=database_dir, database_name=database_name).load()
 
         # Create the Visualizer
-        self.__replay: BaseReplay = available[backend.lower()](database=database,
-                                                               fps=fps)
+        self.__replay: BaseReplay
+        if backend.lower() == 'vedo':
+            from SSD.Core.Rendering.backend.Vedo.VedoReplay import VedoReplay
+            self.__replay = VedoReplay(database=database,
+                                       fps=fps)
+        else:
+            from SSD.Core.Rendering.backend.Open3d.Open3dReplay import Open3dReplay
+            self.__replay = Open3dReplay(database=database,
+                                         fps=fps)
 
     def launch(self):
         """

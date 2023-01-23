@@ -3,7 +3,7 @@ from threading import Thread
 from struct import unpack
 from copy import copy
 from time import time, sleep
-import open3d as o3d
+import open3d.visualization.gui as gui
 
 from SSD.Core.Storage.Database import Database
 from SSD.Core.Rendering.backend.BaseVisualizer import BaseVisualizer
@@ -112,7 +112,7 @@ class Open3dVisualizer(BaseApp, BaseVisualizer):
                     client.send(b'done')
                 Thread(target=self.multiple_clients_thread).start()
 
-            o3d.visualization.gui.Application.instance.run()
+            gui.Application.instance.run()
 
     def single_client_thread(self):
         """
@@ -131,13 +131,13 @@ class Open3dVisualizer(BaseApp, BaseVisualizer):
                 self.__step = (0, unpack('i', msg)[0])
                 if not self.offscreen:
                     process_time = time()
-                    o3d.visualization.gui.Application.instance.post_to_main_thread(self._window,
-                                                                                   self.update_visualizer)
+                    gui.Application.instance.post_to_main_thread(self._window,
+                                                                 self.update_visualizer)
                     dt = max(0., self.fps - (time() - process_time))
                     sleep(dt)
 
         if not self.offscreen:
-            o3d.visualization.gui.Application.instance.quit()
+            gui.Application.instance.quit()
 
     def multiple_clients_thread(self) -> None:
         """
@@ -150,13 +150,13 @@ class Open3dVisualizer(BaseApp, BaseVisualizer):
                 self.__step = self.requests.pop(0)
                 if not self.offscreen:
                     process_time = time()
-                    o3d.visualization.gui.Application.instance.post_to_main_thread(self._window,
-                                                                                   self.update_visualizer)
+                    gui.Application.instance.post_to_main_thread(self._window,
+                                                                 self.update_visualizer)
                     dt = max(0., self.fps - (time() - process_time))
                     sleep(dt)
 
         if not self.offscreen:
-            o3d.visualization.gui.Application.instance.quit()
+            gui.Application.instance.quit()
 
     def update_visualizer(self) -> None:
         """

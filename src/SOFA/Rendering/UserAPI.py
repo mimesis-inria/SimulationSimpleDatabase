@@ -7,7 +7,7 @@ from SSD.Core.Rendering.UserAPI import UserAPI as _UserAPI
 from SSD.SOFA.utils import error_message
 
 
-class VedoFactory(Sofa.Core.Controller):
+class UserAPI(Sofa.Core.Controller):
 
     def __init__(self,
                  root: Sofa.Core.Node,
@@ -42,6 +42,19 @@ class VedoFactory(Sofa.Core.Controller):
                                             remove_existing=remove_existing,
                                             idx_instance=idx_instance)
         self.__updates: Dict[int, Tuple[str, Any]] = {}
+
+    def launch_visualizer(self,
+                          backend: str = 'vedo',
+                          offscreen: bool = False,
+                          fps: int = 20) -> None:
+
+        self.__factory.launch_visualizer(backend=backend,
+                                         offscreen=offscreen,
+                                         fps=fps)
+
+    def close(self):
+
+        self.__factory.close()
 
     @classmethod
     def __get_position_data(cls,

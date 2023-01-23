@@ -6,8 +6,6 @@ from inspect import stack, getmodule
 
 from SSD.Core.Storage.Database import Database
 from SSD.Core.Rendering.backend.BaseVisualizer import BaseVisualizer
-from SSD.Core.Rendering.backend.Vedo.VedoVisualizer import VedoVisualizer
-from SSD.Core.Rendering.backend.Open3d.Open3dVisualizer import Open3dVisualizer
 
 
 class Visualizer:
@@ -36,16 +34,28 @@ class Visualizer:
         """
 
         # Check backend
-        if backend.lower() not in (available := {'vedo': VedoVisualizer, 'open3d': Open3dVisualizer}):
+        if backend.lower() not in (available := ['vedo', 'open3d']):
             raise ValueError(f"The backend '{backend}' is not available. Must be in {available}")
 
         # Create the Visualizer
-        self.__visualizer: BaseVisualizer = available[backend.lower()](database=database,
-                                                                       database_dir=database_dir,
-                                                                       database_name=database_name,
-                                                                       remove_existing=remove_existing,
-                                                                       offscreen=offscreen,
-                                                                       fps=fps)
+        self.__visualizer: BaseVisualizer
+        if backend.lower() == 'vedo':
+            from SSD.Core.Rendering.backend.Vedo.VedoVisualizer import VedoVisualizer
+            self.__visualizer = VedoVisualizer(database=database,
+                                               database_dir=database_dir,
+                                               database_name=database_name,
+                                               remove_existing=remove_existing,
+                                               offscreen=offscreen,
+                                               fps=fps)
+        else:
+            from SSD.Core.Rendering.backend.Open3d.Open3dVisualizer import Open3dVisualizer
+            self.__visualizer = Open3dVisualizer(database=database,
+                                                 database_dir=database_dir,
+                                                 database_name=database_name,
+                                                 remove_existing=remove_existing,
+                                                 offscreen=offscreen,
+                                                 fps=fps)
+
         self.__start_visualizer(nb_clients=nb_clients)
 
     def get_database(self) -> Database:
@@ -113,7 +123,6 @@ class Visualizer:
 
 
 def __launch_subprocess():
-
     # Load the existing Database
     db_path = argv[2].split('%%')
     db = Database(database_dir=db_path[0],
@@ -127,6 +136,5 @@ def __launch_subprocess():
 
 
 if __name__ == '__main__':
-
     # This script is run in a dedicated subprocess with the call to Visualizer.launch()
     __launch_subprocess()
