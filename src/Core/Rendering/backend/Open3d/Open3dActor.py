@@ -81,6 +81,7 @@ class Open3dActor(BaseActor):
 
         # Create instance
         if data['wireframe']:
+            data['line_width'] = 1. if data['line_width'] == -1. else data['line_width']
             self.material.line_width = data['line_width']
             self.utils = o3d.geometry.TriangleMesh(vertices=o3d.utility.Vector3dVector(data['positions']),
                                                    triangles=o3d.utility.Vector3iVector(data['cells']))
@@ -289,6 +290,8 @@ class Open3dActor(BaseActor):
                       data: Dict[str, Any]) -> None:
 
         # Create font style
+        data['size'] = 10 if data['size'] == -1. else data['size']
+        data['font'] = 'monospace' if data['font'] == '' else data['font']
         # if data['bold'] and data['italic']:
         #     style = gui.FontStyle.BOLD_ITALIC
         # elif data['bold'] or data['italic']:

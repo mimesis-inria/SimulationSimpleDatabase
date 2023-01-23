@@ -5,8 +5,7 @@ from numpy.random import random
 from SSD.Core.Rendering.UserAPI import UserAPI
 
 # 1. Create the visualization API
-visu = UserAPI(backend='open3d',
-               database_name='open3d_example',
+visu = UserAPI(database_name='open3d_example',
                remove_existing=True)
 
 # 2. Create the object to render
@@ -44,7 +43,8 @@ visu.add_text(content='0',
               bold=True)
 
 # 4. Initialize the visualization
-visu.launch_visualizer(fps=20)
+visu.launch_visualizer(backend='open3d',
+                       fps=20)
 
 # 5. Run a few steps
 for step in range(100):

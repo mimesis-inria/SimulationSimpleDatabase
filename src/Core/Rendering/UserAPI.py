@@ -11,7 +11,6 @@ from SSD.Core.Rendering.backend.DataTables import DataTables
 class UserAPI:
 
     def __init__(self,
-                 backend: str = 'vedo',
                  database: Optional[Database] = None,
                  database_dir: str = '',
                  database_name: Optional[str] = None,
@@ -20,18 +19,12 @@ class UserAPI:
         """
         The UserAPI is a Factory used to easily create and update visual objects in the Visualizer.
 
-        :param backend: The name of the Visualizer to use (either 'vedo' or 'open3d').
         :param database: Database to connect to.
         :param database_dir: Directory that contains the Database file (used if 'database' is not defined).
         :param database_name: Name of the Database file (used if 'database' is not defined).
         :param remove_existing: If True, overwrite any existing Database file with the same path.
         :param idx_instance: If several Factories are connected to the same Visualizer, specify the index of instances.
         """
-
-        # Check backend
-        if backend.lower() not in (available := ['vedo', 'open3d']):
-            raise ValueError(f"The backend '{backend}' is not available. Must be in {available}")
-        self.__backend = backend.lower()
 
         # Define the Database
         if database is not None:
@@ -67,18 +60,24 @@ class UserAPI:
         return self.__database.get_path()
 
     def launch_visualizer(self,
+                          backend: str = 'vedo',
                           offscreen: bool = False,
                           fps: int = 20) -> None:
         """
         Launch the Visualizer.
 
+        :param backend: The name of the Visualizer to use (either 'vedo' or 'open3d').
         :param offscreen: If True, the visualization is done offscreen.
         :param fps: Max frame rate.
         """
 
+        # Check backend
+        if backend.lower() not in (available := ['vedo', 'open3d']):
+            raise ValueError(f"The backend '{backend}' is not available. Must be in {available}")
+
         # Launch the Visualizer
         database_path = self.get_database_path()
-        Visualizer.launch(backend=self.__backend,
+        Visualizer.launch(backend=backend,
                           database_dir=database_path[0],
                           database_name=database_path[1],
                           offscreen=offscreen,
@@ -218,10 +217,6 @@ class UserAPI:
         :param wireframe: If True, the Mesh will be rendered as wireframe.
         :param line_width: Width of the edges of the faces.
         """
-
-        # Different default values
-        if line_width == -1.:
-            line_width = 0. if self.__backend == 'vedo' else 1.
 
         return self.__add_object('Mesh', locals())
 
@@ -439,12 +434,6 @@ class UserAPI:
         :param bold: Apply bold style to the Text.
         :param italic: Apply italic style to the Text.
         """
-
-        # Different default values
-        if size == -1:
-            size = 1 if self.__backend == 'vedo' else 10
-        if font == '':
-            font = 'Arial' if self.__backend == 'vedo' else 'monospace'
 
         return self.__add_object('Text', locals())
 

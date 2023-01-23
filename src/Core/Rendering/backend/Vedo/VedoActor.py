@@ -69,6 +69,7 @@ class VedoActor(BaseActor):
                              c=data['c'],
                              alpha=data['alpha']).compute_normals()
         # Apply rendering style
+        data['line_width'] = 0. if data['line_width'] == -1. else data['line_width']
         self.instance.lw(data['line_width']).wireframe(data['wireframe'])
 
     def __update_mesh(self,
@@ -209,6 +210,8 @@ class VedoActor(BaseActor):
         pos = f'{coord[corner[0].upper()]}-{coord[corner[1].upper()]}'
 
         # Create instance
+        data['size'] = 1 if data['size'] == -1. else data['size']
+        data['font'] = 'Arial' if data['font'] == '' else data['font']
         self.instance = Text2D(txt=data['content'],
                                pos=pos,
                                s=data['size'],
