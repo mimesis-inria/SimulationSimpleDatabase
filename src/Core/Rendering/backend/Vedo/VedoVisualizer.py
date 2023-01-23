@@ -178,15 +178,23 @@ class VedoVisualizer(BaseVisualizer):
                                   axes=4)
 
             # 5.3. Add a timer callback and set the Plotter in interactive mode
-            self.__plotter.add_callback('timer', self.__update_thread)
-            self.__plotter.timer_callback('create', dt=int(self.__fps * 1e3) // nb_clients)
-            for i, client in enumerate(self.__clients):
-                client.send(b'done')
-                Thread(target=self.__listen_client, args=(i,)).start()
+            timer_id = self.__plotter.timer_callback('create', dt=int(self.__fps * 1e3) // nb_clients)
+            if nb_clients == 1:
+                self.__plotter.add_callback('timer', self.__single_client_thread)
+                self.__clients[0].send(b'done')
+            else:
+                self.__plotter.add_callback('timer', self.__multiple_clients_thread)
+                for i, client in enumerate(self.__clients):
+                    client.send(b'done')
+                    Thread(target=self.__listen_client, args=(i,)).start()
             self.__plotter.interactive()
+            self.__plotter.timer_callback('destroy', timerId=timer_id)
+            self.__plotter.close()
+            self.__plotter = None
 
         # 6. The window was closed
-        self.__exit(force_quit=True)
+        if False in self.__is_done:
+            self.__exit(force_quit=True)
 
     def __listen_client(self, idx_client: int):
 
@@ -201,13 +209,27 @@ class VedoVisualizer(BaseVisualizer):
                 step = unpack('i', msg)[0]
                 self.__requests.append((idx_client, step))
 
-    def __update_thread(self, _) -> None:
+    def __multiple_clients_thread(self, _) -> None:
 
         if len(self.__requests) > 0:
             i, step = self.__requests.pop(0)
             if not self.__offscreen:
                 self.__update_instances(step=step, idx_factory=i)
             self.__clients[i].send(b'done')
+
+    def __single_client_thread(self, _) -> None:
+
+        msg = self.__clients[0].recv(4)
+        if len(msg) == 0:
+            pass
+        elif msg == b'exit':
+            self.__is_done[0] = True
+            self.__exit()
+        else:
+            step = unpack('i', msg)[0]
+            if not self.__offscreen:
+                self.__update_instances(step=step, idx_factory=0)
+            self.__clients[0].send(b'done')
 
     def __update_instances(self,
                            step: int,
@@ -249,21 +271,15 @@ class VedoVisualizer(BaseVisualizer):
         if force_quit:
             for i, client in enumerate(self.__clients):
                 client.send(b'exit')
-                self.__is_done[i] = True
 
-        if False not in self.__is_done:
+        # Close the socket
+        if self.__socket is not None:
+            self.__socket.close()
+            self.__socket = None
 
-            # Close the socket
-            if self.__socket is not None:
-                self.__socket.close()
-                self.__socket = None
-
-            # Close the Plotter
-            if self.__plotter is not None:
-                self.__plotter.timer_callback('destroy', timerId=2)
-                self.__plotter.break_interaction()
-                self.__plotter.close()
-                self.__plotter = None
+        # Close the Plotter
+        if self.__plotter is not None:
+            self.__plotter.break_interaction()
 
 
 def _do_remove(actor: VedoActor,

@@ -5,7 +5,6 @@ from copy import copy
 from time import time, sleep
 from socket import socket, AF_INET, SOCK_STREAM, SOL_SOCKET, SO_REUSEADDR
 import open3d as o3d
-from threading import Thread
 
 from SSD.Core.Storage.Database import Database
 from SSD.Core.Rendering.backend.BaseVisualizer import BaseVisualizer
@@ -189,10 +188,15 @@ class Open3dVisualizer(BaseApp, BaseVisualizer):
             self._scene.setup_camera(60, bounds, bounds.get_center())
 
             # 5.4. Launch mainloop
-            for i, client in enumerate(self.__clients):
-                Thread(target=self.__listen_client, args=(i,)).start()
-                client.send(b'done')
-            Thread(target=self.__update_thread).start()
+            if nb_clients == 1:
+                Thread(target=self.__single_client_thread).start()
+                self.__clients[0].send(b'done')
+            else:
+                for i, client in enumerate(self.__clients):
+                    Thread(target=self.__listen_client, args=(i,)).start()
+                    client.send(b'done')
+                Thread(target=self.__multiple_clients_thread).start()
+
             o3d.visualization.gui.Application.instance.run()
 
     def __listen_client(self, idx_client: int):
@@ -208,7 +212,7 @@ class Open3dVisualizer(BaseApp, BaseVisualizer):
                 step = unpack('i', msg)[0]
                 self.__requests.append((idx_client, step))
 
-    def __update_thread(self) -> None:
+    def __multiple_clients_thread(self) -> None:
 
         # 2. Render at each Factory.render() call
         while False in self.__is_done:
@@ -216,6 +220,29 @@ class Open3dVisualizer(BaseApp, BaseVisualizer):
             if len(self.__requests) > 0:
                 self.__step = self.__requests.pop(0)
 
+                if not self.__offscreen:
+                    process_time = time()
+                    o3d.visualization.gui.Application.instance.post_to_main_thread(self._window,
+                                                                                   self.__update_instances)
+                    # Respect frame rate
+                    dt = max(0., self.__fps - (time() - process_time))
+                    sleep(dt)
+
+        # 3. Close the Visualizer
+        if not self.__offscreen:
+            o3d.visualization.gui.Application.instance.quit()
+
+    def __single_client_thread(self):
+
+        while not self.__is_done[0]:
+            msg = self.__clients[0].recv(4)
+            if len(msg) == 0:
+                pass
+            elif msg == b'exit':
+                self.__is_done[0] = True
+                self._exit(force_quit=False)
+            else:
+                self.__step = (0, unpack('i', msg)[0])
                 if not self.__offscreen:
                     process_time = time()
                     o3d.visualization.gui.Application.instance.post_to_main_thread(self._window,

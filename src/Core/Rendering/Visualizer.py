@@ -90,8 +90,10 @@ class Visualizer:
         """
 
         # Launch a new process
-        Thread(target=Visualizer.__launch,
-               args=(backend, database_dir, database_name, offscreen, fps, nb_clients)).start()
+        t = Thread(target=Visualizer.__launch,
+                   args=(backend, database_dir, database_name, offscreen, fps, nb_clients))
+        t.daemon = True
+        t.start()
 
     @staticmethod
     def __launch(backend: str,
