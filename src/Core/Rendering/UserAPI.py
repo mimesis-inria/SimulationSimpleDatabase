@@ -15,6 +15,7 @@ class UserAPI:
                  database_dir: str = '',
                  database_name: Optional[str] = None,
                  remove_existing: bool = False,
+                 non_storing: bool = False,
                  idx_instance: int = 0):
         """
         The UserAPI is a Factory used to easily create and update visual objects in the Visualizer.
@@ -23,6 +24,7 @@ class UserAPI:
         :param database_dir: Directory that contains the Database file (used if 'database' is not defined).
         :param database_name: Name of the Database file (used if 'database' is not defined).
         :param remove_existing: If True, overwrite any existing Database file with the same path.
+        :param non_storing: If True, the Database will not be stored.
         :param idx_instance: If several Factories are connected to the same Visualizer, specify the index of instances.
         """
 
@@ -34,6 +36,7 @@ class UserAPI:
                                                  database_name=database_name).new(remove_existing=remove_existing)
         else:
             raise ValueError("Both 'database' and 'database_name' are not defined.")
+        self.__non_storing = non_storing
 
         # Information about all Tables
         self.__tables: List[DataTables] = []
@@ -122,12 +125,12 @@ class UserAPI:
         for i in self.__update.keys():
             if not self.__update[i]:
                 self.__tables[i].send_data(data={}, update=False)
-            self.__update[i] = False
+            self.__update[i] = self.__non_storing
 
         # Send the index of the step to render
         if not self.__offscreen:
             if self.__socket is not None:
-                self.__step += 1
+                self.__step += 1 if not self.__non_storing else 0
                 try:
                     self.__socket.send(bytearray(pack('i', self.__step)))
                     if self.__socket.recv(4) == b'exit':
@@ -150,6 +153,9 @@ class UserAPI:
             self.__socket.close()
             self.__socket = None
 
+        if self.__non_storing:
+            self.__database.delete()
+
     # ###########################
     # OBJECTS CREATION & UPDATE #
     #############################
@@ -163,7 +169,7 @@ class UserAPI:
 
         # Define the Table name
         table_name = f'{object_type}_{self.__idx}_{self.__current_id}'
-        self.__update[self.__current_id] = False
+        self.__update[self.__current_id] = self.__non_storing
         self.__current_id += 1
 
         # Create the Table and register the object
