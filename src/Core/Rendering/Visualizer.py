@@ -16,7 +16,6 @@ class Visualizer:
                  database_dir: str = '',
                  database_name: Optional[str] = None,
                  remove_existing: bool = False,
-                 offscreen: bool = False,
                  fps: int = 20,
                  nb_clients: int = 1):
         """
@@ -28,7 +27,6 @@ class Visualizer:
         :param database_dir: Directory which contains the Database file (used if 'database' is not defined).
         :param database_name: Name of the Database (used if 'database' is not defined).
         :param remove_existing: If True, overwrite a Database with the same path.
-        :param offscreen: If True, visual data will be saved but not rendered.
         :param fps: Max frame rate.
         :param nb_clients: Number of Factories to connect to.
         """
@@ -45,7 +43,6 @@ class Visualizer:
                                                database_dir=database_dir,
                                                database_name=database_name,
                                                remove_existing=remove_existing,
-                                               offscreen=offscreen,
                                                fps=fps)
         else:
             from SSD.Core.Rendering.backend.Open3d.Open3dVisualizer import Open3dVisualizer
@@ -53,7 +50,6 @@ class Visualizer:
                                                  database_dir=database_dir,
                                                  database_name=database_name,
                                                  remove_existing=remove_existing,
-                                                 offscreen=offscreen,
                                                  fps=fps)
 
         self.__start_visualizer(nb_clients=nb_clients)
@@ -90,7 +86,6 @@ class Visualizer:
     def launch(backend: str = 'vedo',
                database_dir: str = '',
                database_name: str = '',
-               offscreen: bool = False,
                fps: int = 20,
                nb_clients: int = 1) -> None:
         """
@@ -99,14 +94,13 @@ class Visualizer:
         :param backend: The name of the Visualizer to use (either 'vedo' or 'open3d').
         :param database_dir: Directory which contains the Database file (used if 'database' is not defined).
         :param database_name: Name of the Database (used if 'database' is not defined).
-        :param offscreen: If True, visual data will be saved but not rendered.
         :param fps: Max frame rate.
         :param nb_clients: Number of Factories to connect to.
         """
 
         # Launch a new process
         t = Thread(target=Visualizer.__launch,
-                   args=(backend, database_dir, database_name, offscreen, fps, nb_clients))
+                   args=(backend, database_dir, database_name, fps, nb_clients))
         t.daemon = True
         t.start()
 
@@ -114,12 +108,11 @@ class Visualizer:
     def __launch(backend: str,
                  database_dir: str,
                  database_name: str,
-                 offscreen: bool,
                  fps: int,
                  nb_clients: int) -> None:
 
         run([executable, __file__,
-             backend, f'{database_dir}%%{database_name}', str(offscreen), str(fps), str(nb_clients)])
+             backend, f'{database_dir}%%{database_name}', str(fps), str(nb_clients)])
 
 
 def __launch_subprocess():
@@ -130,9 +123,8 @@ def __launch_subprocess():
     # Create the Visualizer
     Visualizer(backend=argv[1],
                database=db,
-               offscreen=argv[3] == 'True',
-               fps=int(argv[4]),
-               nb_clients=int(argv[5]))
+               fps=int(argv[3]),
+               nb_clients=int(argv[4]))
 
 
 if __name__ == '__main__':

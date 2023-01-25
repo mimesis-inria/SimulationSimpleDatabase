@@ -13,7 +13,6 @@ class BaseVisualizer:
                  database_dir: str = '',
                  database_name: Optional[str] = None,
                  remove_existing: bool = False,
-                 offscreen: bool = False,
                  fps: int = 20):
         """
         The BaseVisualizer is the common API for all backend Visualizers.
@@ -22,7 +21,6 @@ class BaseVisualizer:
         :param database_dir: Directory which contains the Database file (used if 'database' is not defined).
         :param database_name: Name of the Database (used if 'database' is not defined).
         :param remove_existing: If True, overwrite a Database with the same path.
-        :param offscreen: If True, visual data will be saved but not rendered.
         :param fps: Max frame rate.
         """
 
@@ -36,7 +34,6 @@ class BaseVisualizer:
                                                database_name=database_name).new(remove_existing=remove_existing)
 
         # Visualization parameters
-        self.offscreen: bool = offscreen
         self.fps: float = 1 / min(max(1, abs(fps)), 50)
 
         # Actors parameters

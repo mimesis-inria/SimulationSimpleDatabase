@@ -12,7 +12,6 @@ class Visualizer(_Visualizer):
                  database_dir: str = '',
                  database_name: Optional[str] = None,
                  remove_existing: bool = False,
-                 offscreen: bool = False,
                  fps: int = 20,
                  nb_clients: int = 1):
         """
@@ -24,7 +23,6 @@ class Visualizer(_Visualizer):
         :param database_dir: Directory which contains the Database file (used if 'database' is not defined).
         :param database_name: Name of the Database (used if 'database' is not defined).
         :param remove_existing: If True, overwrite a Database with the same path.
-        :param offscreen: If True, visual data will be saved but not rendered.
         :param fps: Max frame rate.
         """
 
@@ -34,6 +32,5 @@ class Visualizer(_Visualizer):
                              database_dir=database_dir,
                              database_name=database_name,
                              remove_existing=remove_existing,
-                             offscreen=offscreen,
                              fps=fps,
                              nb_clients=nb_clients)

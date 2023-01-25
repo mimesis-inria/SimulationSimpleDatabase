@@ -138,7 +138,7 @@ class Open3dReplay(BaseApp, BaseReplay):
                     self._scene.scene.add_geometry(actor.name, actor.instance, actor.material)
 
         # 2. Update all the Actors
-        if step < self.nb_sample:
+        if step < max(self.nb_sample.values()):
             self.update_actors(step=step)
 
     def update_actor_backend(self,

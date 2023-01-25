@@ -16,7 +16,6 @@ class VedoVisualizer(BaseVisualizer):
                  database_dir: str = '',
                  database_name: Optional[str] = None,
                  remove_existing: bool = False,
-                 offscreen: bool = False,
                  fps: int = 20):
         """
         The VedoVisualizer is used to manage the creation, update and rendering of Vedo Actors.
@@ -25,7 +24,6 @@ class VedoVisualizer(BaseVisualizer):
         :param database_dir: Directory which contains the Database file (used if 'database' is not defined).
         :param database_name: Name of the Database (used if 'database' is not defined).
         :param remove_existing: If True, overwrite a Database with the same path.
-        :param offscreen: If True, visual data will be saved but not rendered.
         :param fps: Max frame rate.
         """
 
@@ -34,7 +32,6 @@ class VedoVisualizer(BaseVisualizer):
                                 database_dir=database_dir,
                                 database_name=database_name,
                                 remove_existing=remove_existing,
-                                offscreen=offscreen,
                                 fps=fps)
 
         self.actors: Dict[int, Dict[str, VedoActor]] = {}
@@ -75,38 +72,36 @@ class VedoVisualizer(BaseVisualizer):
         :param nb_clients: Number of Factories to connect to.
         """
 
-        if not self.offscreen:
+        # 1. Create the list of actors to render
+        actors = []
+        for group in self.actors.keys():
+            actors.append([])
+            for actor in self.actors[group].values():
+                actors[-1].append(actor.instance)
 
-            # 1. Create the list of actors to render
-            actors = []
-            for group in self.actors.keys():
-                actors.append([])
-                for actor in self.actors[group].values():
-                    actors[-1].append(actor.instance)
+        # 2. Create a non-interactive Plotter instance
+        self.__plotter = show(actors,
+                              new=True,
+                              N=len(actors),
+                              sharecam=True,
+                              interactive=False,
+                              title='SSD',
+                              axes=4)
 
-            # 2. Create a non-interactive Plotter instance
-            self.__plotter = show(actors,
-                                  new=True,
-                                  N=len(actors),
-                                  sharecam=True,
-                                  interactive=False,
-                                  title='SSD',
-                                  axes=4)
-
-            # 3. Add a timer callback and set the Plotter in interactive mode
-            timer_id = self.__plotter.timer_callback('create', dt=int(self.fps * 1e3) // nb_clients)
-            if nb_clients == 1:
-                self.__plotter.add_callback('timer', self.single_client_thread)
-                self.clients[0].send(b'done')
-            else:
-                self.__plotter.add_callback('timer', self.multiple_clients_thread)
-                for i, client in enumerate(self.clients):
-                    client.send(b'done')
-                    Thread(target=self.listen_client, args=(i,)).start()
-            self.__plotter.interactive()
-            self.__plotter.timer_callback('destroy', timerId=timer_id)
-            self.__plotter.close()
-            self.__plotter = None
+        # 3. Add a timer callback and set the Plotter in interactive mode
+        timer_id = self.__plotter.timer_callback('create', dt=int(self.fps * 1e3) // nb_clients)
+        if nb_clients == 1:
+            self.__plotter.add_callback('timer', self.single_client_thread)
+            self.clients[0].send(b'done')
+        else:
+            self.__plotter.add_callback('timer', self.multiple_clients_thread)
+            for i, client in enumerate(self.clients):
+                client.send(b'done')
+                Thread(target=self.listen_client, args=(i,)).start()
+        self.__plotter.interactive()
+        self.__plotter.timer_callback('destroy', timerId=timer_id)
+        self.__plotter.close()
+        self.__plotter = None
 
         # 4. The window was closed
         if False in self.is_done:
@@ -125,8 +120,7 @@ class VedoVisualizer(BaseVisualizer):
             self.exit(force_quit=False)
         else:
             step = unpack('i', msg)[0]
-            if not self.offscreen:
-                self.update_visualizer(step=step, idx_factory=0)
+            self.update_visualizer(step=step, idx_factory=0)
             self.clients[0].send(b'done')
 
     def multiple_clients_thread(self, _) -> None:
@@ -136,8 +130,7 @@ class VedoVisualizer(BaseVisualizer):
 
         if len(self.requests) > 0:
             i, step = self.requests.pop(0)
-            if not self.offscreen:
-                self.update_visualizer(step=step, idx_factory=i)
+            self.update_visualizer(step=step, idx_factory=i)
             self.clients[i].send(b'done')
 
     def update_visualizer(self,

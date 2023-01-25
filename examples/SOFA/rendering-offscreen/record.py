@@ -16,9 +16,9 @@ def createScene(node):
 
     # The script is launched with "python3" then create a Visualizer
     else:
-        factory = UserAPI(root=node, database_name='caduceus', remove_existing=True, offscreen=True)
-        node.addObject(Caduceus(node, factory=factory, name='Controller'))
-        return factory
+        api = UserAPI(root=node, database_name='caduceus', remove_existing=True)
+        node.addObject(Caduceus(node, factory=api, name='Controller'))
+        return api
 
 
 if __name__ == '__main__':
@@ -27,12 +27,12 @@ if __name__ == '__main__':
 
     # Init the scene graph and the Visualizer
     root = Sofa.Core.Node('root')
-    api = createScene(root)
+    factory = createScene(root)
     Sofa.Simulation.init(root)
-    api.launch_visualizer()
+    factory.launch_visualizer(offscreen=True)
 
     # Run a few steps of simulation and render them
     for _ in range(300):
         Sofa.Simulation.animate(root, root.dt.value)
 
-    api.close()
+    factory.close()

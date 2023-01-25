@@ -86,7 +86,7 @@ class VedoReplay(BaseReplay):
         """
 
         self.step += 1
-        if self.step < self.nb_sample:
+        if self.step < max(self.nb_sample.values()):
             self.update_actors(step=self.step)
             self.__plotter.render()
 

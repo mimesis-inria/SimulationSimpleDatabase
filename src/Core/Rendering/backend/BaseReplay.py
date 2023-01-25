@@ -1,4 +1,4 @@
-from typing import Optional, Dict
+from typing import Dict
 
 from SSD.Core.Storage.Database import Database
 from SSD.Core.Rendering.backend.BaseActor import BaseActor
@@ -21,7 +21,7 @@ class BaseReplay:
 
         # Visualization parameters
         self.fps: float = 1 / min(max(1, abs(fps)), 50)
-        self.nb_sample: Optional[int] = None
+        self.nb_sample: Dict[str, int] = {}
         self.step: int = 1
 
         # Actors parameters
@@ -69,7 +69,7 @@ class BaseReplay:
         for table_name in sorted_table_names:
 
             # 2.1. Get the number of sample
-            self.nb_sample = self.database.nb_lines(table_name=table_name)
+            self.nb_sample[table_name] = self.database.nb_lines(table_name=table_name)
 
             # 2.2. Get the full line of data
             object_data = self.database.get_line(table_name=table_name,

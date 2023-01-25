@@ -18,7 +18,6 @@ class Open3dVisualizer(BaseApp, BaseVisualizer):
                  database_dir: str = '',
                  database_name: Optional[str] = None,
                  remove_existing: bool = False,
-                 offscreen: bool = False,
                  fps: int = 20):
         """
         The Open3dVisualizer is used to manage the creation, update and rendering of Open3D Actors.
@@ -27,7 +26,6 @@ class Open3dVisualizer(BaseApp, BaseVisualizer):
         :param database_dir: Directory which contains the Database file (used if 'database' is not defined).
         :param database_name: Name of the Database (used if 'database' is not defined).
         :param remove_existing: If True, overwrite a Database with the same path.
-        :param offscreen: If True, visual data will be saved but not rendered.
         :param fps: Max frame rate.
         """
 
@@ -36,7 +34,6 @@ class Open3dVisualizer(BaseApp, BaseVisualizer):
                                 database_dir=database_dir,
                                 database_name=database_name,
                                 remove_existing=remove_existing,
-                                offscreen=offscreen,
                                 fps=fps)
 
         self.actors: Dict[int, Dict[str, Open3dActor]] = {}
@@ -82,37 +79,35 @@ class Open3dVisualizer(BaseApp, BaseVisualizer):
         :param nb_clients: Number of Factories to connect to.
         """
 
-        if not self.offscreen:
+        # 1. Init Visualizer instance
+        self._create_settings(len(self.actors))
+        self._window.set_on_close(self.exit)
 
-            # 1. Init Visualizer instance
-            self._create_settings(len(self.actors))
-            self._window.set_on_close(self.exit)
+        # 2 Add all Text
+        for actor in self.additional_labels.values():
+            self._window.add_child(actor.instance)
+            actor.instance.visible = False
 
-            # 2 Add all Text
-            for actor in self.additional_labels.values():
-                self._window.add_child(actor.instance)
-                actor.instance.visible = False
-
-            # 3. Add geometries to the Visualizer
-            for actor in self.actors[self.__current_group].values():
-                if actor.type == 'Text':
-                    actor.instance.visible = True
-                else:
-                    self._scene.scene.add_geometry(actor.name, actor.instance, actor.material)
-            bounds = self._scene.scene.bounding_box
-            self._scene.setup_camera(60, bounds, bounds.get_center())
-
-            # 4. Launch mainloop
-            if nb_clients == 1:
-                Thread(target=self.single_client_thread).start()
-                self.clients[0].send(b'done')
+        # 3. Add geometries to the Visualizer
+        for actor in self.actors[self.__current_group].values():
+            if actor.type == 'Text':
+                actor.instance.visible = True
             else:
-                for i, client in enumerate(self.clients):
-                    Thread(target=self.listen_client, args=(i,)).start()
-                    client.send(b'done')
-                Thread(target=self.multiple_clients_thread).start()
+                self._scene.scene.add_geometry(actor.name, actor.instance, actor.material)
+        bounds = self._scene.scene.bounding_box
+        self._scene.setup_camera(60, bounds, bounds.get_center())
 
-            gui.Application.instance.run()
+        # 4. Launch mainloop
+        if nb_clients == 1:
+            Thread(target=self.single_client_thread).start()
+            self.clients[0].send(b'done')
+        else:
+            for i, client in enumerate(self.clients):
+                Thread(target=self.listen_client, args=(i,)).start()
+                client.send(b'done')
+            Thread(target=self.multiple_clients_thread).start()
+
+        gui.Application.instance.run()
 
     def single_client_thread(self):
         """
@@ -129,15 +124,13 @@ class Open3dVisualizer(BaseApp, BaseVisualizer):
                 self.exit(force_quit=False)
             else:
                 self.__step = (0, unpack('i', msg)[0])
-                if not self.offscreen:
-                    process_time = time()
-                    gui.Application.instance.post_to_main_thread(self._window,
-                                                                 self.update_visualizer)
-                    dt = max(0., self.fps - (time() - process_time))
-                    sleep(dt)
+                process_time = time()
+                gui.Application.instance.post_to_main_thread(self._window,
+                                                             self.update_visualizer)
+                dt = max(0., self.fps - (time() - process_time))
+                sleep(dt)
 
-        if not self.offscreen:
-            gui.Application.instance.quit()
+        gui.Application.instance.quit()
 
     def multiple_clients_thread(self) -> None:
         """
@@ -148,15 +141,13 @@ class Open3dVisualizer(BaseApp, BaseVisualizer):
 
             if len(self.requests) > 0:
                 self.__step = self.requests.pop(0)
-                if not self.offscreen:
-                    process_time = time()
-                    gui.Application.instance.post_to_main_thread(self._window,
-                                                                 self.update_visualizer)
-                    dt = max(0., self.fps - (time() - process_time))
-                    sleep(dt)
+                process_time = time()
+                gui.Application.instance.post_to_main_thread(self._window,
+                                                             self.update_visualizer)
+                dt = max(0., self.fps - (time() - process_time))
+                sleep(dt)
 
-        if not self.offscreen:
-            gui.Application.instance.quit()
+        gui.Application.instance.quit()
 
     def update_visualizer(self) -> None:
         """

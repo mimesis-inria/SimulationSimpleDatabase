@@ -43,18 +43,90 @@ class UserAPI(Sofa.Core.Controller):
                                             idx_instance=idx_instance)
         self.__updates: Dict[int, Tuple[str, Any]] = {}
 
+    def get_database(self) -> Database:
+        """
+        Get the Database instance.
+        """
+
+        return self.__factory.get_database()
+
+    def get_database_path(self) -> Tuple[str]:
+        """
+        Get the path to the Database.
+        """
+
+        return self.__factory.get_database_path()
+
     def launch_visualizer(self,
                           backend: str = 'vedo',
                           offscreen: bool = False,
                           fps: int = 20) -> None:
+        """
+        Launch the Visualizer.
+
+        :param backend: The name of the Visualizer to use (either 'vedo' or 'open3d').
+        :param offscreen: If True, the visualization is done offscreen.
+        :param fps: Max frame rate.
+        """
 
         self.__factory.launch_visualizer(backend=backend,
                                          offscreen=offscreen,
                                          fps=fps)
 
+    def connect_visualizer(self,
+                           offscreen: bool = False):
+        """
+        Connect the Factory to an existing Visualizer.
+
+        :param offscreen: If True, the visualization is done offscreen.
+        """
+
+        self.__factory.connect_visualizer(offscreen=offscreen)
+
     def close(self):
+        """
+        Close the Visualization.
+        """
 
         self.__factory.close()
+
+    def onAnimateEndEvent(self, _) -> None:
+        """
+        Event called at the end of a time step.
+        """
+
+        # Execute all callbacks
+        for object_id, (object_type, object_data) in self.__updates.items():
+
+            if object_type == 'Mesh':
+                self.__factory.update_mesh(object_id=object_id,
+                                           positions=self.__get_position_data(position_object=object_data))
+
+            elif object_type == 'Points':
+                positions = self.__get_position_data(position_object=object_data[0])
+                positions = positions[object_data[1]] if object_data[1] is not None else positions
+                self.__factory.update_points(object_id=object_id,
+                                             positions=positions)
+
+            elif object_type == 'Arrows':
+                positions = self.__get_position_data(position_object=object_data[1])
+                positions = positions[object_data[2]] if object_data[2] is not None else positions
+                if object_data[0] == 'vec':
+                    vectors = self.__get_force_data(object_data[3])
+                else:
+                    vectors = self.__get_position_data(object_data[3]) - positions
+                vectors = vectors[object_data[4]] if object_data[4] is not None else vectors
+                if len(vectors) == 1:
+                    vectors = tile(vectors, (len(positions), 1))
+                self.__factory.update_arrows(object_id=object_id,
+                                             positions=positions,
+                                             vectors=vectors * object_data[5])
+
+            elif object_type == 'Markers':
+                self.__factory.update_markers(object_id=object_id)
+
+        # Execute rendering
+        self.__factory.render()
 
     @classmethod
     def __get_position_data(cls,
@@ -124,44 +196,6 @@ class UserAPI(Sofa.Core.Controller):
                           f"value '{cell_type}'.")
 
         return cells
-
-    def onAnimateEndEvent(self, _) -> None:
-        """
-        Event called at the end of a time step.
-        """
-
-        # Execute all callbacks
-        for object_id, (object_type, object_data) in self.__updates.items():
-
-            if object_type == 'Mesh':
-                self.__factory.update_mesh(object_id=object_id,
-                                           positions=self.__get_position_data(position_object=object_data))
-
-            elif object_type == 'Points':
-                positions = self.__get_position_data(position_object=object_data[0])
-                positions = positions[object_data[1]] if object_data[1] is not None else positions
-                self.__factory.update_points(object_id=object_id,
-                                             positions=positions)
-
-            elif object_type == 'Arrows':
-                positions = self.__get_position_data(position_object=object_data[1])
-                positions = positions[object_data[2]] if object_data[2] is not None else positions
-                if object_data[0] == 'vec':
-                    vectors = self.__get_force_data(object_data[3])
-                else:
-                    vectors = self.__get_position_data(object_data[3]) - positions
-                vectors = vectors[object_data[4]] if object_data[4] is not None else vectors
-                if len(vectors) == 1:
-                    vectors = tile(vectors, (len(positions), 1))
-                self.__factory.update_arrows(object_id=object_id,
-                                             positions=positions,
-                                             vectors=vectors * object_data[5])
-
-            elif object_type == 'Markers':
-                self.__factory.update_markers(object_id=object_id)
-
-        # Execute rendering
-        self.__factory.render()
 
     def __get_object(self,
                      object_path: str) -> Sofa.Core.Base:

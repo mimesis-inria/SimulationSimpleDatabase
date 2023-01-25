@@ -44,6 +44,7 @@ class UserAPI:
         # Synchronization between the Factory and the Visualizer
         self.__update: Dict[int, bool] = {}
         self.__socket: Optional[socket] = None
+        self.__offscreen: bool = False
 
     def get_database(self) -> Database:
         """
@@ -75,35 +76,42 @@ class UserAPI:
         if backend.lower() not in (available := ['vedo', 'open3d']):
             raise ValueError(f"The backend '{backend}' is not available. Must be in {available}")
 
-        # Launch the Visualizer
-        database_path = self.get_database_path()
-        Visualizer.launch(backend=backend,
-                          database_dir=database_path[0],
-                          database_name=database_path[1],
-                          offscreen=offscreen,
-                          fps=fps)
-        # Connect the Factory to the Visualizer
-        self.connect_visualizer()
+        self.__offscreen = offscreen
+        if not offscreen:
+            # Launch the Visualizer
+            database_path = self.get_database_path()
+            Visualizer.launch(backend=backend,
+                              database_dir=database_path[0],
+                              database_name=database_path[1],
+                              fps=fps)
+            # Connect the Factory to the Visualizer
+            self.connect_visualizer()
 
-    def connect_visualizer(self):
+    def connect_visualizer(self,
+                           offscreen: bool = False):
         """
         Connect the Factory to an existing Visualizer.
+
+        :param offscreen: If True, the visualization is done offscreen.
         """
 
-        # Connect the Factory to the Visualizer
-        self.__socket = socket(AF_INET, SOCK_STREAM)
-        self.__socket.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
-        # Connection attempts while the server is not running on the Visualizer side
-        connected = False
-        while not connected:
-            try:
-                self.__socket.connect(('localhost', 20000))
-                self.__socket.send(bytearray(pack('i', self.__idx)))
-                connected = True
-            except ConnectionRefusedError:
-                pass
-        # Server is ready
-        self.__socket.recv(4)
+        self.__offscreen = offscreen
+        if not offscreen:
+
+            # Connect the Factory to the Visualizer
+            self.__socket = socket(AF_INET, SOCK_STREAM)
+            self.__socket.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
+            # Connection attempts while the server is not running on the Visualizer side
+            connected = False
+            while not connected:
+                try:
+                    self.__socket.connect(('localhost', 20000))
+                    self.__socket.send(bytearray(pack('i', self.__idx)))
+                    connected = True
+                except ConnectionRefusedError:
+                    pass
+            # Server is ready
+            self.__socket.recv(4)
 
     def render(self) -> None:
         """
@@ -117,19 +125,20 @@ class UserAPI:
             self.__update[i] = False
 
         # Send the index of the step to render
-        if self.__socket is not None:
-            self.__step += 1
-            try:
-                self.__socket.send(bytearray(pack('i', self.__step)))
-                if self.__socket.recv(4) == b'exit':
-                    self.__socket.close()
-                    self.__socket = None
-            except ConnectionResetError:
+        if not self.__offscreen:
+            if self.__socket is not None:
+                self.__step += 1
+                try:
+                    self.__socket.send(bytearray(pack('i', self.__step)))
+                    if self.__socket.recv(4) == b'exit':
+                        self.__socket.close()
+                        self.__socket = None
+                except ConnectionResetError:
+                    quit(print('Rendering window closed, shutting down.'))
+                except BrokenPipeError:
+                    quit(print('Rendering window closed, shutting down.'))
+            else:
                 quit(print('Rendering window closed, shutting down.'))
-            except BrokenPipeError:
-                quit(print('Rendering window closed, shutting down.'))
-        else:
-            quit(print('Rendering window closed, shutting down.'))
 
     def close(self):
         """

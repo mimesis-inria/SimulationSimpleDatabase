@@ -1,10 +1,9 @@
 from vedo import Mesh
 from numpy.random import random
-from threading import Thread
 
 from SSD.Core.Storage.Database import Database
 from SSD.Core.Rendering.UserAPI import UserAPI
-from SSD.Core.Rendering.Visualizer import Visualizer
+from SSD.Core.Rendering.Replay import Replay
 
 
 class Simulation:
@@ -26,7 +25,7 @@ class Simulation:
     def connect_to_visualizer(self):
 
         # Connect the Factory to the Visualizer
-        self.factory.connect_visualizer()
+        self.factory.connect_visualizer(offscreen=True)
 
     def step(self):
 
@@ -45,26 +44,16 @@ class Simulation:
 if __name__ == '__main__':
 
     # 1. Create a new Database
-    db = Database(database_name='several_factories').new(remove_existing=True)
+    db = Database(database_name='several_factories_offscreen').new(remove_existing=True)
 
     # 2. Create several simulations
     nb_simu = 2
     simulations = [Simulation(database=db,
                               idx_instance=i) for i in range(nb_simu)]
 
-    # 3. Connect a single Visualizer to the Factories
-    # 3.1. Create a new Visualizer
-    Visualizer.launch(backend='vedo',
-                      database_name='several_factories',
-                      nb_clients=nb_simu)
-    # 3.2. Connect each Factory to the Visualizer (must be launched in thread)
-    connexion_threads = []
+    # 3. Connect each factory to a single offscreen Visualizer
     for simu in simulations:
-        connexion_thread = Thread(target=simu.connect_to_visualizer)
-        connexion_threads.append(connexion_thread)
-        connexion_thread.start()
-    for connexion_thread in connexion_threads:
-        connexion_thread.join()
+        simu.connect_to_visualizer()
 
     # 4. Run a few steps (with possibly a different number of steps)
     for step in range(50):
@@ -72,6 +61,7 @@ if __name__ == '__main__':
         if step < 20:
             simulations[1].step()
 
-    # 5. Close the Visualization
+    # 5. Close the Factories & Replay steps
     for simu in simulations:
         simu.close()
+    Replay(database_name='several_factories_offscreen').launch()
