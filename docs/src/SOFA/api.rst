@@ -15,10 +15,10 @@ Database
 Rendering
 ---------
 
-Factory
+UserAPI
 """""""
 
-.. autoclass:: SSD.SOFA.Rendering.VedoFactory.VedoFactory
+.. autoclass:: SSD.SOFA.Rendering.UserAPI.UserAPI
     :special-members: __init__
     :members:
 
@@ -26,14 +26,14 @@ Factory
 Visualizer
 """"""""""
 
-.. autoclass:: SSD.SOFA.Rendering.VedoVisualizer.VedoVisualizer
+.. autoclass:: SSD.SOFA.Rendering.Visualizer.Visualizer
     :special-members: __init__
     :members:
 
 
-ReplayVisualizer
-""""""""""""""""
+Replay
+""""""
 
-.. autoclass:: SSD.SOFA.Rendering.ReplayVisualizer.ReplayVisualizer
+.. autoclass:: SSD.SOFA.Rendering.Replay.Replay
     :special-members: __init__
     :members:

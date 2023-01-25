@@ -1,13 +1,13 @@
 .. figure:: _static/images/logo.svg
 
 
-SSD - SimulationSimpleDatabase
-------------------------------
+SimulationSimpleDatabase
+------------------------
 
-The **SSD** project provides Python3 tools allowing users to easily develop **data storage** strategies for their
-**numerical simulations**.
+The **SSD** project provides Python3 tools allowing users to easily develop **data storage** and **visualization**
+strategies for their **numerical simulations** with a minimal lines of code.
 
-This project has two main objectives:
+This project is divided in two main objectives:
 
     .. table::
         :widths: 15 90
@@ -18,8 +18,6 @@ This project has two main objectives:
         | ``Rendering`` | Easy **storage** & **rendering** management systems for **visual data** from a numerical |
         |               | simulation.                                                                              |
         +---------------+------------------------------------------------------------------------------------------+
-
-
 
 The **SSD** project is mainly using the :Peewee:`Peewee <>` Python3 library and was mostly designed to fit the
 :DeepPhysX:`DeepPhysX <>` and :SOFA:`SOFA <>` frameworks.
@@ -43,7 +41,7 @@ The **SSD** project provides the following packages:
         |  * Easy writing and reading user interface;          |  * Various object types and highly customizable      |
         |  * Event management system;                          |    rendering styles;                                 |
         |  * Tools such as merging and exporting data in other |  * Several Python libraries available:               |
-        |    formats.                                          |    :Vedo:`Vedo <>`.                                  |
+        |    formats.                                          |    :Vedo:`Vedo <>`, :Open3D:`Open3D<>`.              |
         +------------------------------------------------------+------------------------------------------------------+
 
 The **SSD** project also provides a compatible layer with :SOFA:`SOFA <>` framework:

@@ -2,16 +2,16 @@
 
 ![logo](docs/src/_static/images/logo.svg)
 
-The **SSD** project provides Python3 tools allowing users to easily develop **data storage** strategies for their
-**numerical simulations**.
+The **SSD** project provides Python3 tools allowing users to easily develop **data storage** and **visualization** 
+strategies for their **numerical simulations** with az minimal lines of code.
 
 This project has two main objectives:
 * Easy **storage** management system for **any data** from a numerical simulation;
 * Easy **storage** & **rendering** management systems for **visual data** from a numerical simulation.
 
 The **SSD** project is mainly using the [Peewee](http://docs.peewee-orm.com/en/latest/) Python3 library and was mostly 
-designed to fit the [DeepPhysX](https://github.com/mimesis-inria/DeepPhysX) and 
-[SOFA](https://www.sofa-framework.org/) frameworks.
+designed to fit the [**DeepPhysX**](https://github.com/mimesis-inria/DeepPhysX) and 
+[**SOFA**](https://www.sofa-framework.org/) frameworks.
 
 Discover more about the project on the dedicated 
 [**Documentation**](https://simulationsimpledatabase.readthedocs.io/en/latest/).
@@ -30,7 +30,7 @@ The **SSD** project provides the following `Core` packages:
   * Live rendering of numerical simulations;
   * Replay of stored numerical simulation steps;
   * Various object types and highly customizable rendering styles;
-  * Several Python libraries available: [Vedo](https://vedo.embl.es/)
+  * Several Python libraries available: [Vedo](https://vedo.embl.es/), [Open3D](http://www.open3d.org/)
 
 The **SSD** project also provides a `SOFA` compatible package with additional features:
 * `SSD.SOFA.Storage`
