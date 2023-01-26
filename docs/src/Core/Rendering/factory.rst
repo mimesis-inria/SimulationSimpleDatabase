@@ -6,20 +6,14 @@ Creating a Factory
 
 The *Factory* is an easy user interface to create and update visual objects such as meshes, point-clouds, etc.
 The *Factory* will also automatically store each object in a dedicated *Table* of a *Database*.
-Thus, it requires a *Database* to connect to (it can either be an existing one either create a new one by itself):
+Thus, it requires a *Database* to connect to (by default, a new *Database* is created, but an exiting one can be
+specified):
 
 .. code-block:: python
 
-    from SSD.Core.Storage.Database import Database
-    from SSD.Core.Rendering.Factory import Factory
+    from SSD.Core.Rendering.UserAPI import UserAPI
 
-    # Create a new Database then a new Factory
-    db = Database(database_dir='my_directory',
-                  database_name='my_database').new(remove_existing=True)
-    factory = Factory(database=db)
-
-    # Create only a new Factory (the Database will be automatically created)
-    factory = Factory(database_dir='my_directory',
+    factory = UserAPI(database_dir='my_directory',
                       database_name='my_database',
                       remove_existing=True)
 
@@ -71,18 +65,14 @@ It is important to specify the right identifier in the factory (identifiers foll
 
     You can update a single object several times per time step, meaning that the same raw of data in the *Table* will
     be modified.
-    A call to ``render`` will synchronize *Tables* and a new row will be edited next (see Visualizer).
+    A call to ``render`` will synchronize *Tables* and a new row will be edited next (see *Visualizer*).
 
-VedoFactory
------------
 
-The *VedoFactory* allows to create :Vedo:`Vedo <>` visual objects.
-The available objects are:
-:VedoObject:`Mesh <mesh.html#vedo.mesh.Mesh>`,
-:VedoObject:`Points <pointcloud.html#vedo.pointcloud.Points>`,
-:VedoObject:`Arrows <shapes.html#vedo.shapes.Arrows>`,
-:VedoObject:`Markers <shapes.html#vedo.shapes.Marker>`,
-:VedoObject:`Symbols <shapes.html#vedo.shapes.Glyph>`
+Available objects
+-----------------
+
+The *Factory* allows to create several visual object types.
+The visualization data to provide does not depend on the *Visualizer* you will use.
 
 Mesh
 """"
@@ -147,25 +137,29 @@ Mesh
       - Optional
       - Specifies if the *Mesh* should be rendered as wireframe.
 
-    * - ``compute_normals``
-      - :guilabel:`bool`
-      - Optional
-      - *Disabled*
-      - Specifies if the normals of the *Mesh* should be re-computed.
-
     * - ``line_width``
       - :guilabel:`float`
       - Optional
-      - *Disabled*
+      - Optional
       - Width of the edges.
+
 
 .. admonition:: Example
 
-    See example in ``examples/Core/Rendering/mesh.py``.
+    .. code-block:: python
+
+        factory.add_mesh(positions=pos_array,
+                         cells=cells_array,
+                         color_map='jet',
+                         scalar_field=pos_array[:, 1],
+                         wireframe=True,
+                         line_width=1.)
+
 
     .. figure:: ../../_static/images/vedo_visualizer_mesh.png
         :alt: vedo_visualizer_mesh.png
         :width: 30%
+
 
 Points
 """"""
@@ -224,9 +218,16 @@ Points
       - Optional
       - Size of the *Points*.
 
+
 .. admonition:: Example
 
-    See example in ``examples/Core/Rendering/points.py``.
+    .. code-block:: python
+
+        factory.add_points(positions=pos_array,
+                           color_map='jet',
+                           scalar_field=pos_array[:, 1],
+                           point_size=5)
+
 
     .. figure:: ../../_static/images/vedo_visualizer_points.png
         :alt: vedo_visualizer_points.png
@@ -292,12 +293,19 @@ Arrows
     * - ``res``
       - :guilabel:`int`
       - Optional
-      - Optional
+      - *Disabled*
       - Circular resolution of the *Arrows*.
+
 
 .. admonition:: Example
 
-    See example in ``examples/Core/Rendering/arrows.py``.
+    .. code-block:: python
+
+        factory.add_arrows(positions=pos_array,
+                           vectors=vec_array,
+                           c='green',
+                           res=15)
+
 
     .. figure:: ../../_static/images/vedo_visualizer_arrows.png
         :alt: vedo_visualizer_arrows.png
@@ -380,14 +388,21 @@ Markers
 
 .. admonition:: Example
 
-    See example in ``examples/Core/Rendering/markers.py``.
+    .. code-block:: python
+
+        factory.add_markers(normal_to=0,
+                            indices=[0, 15, 35],
+                            c='red',
+                            symbol='0')
+
 
     .. figure:: ../../_static/images/vedo_visualizer_markers.png
         :alt: vedo_visualizer_markers.png
         :width: 30%
 
-Symbols
-"""""""
+
+Text
+""""
 
 .. list-table::
     :width: 100%
@@ -401,70 +416,60 @@ Symbols
       - Update
       - Description
 
-    * - ``positions``
-      - :guilabel:`ndarray`
+    * - ``content``
+      - :guilabel:`str`
       - **Required**
       - Optional
-      - List of positions of the *Symbols*.
-
-    * - ``orientations``
-      - :guilabel:`ndarray`
-      - **Required**
-      - Optional
-      - Orientations of the *Symbols*. Can be a same orientation vector for all or an orientation vector per symbol.
+      - Content of the *Text*.
 
     * - ``at``
       - :guilabel:`int`
       - Optional
       - *Disabled*
-      - Sub-window in which the *Symbols* will be rendered.
+      - Sub-window in which the *Text* will be rendered.
 
-    * - ``alpha``
-      - :guilabel:`float`
+    * - ``corner``
+      - :guilabel:`str`
       - Optional
-      - Optional
-      - Opacity of the *Symbols* between 0 and 1.
+      - *Disabled*
+      - Horizontal and vertical positions of the *Text* between T (top), M (middle), B (bottom), R (right), L (left).
 
     * - ``c``
       - :guilabel:`str`
       - Optional
       - Optional
-      - Uniform color of the *Symbols*.
+      - Uniform color of the *Text*.
 
-    * - ``colormap``
+    * - ``font``
       - :guilabel:`str`
       - Optional
       - *Disabled*
-      - Name of the color palette that maps a color to a scalar value.
-
-    * - ``scalar_field``
-      - :guilabel:`ndarray`
-      - Optional
-      - Optional
-      - List of scalar values to define color based on the colormap.
-
-    * - ``symbol``
-      - :guilabel:`str`
-      - Optional
-      - Optional
-      - Symbol of the *Symbols*.
+      - Font of the *Text*.
 
     * - ``size``
-      - :guilabel:`float`
+      - :guilabel:`int`
       - Optional
-      - Optional
-      - Size of the *Symbols*.
+      - *Disabled*
+      - Size of the *Text*.
 
-    * - ``filled``
+    * - ``bold``
       - :guilabel:`bool`
       - Optional
       - Optional
-      - Specifies whether the symbols should be filled or not.
+      - Apply bold style to the *Text*.
+
+    * - ``italic``
+      - :guilabel:`bool`
+      - Optional
+      - Optional
+      - Apply italic style to the *Text*.
+
 
 .. admonition:: Example
 
-    See example in ``examples/Core/Rendering/markers.py``.
+    .. code-block:: python
 
-    .. figure:: ../../_static/images/vedo_visualizer_symbols.png
-        :alt: vedo_visualizer_symbols.png
-        :width: 30%
+        factory.add_text(content='SSD',
+                         corner='TM',
+                         c='black',
+                         bold=True)

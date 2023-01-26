@@ -74,7 +74,7 @@ extlinks = {'Peewee': ('https://docs.peewee-orm.com/en/latest/%s', '%s'),
             'Numpy': ('https://numpy.org/%s', '%s'),
             'PyPi': ('https://pypi.org/project/SimulationSimpleDatabase/%s', '%s'),
             'Vedo': ('https://vedo.embl.es/%s', '%s'),
-            'VedoObject': ('https://vedo.embl.es/autodocs/content/vedo/%s', '%s')
+            'Open3D': ('http://www.open3d.org/', '%s')
             }
 
 autodoc_mock_imports = ['Sofa']

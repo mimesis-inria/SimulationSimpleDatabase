@@ -1,17 +1,18 @@
+from typing import Optional
 import Sofa
 
-from SSD.SOFA.Rendering.VedoFactory import VedoFactory
+from SSD.SOFA.Rendering.UserAPI import UserAPI
 
 
 class Caduceus(Sofa.Core.Controller):
 
-    def __init__(self, root, database=None, *args, **kwargs):
+    def __init__(self, root, factory: Optional[UserAPI] = None, *args, **kwargs):
         Sofa.Core.Controller.__init__(self, *args, **kwargs)
 
         self.root: Sofa.Core.Node = root
 
         # Create the factory
-        self.factory = VedoFactory(self.root, database=database) if database is not None else None
+        self.factory = factory
 
         # Root
         self.root.gravity.value = [0, -1000, 0]

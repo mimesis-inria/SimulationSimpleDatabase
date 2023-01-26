@@ -17,6 +17,8 @@ The **SSD** project has the following dependencies:
     |                        | :Numpy:`Numpy <>`     | **Required** | :guilabel:`pip install numpy`                      |
     +------------------------+-----------------------+--------------+----------------------------------------------------+
     | ``SSD.Core.Rendering`` | :Vedo:`Vedo <>`       | **Required** | :guilabel:`pip install vedo`                       |
+    |                        +-----------------------+--------------+----------------------------------------------------+
+    |                        | :Open3D:`Open3D <>`   | **Required** | :guilabel:`pip install open3d`                     |
     +------------------------+-----------------------+--------------+----------------------------------------------------+
     | ``SSD.SOFA``           | :SP3:`SofaPython3 <>` | Optional     | :SP3:`Follow instructions <menu/Compilation.html>` |
     +------------------------+-----------------------+--------------+----------------------------------------------------+

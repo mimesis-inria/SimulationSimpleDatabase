@@ -734,6 +734,14 @@ class Database:
         # Renaming
         self.__tables[table_name].remove_field(field_name)
 
+    def delete(self):
+        """
+        Delete the Database file.
+        """
+
+        if exists(database_path := join(self.__database_dir, f'{self.__database_name}.db')):
+            remove(database_path)
+
     def export(self,
                exporter: str,
                filename: str,

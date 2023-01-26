@@ -6,81 +6,89 @@ Creating a Visualizer
 
 The *Visualizer* is managing the rendering of visual objects.
 It uses *Actors* to create and update objects instances.
-The visual data is received from a *Database*, thus it requires one to connect to (it can either be an existing one
-either create a new one by itself).
-The *Database* must obviously be the same for the *Factory* and the *Visualizer*, you can access the *Database* of one
-of them using the ``get_database`` method.
+The visual data is received from a *Database*, thus it requires one to connect to.
+The *Database* must obviously be the same for the *Factory* and the *Visualizer*.
 There are several ways to create them, you can choose the more convenient regarding your applications:
 
 .. code-block:: python
 
-    from SSD.Core.Storage.Database import Database
-    from SSD.Core.Rendering.Factory import Factory
+    from SSD.Core.Rendering.UserAPI import UserAPI
     from SSD.Core.Rendering.Visualizer import Visualizer
 
-    # Create a new Database then a new Factory and a new Visualizer
-    db = Database(database_dir='my_directory',
-                  database_name='my_database').new(remove_existing=True)
-    factory = Factory(database=db)
-    visualizer = Visualizer(database=db)
-
-    # Create only a new Factory (the Database will be automatically created) and then a new Visualizer
-    factory = Factory(database_dir='my_directory',
+    # OPTION 1: Create a new Factory and launch the Visualizer from this Factory
+    factory = UserAPI(database_dir='my_directory',
                       database_name='my_database',
                       remove_existing=True)
-    visualizer = Visualizer(database=factory.get_database())
-
-    # Create only a new Visualizer (the Database will be automatically created) and then a new Factory
-    visualizer = Visualizer(database_dir='my_directory',
-                            database_name='my_database',
-                            remove_existing=True)
-    factory = Factory(database=factory.get_database())
-
-
-Initializing a Visualizer
--------------------------
-
-The *Visualizer* must be initialized **once all the object are added** to the *Factory*:
-
-.. code-block:: python
-
-    # Add objects to the Factory
     factory.add_mesh(...)
-    factory.add_points(...)
+    factory.launch_visualizer(backend='vedo')
 
-    # Render them in the Visualizer
-    visualize.init_visualizer()
+    # OPTION 2: Create a new Factory and connect to a Visualizer manually
+    factory = UserAPI(database_dir='my_directory',
+                      database_name='my_database',
+                      remove_existing=True)
+    factory.add_mesh(...)
+    Visualizer.launch(database_dir='my_directory',
+                      database_name='my_database',
+                      backend='vedo')
+    factory.connect_visualizer()
 
 
-The rendering window should the appear with a "start" button.
-You can interact with the objects to place the camera in the desired position, since the interactions will be disabled
-during the execution of your code (otherwise the rendering window will stay master and you following code will not be
-executed).
-Once you press the "start" button, interactions are disabled and the next part of the code is executed.
+
+.. warning::
+    The *Visualizer* must be initialized **once all the object are added** to the *Factory*.
+
+
+.. note::
+    Several *Factories* can be connected to a single *Visualizer*.
+    To do so, you must choose the option 2 with each call to ``factory.connect_visualizer`` done in a separate thread.
+
+
+In both cases, several options are available when launching the *Visualizer*:
+
+.. list-table::
+    :width: 100%
+    :widths: 15 10 75
+    :header-rows: 1
+    :class: tight-table
+
+    * - Field
+      - Type
+      - Description
+
+    * - ``backend``
+      - :guilabel:`str`
+      - The name of the *Visualizer* to use (either ``vedo`` or ``open3d``).
+
+    * - ``offscreen``
+      - :guilabel:`bool`
+      - If True, the visualization will be done offscreen.
+
+    * - ``fps``
+      - :guilabel:`int`
+      - Maximum frame rate.
 
 
 Updating a Visualizer
 ---------------------
 
-The *Visualizer* only updates the rendering view when a call to ``render`` is triggered.
-This method can either be called from the *Visualizer* itself or from the *Factory* since both components are connected
-to a signal that trigger a synchronization:
-
- * in the *Factory*, a new row can be edited in all *Tables*;
- * in the *Visualizer*, all instances are updated; if a *Table* was not edited for this step, an empty line is added to
-   keep the same number of rows in all *Tables*.
+The *Visualizer* updates the rendering view when a call to ``render`` is triggered in the *Factory.
+Between two calls of the ``render`` method, visual object data can be updated several times per object.
+If an object was not updated during the step, an empty line is added to the corresponding *Table* in the *Database*
+to keep the same number of rows in all *Tables*.
 
 .. code-block:: python
 
-    # Update objects and render from the Visualizer
-    factory.update_mesh(...)
-    factory.update_points(...)
-    visualizer.render()
-
-    # Update objects and render from the Factory
     factory.update_mesh(...)
     factory.update_points(...)
     factory.render()
+
+
+.. warning::
+    Do not forget to close the *Visualizer* at the end of of your simulation:
+
+    .. code-block:: python
+
+        factor.close()
 
 
 Replay Visualizer
@@ -93,9 +101,13 @@ The *ReplayVisualizer* only requires to be initialized to be launched:
 
 .. code-block:: python
 
-    from SSD.Core.Rendering.ReplayVisualizer import ReplayVisualizer
+    from SSD.Core.Rendering.Replay import Replay
 
     # Launch the ReplayVisualizer
-    visualizer = ReplayVisualizer(database_dir='my_directory',
-                                  database_name='my_database')
-    visualizer.init_visualizer()
+    Replay(database_dir='my_directory',
+           database_name='my_database',
+           backend='open3d').launch()
+
+
+.. note::
+    It is totally possible to use the ``open3D`` backend with a *Database* previously used with ``vedo`` and vice-versa.

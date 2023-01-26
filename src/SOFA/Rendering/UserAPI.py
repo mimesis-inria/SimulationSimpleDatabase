@@ -3,11 +3,11 @@ from numpy import array, ndarray, tile
 import Sofa
 
 from SSD.Core.Storage.Database import Database
-from SSD.Core.Rendering.VedoFactory import VedoFactory as _VedoFactory
+from SSD.Core.Rendering.UserAPI import UserAPI as _UserAPI
 from SSD.SOFA.utils import error_message
 
 
-class VedoFactory(Sofa.Core.Controller):
+class UserAPI(Sofa.Core.Controller):
 
     def __init__(self,
                  root: Sofa.Core.Node,
@@ -15,20 +15,21 @@ class VedoFactory(Sofa.Core.Controller):
                  database_dir: str = '',
                  database_name: Optional[str] = None,
                  remove_existing: bool = False,
+                 non_storing: bool = False,
                  idx_instance: int = 0,
                  *args, **kwargs):
         """
-            A Factory to manage objects to render and save in the Database.
-            User interface to create and update Vedo objects.
-            Additional callbacks to automatically get SOFA objects Data.
+        The UserAPI is a Factory used to easily create and update visual objects in the Visualizer.
+        This SOFA version brings additional callbacks to automatically get SOFA objects Data.
 
-            :param root: Root node of the sce graph.
-            :param database: Database to connect to.
-            :param database_dir: Directory which contains the Database file (used if 'database' is not defined).
-            :param database_name: Name of the Database to connect to (used if 'database' is not defined).
-            :param remove_existing: If True, overwrite a Database with the same path.
-            :param idx_instance: If several Factories must be created, specify the index of the Factory.
-            """
+        :param root: Root node of the sce graph.
+        :param database: Database to connect to.
+        :param database_dir: Directory which contains the Database file (used if 'database' is not defined).
+        :param database_name: Name of the Database to connect to (used if 'database' is not defined).
+        :param remove_existing: If True, overwrite a Database with the same path.
+        :param non_storing: If True, the Database will not be stored.
+        :param idx_instance: If several Factories must be created, specify the index of the Factory.
+        """
 
         Sofa.Core.Controller.__init__(self, *args, **kwargs)
 
@@ -37,77 +38,64 @@ class VedoFactory(Sofa.Core.Controller):
         self.root.addChild('factory')
         self.root.factory.addObject(self)
 
-        self.__factory: _VedoFactory = _VedoFactory(database=database,
-                                                    database_dir=database_dir,
-                                                    database_name=database_name,
-                                                    remove_existing=remove_existing,
-                                                    idx_instance=idx_instance)
+        self.__factory: _UserAPI = _UserAPI(database=database,
+                                            database_dir=database_dir,
+                                            database_name=database_name,
+                                            remove_existing=remove_existing,
+                                            non_storing=non_storing,
+                                            idx_instance=idx_instance)
         self.__updates: Dict[int, Tuple[str, Any]] = {}
 
-    @classmethod
-    def __get_position_data(cls,
-                            position_object: Sofa.Core.Base) -> ndarray:
-
-        # Try to access Data field
-        if (data := position_object.getData('positions')) is None:
-            if (data := position_object.getData('position')) is None:
-                positions = None
-            else:
-                positions = data.value
-        else:
-            positions = data.value
-
-        # Check value
-        if positions is None or len(positions) == 0:
-            error_message(f"The object '{position_object.getName()}' does not contain any position data or contains an "
-                          f"empty position array.")
-        positions = array(positions) if type(positions[0]) != ndarray else positions
-        return positions[:, :3]
-
-    @classmethod
-    def __get_force_data(cls,
-                         force_object: Sofa.Core.Base) -> ndarray:
-
-        # Try to access Data field
-        if (data := force_object.getData('forces')) is None:
-            if (data := force_object.getData('force')) is None:
-                forces = None
-            else:
-                forces = data.value
-        else:
-            forces = data.value
-
-        # Check value
-        if forces is None or len(forces) == 0:
-            error_message(f"The object '{force_object.getName()} does not contain any force data or contains an empty "
-                          f"force array.")
-        return forces
-
-    @classmethod
-    def __get_topology_data(cls,
-                            topology_object: Sofa.Core.Base,
-                            cell_type: str) -> ndarray:
-
-        # Check cell type
-        available_cell_types = ['edges', 'triangles', 'quads', 'tetrahedra', 'hexahedra']
-        if cell_type not in available_cell_types:
-            error_message(f"Wrong cell type value '{cell_type}'. The cell type must be in {available_cell_types}.")
-
-        # Try to access Data field
-        if (data := topology_object.getData(cell_type)) is None:
-            cells = None
-        else:
-            cells = data.value
-
-        # Check value
-        if cells is None or len(cells) == 0:
-            error_message(f"The object {topology_object.getName()} does not contain any topology data or contains an "
-                          f"empty topology array with cell type value '{cell_type}'.")
-        return cells
-
-    def onAnimateEndEvent(self, _):
+    def get_database(self) -> Database:
         """
-        At the end of a time step.
+        Get the Database instance.
+        """
+
+        return self.__factory.get_database()
+
+    def get_database_path(self) -> Tuple[str]:
+        """
+        Get the path to the Database.
+        """
+
+        return self.__factory.get_database_path()
+
+    def launch_visualizer(self,
+                          backend: str = 'vedo',
+                          offscreen: bool = False,
+                          fps: int = 20) -> None:
+        """
+        Launch the Visualizer.
+
+        :param backend: The name of the Visualizer to use (either 'vedo' or 'open3d').
+        :param offscreen: If True, the visualization is done offscreen.
+        :param fps: Max frame rate.
+        """
+
+        self.__factory.launch_visualizer(backend=backend,
+                                         offscreen=offscreen,
+                                         fps=fps)
+
+    def connect_visualizer(self,
+                           offscreen: bool = False):
+        """
+        Connect the Factory to an existing Visualizer.
+
+        :param offscreen: If True, the visualization is done offscreen.
+        """
+
+        self.__factory.connect_visualizer(offscreen=offscreen)
+
+    def close(self):
+        """
+        Close the Visualization.
+        """
+
+        self.__factory.close()
+
+    def onAnimateEndEvent(self, _) -> None:
+        """
+        Event called at the end of a time step.
         """
 
         # Execute all callbacks
@@ -143,8 +131,77 @@ class VedoFactory(Sofa.Core.Controller):
         # Execute rendering
         self.__factory.render()
 
+    @classmethod
+    def __get_position_data(cls,
+                            position_object: Sofa.Core.Base) -> ndarray:
+
+        # Try to access Data field
+        if (data := position_object.getData('positions')) is None:
+            if (data := position_object.getData('position')) is None:
+                positions = None
+            else:
+                positions = data.value
+        else:
+            positions = data.value
+
+        # Check value
+        if positions is None:
+            error_message(f"The object '{position_object.getName()}' does not contain any position data.")
+        elif len(positions) == 0:
+            error_message(f"The object '{position_object.getName()}' contains an empty position array.")
+
+        positions = array(positions) if type(positions[0]) != ndarray else positions
+        return positions[:, :3]
+
+    @classmethod
+    def __get_force_data(cls,
+                         force_object: Sofa.Core.Base) -> ndarray:
+
+        # Try to access Data field
+        if (data := force_object.getData('forces')) is None:
+            if (data := force_object.getData('force')) is None:
+                forces = None
+            else:
+                forces = data.value
+        else:
+            forces = data.value
+
+        # Check value
+        if forces is None:
+            error_message(f"The object '{force_object.getName()} does not contain any force data.")
+        elif len(forces) == 0:
+            error_message(f"The object '{force_object.getName()} contains an empty force array.")
+
+        return forces
+
+    @classmethod
+    def __get_topology_data(cls,
+                            topology_object: Sofa.Core.Base,
+                            cell_type: str) -> ndarray:
+
+        # Check cell type
+        available_cell_types = ['edges', 'triangles', 'quads', 'tetrahedra', 'hexahedra']
+        if cell_type not in available_cell_types:
+            error_message(f"Wrong cell type value '{cell_type}'. The cell type must be in {available_cell_types}.")
+
+        # Try to access Data field
+        if (data := topology_object.getData(cell_type)) is None:
+            cells = None
+        else:
+            cells = data.value
+
+        # Check value
+        if cells is None:
+            error_message(f"The object {topology_object.getName()} does not contain any topology data with cell type "
+                          f"value '{cell_type}'.")
+        elif len(cells) == 0:
+            error_message(f"The object {topology_object.getName()} contains an empty topology array with cell type "
+                          f"value '{cell_type}'.")
+
+        return cells
+
     def __get_object(self,
-                     object_path: str):
+                     object_path: str) -> Sofa.Core.Base:
 
         # Check the path
         if object_path[0] != '@' or len(object_path[1:].split('.')) == 0:
@@ -180,19 +237,19 @@ class VedoFactory(Sofa.Core.Controller):
                  topology_object: Optional[str] = None,
                  cell_type: str = 'triangles',
                  animated=True,
-                 at: int = -1,
+                 at: int = 0,
                  alpha: float = 1.,
                  c: str = 'green',
                  colormap: str = 'jet',
                  scalar_field: ndarray = array([]),
                  wireframe: bool = False,
-                 compute_normals: bool = True,
-                 line_width: float = 0.):
+                 line_width: float = -1.) -> int:
         """
         Add a new Mesh to the Factory.
 
         :param position_object: Path to an object containing position and eventually topology Data.
-        :param topology_object: Path to an object containing topology Data.
+        :param topology_object: Path to an object containing topology Data. If not defined, topology data will be
+                                searched in 'position_object'.
         :param cell_type: Type of the cells ('edges', 'triangles', 'quads', 'tetrahedra', 'hexahedra').
         :param animated: If True, the object will be automatically updated at each step.
         :param at: Index of the window in which to Mesh will be rendered.
@@ -201,7 +258,6 @@ class VedoFactory(Sofa.Core.Controller):
         :param colormap: Colormap scheme name.
         :param scalar_field: Scalar values used to color the Mesh regarding the colormap.
         :param wireframe: If True, the Mesh will be rendered as wireframe.
-        :param compute_normals: If True, the normals of the Mesh are pre-computed.
         :param line_width: Width of the edges of the faces.
         """
 
@@ -226,7 +282,6 @@ class VedoFactory(Sofa.Core.Controller):
                                       colormap=colormap,
                                       scalar_field=scalar_field,
                                       wireframe=wireframe,
-                                      compute_normals=compute_normals,
                                       line_width=line_width)
 
         # Register object
@@ -240,7 +295,7 @@ class VedoFactory(Sofa.Core.Controller):
                     alpha: Optional[float] = None,
                     c: Optional[str] = None,
                     scalar_field: Optional[ndarray] = None,
-                    wireframe: Optional[bool] = None):
+                    wireframe: Optional[bool] = None) -> None:
         """
         Update an existing Mesh in the Factory.
 
@@ -267,17 +322,17 @@ class VedoFactory(Sofa.Core.Controller):
                    position_object: str,
                    position_indices: Optional[ndarray] = None,
                    animated=True,
-                   at: int = -1,
+                   at: int = 0,
                    alpha: float = 1.,
                    c: str = 'green',
                    colormap: str = 'jet',
                    scalar_field: ndarray = array([]),
-                   point_size: int = 4):
+                   point_size: int = 4) -> int:
         """
         Add a new Mesh to the Factory.
 
-        :param position_object:
-        :param position_indices:
+        :param position_object: Path to an object containing position Data.
+        :param position_indices: Indices of the positions to extract. If None, all the positions are used.
         :param animated: If True, the object will be automatically updated at each step.
         :param at: Index of the window in which to Mesh will be rendered.
         :param alpha: Mesh opacity.
@@ -314,7 +369,7 @@ class VedoFactory(Sofa.Core.Controller):
                       alpha: Optional[float] = None,
                       c: Optional[str] = None,
                       scalar_field: Optional[ndarray] = None,
-                      point_size: Optional[int] = None):
+                      point_size: Optional[int] = None) -> None:
         """
         Update an existing Point Cloud in the Factory.
 
@@ -333,35 +388,40 @@ class VedoFactory(Sofa.Core.Controller):
                                      scalar_field=scalar_field,
                                      point_size=point_size)
 
-    ###########
-    # VECTORS #
-    ###########
+    ##########
+    # ARROWS #
+    ##########
 
-    def add_vectors(self,
-                    position_object: str,
-                    vector_object: Optional[str] = None,
-                    dest_object: Optional[str] = None,
-                    start_indices: Optional[ndarray] = None,
-                    end_indices: Optional[ndarray] = None,
-                    scale: float = 1.,
-                    animated: bool = True,
-                    at: int = -1,
-                    alpha: float = 1.,
-                    c: str = 'green',
-                    res: int = 12):
+    def add_arrows(self,
+                   position_object: str,
+                   vector_object: Optional[str] = None,
+                   dest_object: Optional[str] = None,
+                   start_indices: Optional[ndarray] = None,
+                   end_indices: Optional[ndarray] = None,
+                   scale: float = 1.,
+                   animated: bool = True,
+                   at: int = 0,
+                   alpha: float = 1.,
+                   c: str = 'green',
+                   colormap: str = 'jet',
+                   scalar_field: ndarray = array([]),
+                   res: int = 12) -> int:
         """
         Add new Arrows to the Factory.
 
-        :param position_object:
-        :param vector_object:
-        :param dest_object:
-        :param start_indices:
-        :param end_indices:
-        :param scale:
-        :param animated:
+        :param position_object: Path to an object containing start position Data.
+        :param vector_object: Path to an object containing vector Data. If None, vectors will be computed from
+                              'dest_object' end positions.
+        :param dest_object: Path to an object containing end position Data.
+        :param start_indices: Indices of the start positions to extract.
+        :param end_indices: Indices of the vectors or the end positions to extract.
+        :param scale: Scale factor to apply to vectors.
+        :param animated: If True, the object will be automatically updated at each step.
         :param at: Index of the window in which to Mesh will be rendered.
         :param alpha: Arrows opacity.
         :param c: Arrows color.
+        :param colormap: Colormap scheme name.
+        :param scalar_field: Scalar values used to color the Arrows regarding the colormap.
         :param res: Circular resolution of the arrows.
         """
 
@@ -396,6 +456,8 @@ class VedoFactory(Sofa.Core.Controller):
                                         at=at,
                                         alpha=alpha,
                                         c=c,
+                                        colormap=colormap,
+                                        scalar_field=scalar_field,
                                         res=res)
 
         # Register object
@@ -414,7 +476,7 @@ class VedoFactory(Sofa.Core.Controller):
                       vectors: Optional[ndarray] = None,
                       alpha: Optional[float] = None,
                       c: Optional[str] = None,
-                      res: Optional[int] = None):
+                      scalar_field: Optional[ndarray] = None) -> None:
         """
         Update existing Arrows in the Factory.
 
@@ -423,7 +485,7 @@ class VedoFactory(Sofa.Core.Controller):
         :param vectors: Vectors of the Arrows.
         :param alpha: Arrows opacity.
         :param c: Arrows color.
-        :param res: Circular resolution of the arrows.
+        :param scalar_field: Scalar values used to color the Arrows regarding the colormap.
         """
 
         self.__factory.update_arrows(object_id=object_id,
@@ -431,7 +493,7 @@ class VedoFactory(Sofa.Core.Controller):
                                      vectors=vectors,
                                      alpha=alpha,
                                      c=c,
-                                     res=res)
+                                     scalar_field=scalar_field)
 
     ###########
     # MARKERS #
@@ -441,12 +503,14 @@ class VedoFactory(Sofa.Core.Controller):
                     normal_to: int,
                     indices: ndarray,
                     animated: bool = True,
-                    at: int = -1,
+                    at: int = 0,
                     alpha: float = 1.,
                     c: str = 'green',
+                    colormap: str = 'jet',
+                    scalar_field: ndarray = array([]),
                     symbol: str = 'o',
-                    size: float = 0.1,
-                    filled: bool = True):
+                    size: float = 1.,
+                    filled: bool = True) -> int:
         """
         Add new Markers to the Factory.
 
@@ -456,6 +520,8 @@ class VedoFactory(Sofa.Core.Controller):
         :param at: Index of the window in which to Mesh will be rendered.
         :param alpha: Markers opacity.
         :param c: Markers color.
+        :param colormap: Colormap scheme name.
+        :param scalar_field: Scalar values used to color the Markers regarding the colormap.
         :param symbol: Symbol of a Marker.
         :param size: Size of a Marker.
         :param filled: If True, the symbol is filled.
@@ -467,6 +533,8 @@ class VedoFactory(Sofa.Core.Controller):
                                          at=at,
                                          alpha=alpha,
                                          c=c,
+                                         colormap=colormap,
+                                         scalar_field=scalar_field,
                                          symbol=symbol,
                                          size=size,
                                          filled=filled)
@@ -481,9 +549,10 @@ class VedoFactory(Sofa.Core.Controller):
                        indices: Optional[ndarray] = None,
                        alpha: Optional[float] = None,
                        c: Optional[str] = None,
+                       scalar_field: Optional[ndarray] = None,
                        symbol: Optional[str] = None,
                        size: Optional[float] = None,
-                       filled: Optional[bool] = None):
+                       filled: Optional[bool] = None) -> None:
         """
         Update existing Markers in the Factory.
 
@@ -492,6 +561,7 @@ class VedoFactory(Sofa.Core.Controller):
         :param indices: Indices of the DOFs of the object where the Markers will be centered.
         :param alpha: Markers opacity.
         :param c: Markers color.
+        :param scalar_field: Scalar values used to color the Markers regarding the colormap.
         :param symbol: Symbol of a Marker.
         :param size: Size of a Marker.
         :param filled: If True, the symbol is filled.
@@ -502,6 +572,7 @@ class VedoFactory(Sofa.Core.Controller):
                                       indices=indices,
                                       alpha=alpha,
                                       c=c,
+                                      scalar_field=scalar_field,
                                       symbol=symbol,
                                       size=size,
                                       filled=filled)
@@ -516,9 +587,9 @@ class VedoFactory(Sofa.Core.Controller):
                  corner: str = 'BR',
                  c: str = 'black',
                  font: str = 'Arial',
-                 size: float = 1.,
+                 size: int = -1,
                  bold: bool = False,
-                 italic: bool = False):
+                 italic: bool = False) -> int:
         """
         Add new 2D Text to the Factory.
 
@@ -547,15 +618,21 @@ class VedoFactory(Sofa.Core.Controller):
     def update_text(self,
                     object_id: int,
                     content: Optional[str] = None,
-                    c: Optional[str] = None):
+                    c: Optional[str] = None,
+                    bold: Optional[bool] = None,
+                    italic: Optional[bool] = None) -> None:
         """
         Update existing Text in the Factory.
 
         :param object_id: Index of the object (follows the global order of creation).
         :param content: Content of the Text.
         :param c: Text color.
+        :param bold: Apply bold style to the Text.
+        :param italic: Apply italic style to the Text.
         """
 
         self.__factory.update_text(object_id=object_id,
                                    content=content,
-                                   c=c)
+                                   c=c,
+                                   bold=bold,
+                                   italic=italic)

@@ -1,6 +1,6 @@
 import Sofa
 
-from SSD.SOFA.Rendering.VedoVisualizer import VedoVisualizer
+from SSD.SOFA.Rendering.UserAPI import UserAPI
 from Liver import Liver
 
 USE_GUI = True
@@ -16,9 +16,9 @@ def createScene(node):
 
     # The script is launched with "python3" then create a Visualizer
     else:
-        visualizer = VedoVisualizer(database_name='liver', remove_existing=True)
-        node.addObject(Liver(node, database=visualizer.get_database(), name='Controller'))
-        return visualizer
+        api = UserAPI(root=node, database_name='liver', remove_existing=True)
+        node.addObject(Liver(node, factory=api, name='Controller'))
+        return api
 
 
 if __name__ == '__main__':
@@ -27,10 +27,12 @@ if __name__ == '__main__':
 
     # Init the scene graph and the Visualizer
     root = Sofa.Core.Node('root')
-    viewer = createScene(root)
+    factory = createScene(root)
     Sofa.Simulation.init(root)
-    viewer.init_visualizer()
+    factory.launch_visualizer()
 
     # Run a few steps of simulation and render them
     for _ in range(300):
         Sofa.Simulation.animate(root, root.dt.value)
+
+    factory.close()

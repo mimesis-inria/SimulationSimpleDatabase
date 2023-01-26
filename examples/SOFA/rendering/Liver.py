@@ -1,21 +1,22 @@
+from typing import Optional
 from numpy.random import uniform
 from numpy.linalg import norm
 from numpy import zeros, array
 import Sofa
 
-from SSD.SOFA.Rendering.VedoFactory import VedoFactory
+from SSD.SOFA.Rendering.UserAPI import UserAPI
 
 
 class Liver(Sofa.Core.Controller):
 
-    def __init__(self, root, database=None, *args, **kwargs):
+    def __init__(self, root, factory: Optional[UserAPI] = None, *args, **kwargs):
         Sofa.Core.Controller.__init__(self, *args, **kwargs)
 
         self.root: Sofa.Core.Node = root
         self.step: int = 0
 
         # Create the Factory
-        self.factory = VedoFactory(self.root, database=database) if database is not None else None
+        self.factory = factory
 
         # Root
         self.root.dt.value = 0.02
@@ -61,7 +62,6 @@ class Liver(Sofa.Core.Controller):
 
         # Add object to the factory
         if self.factory is not None:
-
             # Window 1: Liver only (id=0)
             self.factory.add_mesh(position_object='@liver.visual.LiverOgl',
                                   cell_type='triangles', animated=True,
@@ -71,9 +71,9 @@ class Liver(Sofa.Core.Controller):
             self.factory.add_mesh(position_object='@liver.visual.LiverOgl',
                                   cell_type='triangles', animated=True,
                                   at=1, c='green8', wireframe=True, line_width=1)
-            self.factory.add_vectors(position_object='@liver.surface.SurfaceMO', vector_object='@liver.surface.CFF',
-                                     animated=True, start_indices=array([33]),
-                                     at=1, scale=0.5e-3, c='green3', res=20)
+            self.factory.add_arrows(position_object='@liver.surface.SurfaceMO', vector_object='@liver.surface.CFF',
+                                    animated=True, start_indices=array([33]),
+                                    at=1, scale=0.5e-3, c='green3', res=20)
 
             # Window 3: Grid (id=3 & id=4) + Constraint (id=5)
             self.factory.add_points(position_object='@liver.GridMO', animated=True,
