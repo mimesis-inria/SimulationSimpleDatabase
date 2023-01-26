@@ -96,9 +96,12 @@ def execute_cli():
 
     description = "Command Line Interface dedicated to SSD examples."
     parser = ArgumentParser(prog='SSD', description=description)
-    parser.add_argument('-c', '--clean', help='clean the example repository.', action='store_true')
     parser.add_argument('-g', '--get', help='get the full example repository locally.', action='store_true')
+    parser.add_argument('-c', '--clean', help='clean the example repository.', action='store_true')
     parser.add_argument('-r', '--run', type=str, help='run one of the demo sessions.', metavar='')
+    backends = ['vedo', 'open3d']
+    parser.add_argument('-b', '--backend', type=str, help=f'specify the visualization backend among {backends}',
+                        metavar='')
     args = parser.parse_args()
 
     # Get a copy of the example repository if pip installed from PyPi.org
@@ -128,11 +131,9 @@ def execute_cli():
         clean_examples_dir()
         return
 
-    examples = {'arrows': 'Core.rendering.arrows.py',
-                'markers': 'Core.rendering.markers.py',
-                'mesh': 'Core.rendering.mesh.py',
-                'point_cloud': 'Core.rendering.point_cloud.py',
-                'symbols': 'Core.rendering.symbols.py',
+    examples = {'visualization': 'Core.rendering.visualization.py',
+                'replay': 'Core.rendering.replay.py',
+                'offscreen': 'Core.rendering.offscreen.py',
                 'foreignkey': 'Core.storage.foreignkeyDB.py',
                 'reading': 'Core.storage.readingDB.py',
                 'signal': 'Core.storage.signalDB.py',
@@ -163,6 +164,13 @@ def execute_cli():
                 copy_examples_dir()
             examples_dir = join(getcwd(), 'SSD_examples')
 
+        # Get the backend
+        visualizer = []
+        if (backend := args.backend) is not None:
+            if backend.lower() not in backends:
+                raise ValueError(f"The backend '{backend}' is not available. Must be in {backends}")
+            visualizer.append(backend.lower())
+
         # Run the example
         if type(examples[example]) == str:
             root, repo, script, _ = examples[example].split('.')
@@ -171,7 +179,7 @@ def execute_cli():
                 quit(print(f"SOFA bindings were not found, unable to run {example} example "
                            f"({join(root, repo, script)}.py)"))
             # Run example
-            run([f'{executable}', f'{script}.py'], cwd=join(examples_dir, root, repo))
+            run([f'{executable}', f'{script}.py'] + visualizer, cwd=join(examples_dir, root, repo))
         else:
             root, repo, example_record, extension = examples[example][0].split('.')
             _, _, example_replay, _ = examples[example][1].split('.')
@@ -184,17 +192,17 @@ def execute_cli():
             if example == 'caduceus':
                 if not exists('caduceus.db'):
                     print("Recording data in offscreen mode, please wait...")
-                    run([f'{executable}', f'{example_record}.py'], cwd=join(examples_dir, root, repo))
+                    run([f'{executable}', f'{example_record}.py'] + visualizer, cwd=join(examples_dir, root, repo))
                 run([f'{executable}', f'{example_replay}.py'], cwd=join(examples_dir, root, repo))
             else:
                 if exists('liver.db'):
                     user = input("An existing Database was found for this demo. Replay it (y/n):")
                     if user.lower() in ['no', 'n']:
-                        run([f'{executable}', f'{example_record}.py'], cwd=join(examples_dir, root, repo))
+                        run([f'{executable}', f'{example_record}.py'] + visualizer, cwd=join(examples_dir, root, repo))
                     else:
-                        run([f'{executable}', f'{example_replay}.py'], cwd=join(examples_dir, root, repo))
+                        run([f'{executable}', f'{example_replay}.py'] + visualizer, cwd=join(examples_dir, root, repo))
                 else:
-                    run([f'{executable}', f'{example_record}.py'], cwd=join(examples_dir, root, repo))
+                    run([f'{executable}', f'{example_record}.py'] + visualizer, cwd=join(examples_dir, root, repo))
 
     # No command
     else:

@@ -1,11 +1,12 @@
 from vedo import Mesh
 from numpy.random import random
+from sys import argv
 
 from SSD.Core.Rendering.UserAPI import UserAPI
 from SSD.Core.Rendering.Replay import Replay
 
 # 1. Create the visualization API
-factory = UserAPI(database_name='vedo_offscreen',
+factory = UserAPI(database_name='offscreen',
                   remove_existing=True)
 
 # 2. Create the object to render
@@ -30,6 +31,7 @@ factory.add_points(positions=armadillo.points(),
 factory.launch_visualizer(offscreen=True)
 
 # 5. Run a few steps
+print('Running offscreen...')
 for step in range(100):
     updated_armadillo = armadillo.clone().points(armadillo.points() + 0.1 * random(armadillo.points().shape))
     # 5.1. Update the Mesh
@@ -42,6 +44,7 @@ for step in range(100):
     factory.render()
 
 # 6. Close the visualization, replay steps
+print('...then replay.')
 factory.close()
-Replay(database_name='vedo_offscreen',
-       backend='vedo').launch()
+Replay(database_name='offscreen',
+       backend='vedo' if len(argv) == 1 else argv[1]).launch()

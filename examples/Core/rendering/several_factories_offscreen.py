@@ -1,5 +1,6 @@
 from vedo import Mesh
 from numpy.random import random
+from sys import argv
 
 from SSD.Core.Storage.Database import Database
 from SSD.Core.Rendering.UserAPI import UserAPI
@@ -64,4 +65,5 @@ if __name__ == '__main__':
     # 5. Close the Factories & Replay steps
     for simu in simulations:
         simu.close()
-    Replay(database_name='several_factories_offscreen').launch()
+    Replay(database_name='several_factories_offscreen',
+           backend='vedo' if len(argv) == 1 else argv[1]).launch()

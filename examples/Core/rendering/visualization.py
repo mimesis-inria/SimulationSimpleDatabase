@@ -1,11 +1,12 @@
 from vedo import Mesh
 from numpy import arange
 from numpy.random import random
+from sys import argv
 
 from SSD.Core.Rendering.UserAPI import UserAPI
 
 # 1. Create the visualization API
-factory = UserAPI(database_name='vedo_example',
+factory = UserAPI(database_name='visualization',
                   remove_existing=True)
 
 # 2. Create the object to render
@@ -43,7 +44,7 @@ factory.add_text(content='0',
                  bold=True)
 
 # 4. Initialize the visualization
-factory.launch_visualizer(backend='vedo',
+factory.launch_visualizer(backend='vedo' if len(argv) == 1 else argv[1],
                           fps=20)
 
 # 5. Run a few steps

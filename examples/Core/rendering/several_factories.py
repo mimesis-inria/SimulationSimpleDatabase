@@ -1,6 +1,7 @@
 from vedo import Mesh
 from numpy.random import random
 from threading import Thread
+from sys import argv
 
 from SSD.Core.Storage.Database import Database
 from SSD.Core.Rendering.UserAPI import UserAPI
@@ -54,7 +55,7 @@ if __name__ == '__main__':
 
     # 3. Connect a single Visualizer to the Factories
     # 3.1. Create a new Visualizer
-    Visualizer.launch(backend='vedo',
+    Visualizer.launch(backend='vedo' if len(argv) == 1 else argv[1],
                       database_name='several_factories',
                       nb_clients=nb_simu)
     # 3.2. Connect each Factory to the Visualizer (must be launched in thread)
