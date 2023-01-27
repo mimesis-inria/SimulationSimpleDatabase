@@ -649,8 +649,8 @@ class Database:
         """
 
         self.__database.close()
-        if erase_file:
-            remove(join(self.__database_dir, f'{self.__database_name}.db'))
+        if erase_file and exists(database_path := join(self.__database_dir, f'{self.__database_name}.db')):
+            remove(database_path)
 
     def rename_table(self,
                      table_name: str,
@@ -733,14 +733,6 @@ class Database:
 
         # Renaming
         self.__tables[table_name].remove_field(field_name)
-
-    def delete(self):
-        """
-        Delete the Database file.
-        """
-
-        if exists(database_path := join(self.__database_dir, f'{self.__database_name}.db')):
-            remove(database_path)
 
     def export(self,
                exporter: str,

@@ -154,7 +154,7 @@ class UserAPI:
             self.__socket = None
 
         if self.__non_storing:
-            self.__database.delete()
+            self.__database.close(erase_file=True)
 
     # ###########################
     # OBJECTS CREATION & UPDATE #

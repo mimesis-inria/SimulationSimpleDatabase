@@ -53,14 +53,15 @@ class BaseReplay:
         """
 
         # 1. Sort the Table names per factory and per object indices
-        table_names = self.database.get_tables()
+        table_names = self.database.get_tables(only_names=True)
         sorted_table_names = []
         sorter: Dict[int, Dict[int, str]] = {}
         for table_name in table_names:
-            factory_id, table_id = table_name.split('_')[-2:]
-            if int(factory_id) not in sorter:
-                sorter[int(factory_id)] = {}
-            sorter[int(factory_id)][int(table_id)] = table_name
+            if len(table_name_split := table_name.split('_')) == 3:
+                factory_id, table_id = table_name_split[-2:]
+                if int(factory_id) not in sorter:
+                    sorter[int(factory_id)] = {}
+                sorter[int(factory_id)][int(table_id)] = table_name
         for factory_id in sorted(sorter.keys()):
             for table_id in sorted(sorter[factory_id].keys()):
                 sorted_table_names.append(sorter[factory_id][table_id])

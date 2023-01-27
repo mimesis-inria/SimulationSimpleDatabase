@@ -105,14 +105,15 @@ class BaseVisualizer:
         """
 
         # 1. Sort the Table names per factory index and per object index
-        table_names = self.database.get_tables()
+        table_names = self.database.get_tables(only_names=True)
         sorted_table_names = []
         sorter: Dict[int, Dict[int, str]] = {}
         for table_name in table_names:
-            factory_id, table_id = table_name.split('_')[-2:]
-            if int(factory_id) not in sorter:
-                sorter[int(factory_id)] = {}
-            sorter[int(factory_id)][int(table_id)] = table_name
+            if len(table_name_split := table_name.split('_')) == 3:
+                factory_id, table_id = table_name_split[-2:]
+                if int(factory_id) not in sorter:
+                    sorter[int(factory_id)] = {}
+                sorter[int(factory_id)][int(table_id)] = table_name
         for factory_id in sorted(sorter.keys()):
             for table_id in sorted(sorter[factory_id].keys()):
                 sorted_table_names.append(sorter[factory_id][table_id])
@@ -152,7 +153,7 @@ class BaseVisualizer:
                                          data={'at': i})
             # 3.2. Update value in the Actors
             self.actors[i] = self.actors.pop(group)
-            for idx, actor in self.actors[group].items():
+            for idx, actor in self.actors[i].items():
                 actor.group = i
                 self.groups[idx] = i
 
@@ -209,25 +210,23 @@ class BaseVisualizer:
         :param idx_factory: Index of the Factory to update.
         """
 
-        for group in self.actors.keys():
-            for table_name in self.actors[group].keys():
-                if f'_{idx_factory}_' in table_name:
+        for table_name in self.actors[idx_factory].keys():
 
-                    # Get the current step line in the Table
-                    object_data = self.database.get_line(table_name=table_name,
-                                                         line_id=step)
-                    object_data = dict(filter(lambda item: item[1] is not None, object_data.items()))
-                    object_data.pop('id')
+            # Get the current step line in the Table
+            object_data = self.database.get_line(table_name=table_name,
+                                                 line_id=step)
+            object_data = dict(filter(lambda item: item[1] is not None, object_data.items()))
+            object_data.pop('id')
 
-                    # Update the Actor and its visualization
-                    if len(object_data.keys()) > 0 or 'Markers' in table_name:
-                        actor = self.get_actor(table_name)
-                        # Markers are updated if their associated object was updated
-                        if actor.type == 'Markers' and 'normal_to' in object_data.keys():
-                            object_data['normal_to'] = self.get_actor(object_data['normal_to'])
-                        # Update
-                        actor.update_data(data=object_data)
-                        self.update_actor_backend(actor=actor)
+            # Update the Actor and its visualization
+            if len(object_data.keys()) > 0 or 'Markers' in table_name:
+                actor = self.get_actor(table_name)
+                # Markers are updated if their associated object was updated
+                if actor.type == 'Markers' and 'normal_to' in object_data.keys():
+                    object_data['normal_to'] = self.get_actor(object_data['normal_to'])
+                # Update
+                actor.update_data(data=object_data)
+                self.update_actor_backend(actor=actor)
 
     def update_actor_backend(self,
                              actor: BaseActor) -> None:
