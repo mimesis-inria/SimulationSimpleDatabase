@@ -16,6 +16,7 @@ class UserAPI:
                  database_name: Optional[str] = None,
                  remove_existing: bool = False,
                  non_storing: bool = False,
+                 exit_on_window_close: bool = True,
                  idx_instance: int = 0):
         """
         The UserAPI is a Factory used to easily create and update visual objects in the Visualizer.
@@ -25,6 +26,7 @@ class UserAPI:
         :param database_name: Name of the Database file (used if 'database' is not defined).
         :param remove_existing: If True, overwrite any existing Database file with the same path.
         :param non_storing: If True, the Database will not be stored.
+        :param exit_on_window_close: If True, program will be killed if the Visualizer is closed.
         :param idx_instance: If several Factories are connected to the same Visualizer, specify the index of instances.
         """
 
@@ -48,6 +50,7 @@ class UserAPI:
         self.__update: Dict[int, bool] = {}
         self.__socket: Optional[socket] = None
         self.__offscreen: bool = False
+        self.__exit_on_close: bool = exit_on_window_close
 
     def get_database(self) -> Database:
         """
@@ -137,11 +140,22 @@ class UserAPI:
                         self.__socket.close()
                         self.__socket = None
                 except ConnectionResetError:
-                    quit(print('Rendering window closed, shutting down.'))
+                    self.kill()
                 except BrokenPipeError:
-                    quit(print('Rendering window closed, shutting down.'))
+                    self.kill()
             else:
-                quit(print('Rendering window closed, shutting down.'))
+                self.kill()
+
+    def kill(self):
+        """
+        Kill the program on Visualizer close.
+        """
+
+        if self.__exit_on_close:
+            quit(print('Rendering window closed, shutting down.'))
+        if self.__socket is not None:
+            self.__socket.close()
+            self.__socket = None
 
     def close(self):
         """

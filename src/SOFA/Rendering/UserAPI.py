@@ -16,6 +16,7 @@ class UserAPI(Sofa.Core.Controller):
                  database_name: Optional[str] = None,
                  remove_existing: bool = False,
                  non_storing: bool = False,
+                 exit_on_window_close: bool = True,
                  idx_instance: int = 0,
                  *args, **kwargs):
         """
@@ -28,6 +29,7 @@ class UserAPI(Sofa.Core.Controller):
         :param database_name: Name of the Database to connect to (used if 'database' is not defined).
         :param remove_existing: If True, overwrite a Database with the same path.
         :param non_storing: If True, the Database will not be stored.
+        :param exit_on_window_close: If True, program will be killed if the Visualizer is closed.
         :param idx_instance: If several Factories must be created, specify the index of the Factory.
         """
 
@@ -43,6 +45,7 @@ class UserAPI(Sofa.Core.Controller):
                                             database_name=database_name,
                                             remove_existing=remove_existing,
                                             non_storing=non_storing,
+                                            exit_on_window_close=exit_on_window_close,
                                             idx_instance=idx_instance)
         self.__updates: Dict[int, Tuple[str, Any]] = {}
 
