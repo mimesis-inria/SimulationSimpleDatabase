@@ -39,6 +39,7 @@ class BaseVisualizer:
         # Actors parameters
         self.actors: Dict[int, Dict[str, BaseActor]] = {}
         self.groups: Dict[str, int] = {}
+        self.factories: Dict[int, List[str]] = {}
 
         # Synchronization with the Factories
         self.server: Optional[socket] = None
@@ -128,10 +129,13 @@ class BaseVisualizer:
             group = object_data.pop('at')
 
             # 2.2. Retrieve the good indexing of Actors
-            actor_type = table_name.split('_')[0]
+            actor_type, factory_id = table_name.split('_')[0:2]
             if group not in self.actors:
                 self.actors[group] = {}
                 pre_groups[group] = []
+            if (factory_id := int(factory_id)) not in self.factories:
+                self.factories[factory_id] = []
+            self.factories[factory_id].append(table_name)
 
             # 2.3. Create the Actor
             self.create_actor_backend(actor_name=table_name,
@@ -210,7 +214,7 @@ class BaseVisualizer:
         :param idx_factory: Index of the Factory to update.
         """
 
-        for table_name in self.actors[idx_factory].keys():
+        for table_name in self.factories[idx_factory]:
 
             # Get the current step line in the Table
             object_data = self.database.get_line(table_name=table_name,
