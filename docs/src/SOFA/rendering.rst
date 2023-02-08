@@ -44,7 +44,7 @@ Adding callbacks is very simple, since you only have to specify:
         .. code-block:: python
 
             import Sofa
-            from SSD.SOFA.Rendering.UserAPI import UserAPI
+            from SSD.SOFA import UserAPI
 
             # Create the root node
             root = Sofa.Core.Node('root')
@@ -85,7 +85,7 @@ Adding callbacks is very simple, since you only have to specify:
 
         .. code-block:: python
 
-            from SSD.SOFA.Rendering.UserAPI import UserAPI
+            from SSD.SOFA import UserAPI
 
             def createScene(root):
 

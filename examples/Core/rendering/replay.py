@@ -1,7 +1,7 @@
 from os.path import exists
 from sys import argv
 
-from SSD.Core.Rendering.Replay import Replay
+from SSD.Core import Replay
 
 # Check Database existence
 if not exists('visualization.db'):

@@ -1,7 +1,7 @@
 from typing import Optional
 import Sofa
 
-from SSD.SOFA.Rendering.UserAPI import UserAPI
+from SSD.SOFA import UserAPI
 
 
 class Caduceus(Sofa.Core.Controller):

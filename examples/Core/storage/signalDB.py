@@ -1,7 +1,7 @@
 from numpy import ndarray
 from numpy.random import uniform
 
-from SSD.Core.Storage.Database import Database
+from SSD.Core import Database
 
 # Create a new Database object and a new storage file
 db = Database(database_dir='my_databases',

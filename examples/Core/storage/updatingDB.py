@@ -3,7 +3,7 @@ from os import system
 from numpy import where
 from numpy.random import uniform
 
-from SSD.Core.Storage.Database import Database
+from SSD.Core import Database
 
 
 # Assert DB existence

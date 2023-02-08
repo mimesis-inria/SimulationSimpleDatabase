@@ -11,7 +11,7 @@ specified):
 
 .. code-block:: python
 
-    from SSD.Core.Rendering.UserAPI import UserAPI
+    from SSD.Core import UserAPI
 
     factory = UserAPI(database_dir='my_directory',
                       database_name='my_database',

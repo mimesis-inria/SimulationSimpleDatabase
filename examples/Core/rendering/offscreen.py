@@ -2,8 +2,7 @@ from vedo import Mesh
 from numpy.random import random
 from sys import argv
 
-from SSD.Core.Rendering.UserAPI import UserAPI
-from SSD.Core.Rendering.Replay import Replay
+from SSD.Core import UserAPI, Replay
 
 # 1. Create the visualization API
 factory = UserAPI(database_name='offscreen',

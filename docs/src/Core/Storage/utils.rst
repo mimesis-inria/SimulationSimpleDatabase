@@ -10,7 +10,7 @@ Each *Table* from all *Databases* will be duplicated in the new *Database*; in t
 
 .. code-block:: python
 
-    from SSD.Core.Storage.utils import merge
+    from SSD.Core import merge
 
     merge(database_names=['my_Database1', 'my_Database2'],
           new_database_name='my_MergedDatabase',
@@ -63,7 +63,7 @@ Both methods require tuples defines as :guilabel:`(current_name, new_name)`:
 
 .. code-block:: python
 
-    from SSD.Core.Storage.utils import rename_tables, rename_fields
+    from SSD.Core import rename_tables, rename_fields
 
     rename_tables(database_name='my_Database',
                   renamed_tables=[('my_StoringTable', 'my_NewStoringTable'), ('my_ExchangeTable', 'my_NewExchangeTable')])
@@ -104,7 +104,7 @@ The ``remove_tables`` and ``remove_fields`` tools allows users to remove *Tables
 
 .. code-block:: python
 
-    from SSD.Core.Storage.utils import remove_tables, remove_fields
+    from SSD.Core import remove_tables, remove_fields
 
     rename_tables(database_name='my_Database',
                   remove_tables='my_ExchangeTable')
@@ -135,7 +135,7 @@ The ``export`` tool allows users to export a *Database* either in CSV format eit
 
 .. code-block:: python
 
-    from SSD.Core.Storage.utils import export
+    from SSD.Core import export
 
     export(database_name='my_Database',
            exporter='csv',

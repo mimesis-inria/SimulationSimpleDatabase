@@ -1,7 +1,7 @@
 from os.path import exists, join
 from os import system
 
-from SSD.Core.Storage.Database import Database
+from SSD.Core import Database
 
 # Assert DB existence
 if not exists(join('my_databases', 'database_1.db')) or not exists(join('my_databases', 'database_2.db')):

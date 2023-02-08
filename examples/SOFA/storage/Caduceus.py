@@ -1,7 +1,7 @@
 from numpy import ndarray
 import Sofa
 
-from SSD.SOFA.Storage.Database import Database
+from SSD.SOFA import Database
 
 
 class Caduceus(Sofa.Core.Controller):

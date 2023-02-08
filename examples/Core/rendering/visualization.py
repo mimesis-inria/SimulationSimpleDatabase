@@ -3,7 +3,7 @@ from numpy import arange
 from numpy.random import random
 from sys import argv
 
-from SSD.Core.Rendering.UserAPI import UserAPI
+from SSD.Core import UserAPI
 
 # 1. Create the visualization API
 factory = UserAPI(database_name='visualization',

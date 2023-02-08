@@ -12,8 +12,7 @@ There are several ways to create them, you can choose the more convenient regard
 
 .. code-block:: python
 
-    from SSD.Core.Rendering.UserAPI import UserAPI
-    from SSD.Core.Rendering.Visualizer import Visualizer
+    from SSD.Core import UserAPI, Visualizer
 
     # OPTION 1: Create a new Factory and launch the Visualizer from this Factory
     factory = UserAPI(database_dir='my_directory',
@@ -101,7 +100,7 @@ The *ReplayVisualizer* only requires to be initialized to be launched:
 
 .. code-block:: python
 
-    from SSD.Core.Rendering.Replay import Replay
+    from SSD.Core import Replay
 
     # Launch the ReplayVisualizer
     Replay(database_dir='my_directory',

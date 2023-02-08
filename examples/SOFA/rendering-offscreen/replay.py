@@ -1,6 +1,6 @@
 from os.path import exists
 
-from SSD.SOFA.Rendering.Replay import Replay
+from SSD.SOFA import Replay
 
 
 # Check Database existence

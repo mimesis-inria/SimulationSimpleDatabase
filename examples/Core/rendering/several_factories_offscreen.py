@@ -2,9 +2,7 @@ from vedo import Mesh
 from numpy.random import random
 from sys import argv
 
-from SSD.Core.Storage.Database import Database
-from SSD.Core.Rendering.UserAPI import UserAPI
-from SSD.Core.Rendering.Replay import Replay
+from SSD.Core import Database, UserAPI, Replay
 
 
 class Simulation:
