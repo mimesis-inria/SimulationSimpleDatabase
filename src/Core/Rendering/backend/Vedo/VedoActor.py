@@ -82,6 +82,7 @@ class VedoActor(BaseActor):
 
         # Update rendering style
         if 'line_width' in updated_fields or 'wireframe' in updated_fields:
+            data['line_width'] = 0. if data['line_width'] == -1. else data['line_width']
             self.instance.lw(data['line_width']).wireframe(data['wireframe'])
 
         # Update color
