@@ -99,7 +99,7 @@ class VedoVisualizer(BaseVisualizer):
                 client.send(b'done')
                 Thread(target=self.listen_client, args=(i,)).start()
         self.__plotter.interactive()
-        self.__plotter.timer_callback('destroy', timerId=timer_id)
+        self.__plotter.timer_callback('destroy', timer_id=timer_id)
         self.__plotter.close()
         self.__plotter = None
 
