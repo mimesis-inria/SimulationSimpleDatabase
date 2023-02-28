@@ -17,8 +17,7 @@ class Caduceus(Sofa.Core.Controller):
         # Root
         self.root.gravity.value = [0, -1000, 0]
         self.root.dt.value = 0.04
-        required_plugins = ['CImgPlugin', 'SofaOpenglVisual', 'SofaNonUniformFem', 'SofaConstraint', 'SofaLoader',
-                            'SofaImplicitOdeSolver', 'SofaMeshCollision', 'SofaSimpleFem']
+        required_plugins = ['Sofa.Component', 'Sofa.GL.Component']
         self.root.addObject('RequiredPlugin', pluginName=required_plugins)
         self.root.addObject('VisualStyle', displayFlags='showVisual')
         self.root.addObject('FreeMotionAnimationLoop', parallelCollisionDetectionAndFreeMotion=True)

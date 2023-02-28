@@ -20,8 +20,7 @@ class Liver(Sofa.Core.Controller):
 
         # Root
         self.root.dt.value = 0.02
-        required_plugins = ['SofaOpenglVisual', 'SofaImplicitOdeSolver', 'SofaLoader', 'SofaGeneralSimpleFem',
-                            'SofaBoundaryCondition', 'SofaGeneralLoader', 'SofaBaseLinearSolver', 'SofaBaseMechanics']
+        required_plugins = ['Sofa.Component', 'Sofa.GL.Component']
         self.root.addObject('RequiredPlugin', pluginName=required_plugins)
         self.root.addObject('VisualStyle', displayFlags='showVisual')
         self.root.addObject('DefaultPipeline', verbose=0)
