@@ -7,7 +7,7 @@ from SSD.Core.Rendering.UserAPI import UserAPI as _UserAPI
 from SSD.SOFA.utils import error_message
 
 
-class UserAPI(Sofa.Core.Controller):
+class UserAPI(Sofa.Core.Controller, _UserAPI):
 
     def __init__(self,
                  root: Sofa.Core.Node,
@@ -34,67 +34,21 @@ class UserAPI(Sofa.Core.Controller):
         """
 
         Sofa.Core.Controller.__init__(self, *args, **kwargs)
+        _UserAPI.__init__(self,
+                          database=database,
+                          database_dir=database_dir,
+                          database_name=database_name,
+                          remove_existing=remove_existing,
+                          non_storing=non_storing,
+                          exit_on_window_close=exit_on_window_close,
+                          idx_instance=idx_instance)
 
         # Add the Factory controller to the scene graph
         self.root: Sofa.Core.Node = root
         self.root.addChild('factory')
         self.root.factory.addObject(self)
 
-        self.__factory: _UserAPI = _UserAPI(database=database,
-                                            database_dir=database_dir,
-                                            database_name=database_name,
-                                            remove_existing=remove_existing,
-                                            non_storing=non_storing,
-                                            exit_on_window_close=exit_on_window_close,
-                                            idx_instance=idx_instance)
-        self.__updates: Dict[int, Tuple[str, Any]] = {}
-
-    def get_database(self) -> Database:
-        """
-        Get the Database instance.
-        """
-
-        return self.__factory.get_database()
-
-    def get_database_path(self) -> Tuple[str]:
-        """
-        Get the path to the Database.
-        """
-
-        return self.__factory.get_database_path()
-
-    def launch_visualizer(self,
-                          backend: str = 'vedo',
-                          offscreen: bool = False,
-                          fps: int = 20) -> None:
-        """
-        Launch the Visualizer.
-
-        :param backend: The name of the Visualizer to use (either 'vedo' or 'open3d').
-        :param offscreen: If True, the visualization is done offscreen.
-        :param fps: Max frame rate.
-        """
-
-        self.__factory.launch_visualizer(backend=backend,
-                                         offscreen=offscreen,
-                                         fps=fps)
-
-    def connect_visualizer(self,
-                           offscreen: bool = False):
-        """
-        Connect the Factory to an existing Visualizer.
-
-        :param offscreen: If True, the visualization is done offscreen.
-        """
-
-        self.__factory.connect_visualizer(offscreen=offscreen)
-
-    def close(self):
-        """
-        Close the Visualization.
-        """
-
-        self.__factory.close()
+        self.__callbacks: Dict[int, Tuple[str, Any]] = {}
 
     def onAnimateEndEvent(self, _) -> None:
         """
@@ -102,17 +56,17 @@ class UserAPI(Sofa.Core.Controller):
         """
 
         # Execute all callbacks
-        for object_id, (object_type, object_data) in self.__updates.items():
+        for object_id, (object_type, object_data) in self.__callbacks.items():
 
             if object_type == 'Mesh':
-                self.__factory.update_mesh(object_id=object_id,
-                                           positions=self.__get_position_data(position_object=object_data))
+                self.update_mesh(object_id=object_id,
+                                 positions=self.__get_position_data(position_object=object_data))
 
             elif object_type == 'Points':
                 positions = self.__get_position_data(position_object=object_data[0])
                 positions = positions[object_data[1]] if object_data[1] is not None else positions
-                self.__factory.update_points(object_id=object_id,
-                                             positions=positions)
+                self.update_points(object_id=object_id,
+                                   positions=positions)
 
             elif object_type == 'Arrows':
                 positions = self.__get_position_data(position_object=object_data[1])
@@ -124,15 +78,15 @@ class UserAPI(Sofa.Core.Controller):
                 vectors = vectors[object_data[4]] if object_data[4] is not None else vectors
                 if len(vectors) == 1:
                     vectors = tile(vectors, (len(positions), 1))
-                self.__factory.update_arrows(object_id=object_id,
-                                             positions=positions,
-                                             vectors=vectors * object_data[5])
+                self.update_arrows(object_id=object_id,
+                                   positions=positions,
+                                   vectors=vectors * object_data[5])
 
             elif object_type == 'Markers':
-                self.__factory.update_markers(object_id=object_id)
+                self.update_markers(object_id=object_id)
 
         # Execute rendering
-        self.__factory.render()
+        self.render()
 
     @classmethod
     def __get_position_data(cls,
@@ -231,24 +185,20 @@ class UserAPI(Sofa.Core.Controller):
                           f"Available objects are {[o.getName() for o in node.objects]}.")
         return node.getObject(object_name)
 
-    ########
-    # MESH #
-    ########
-
-    def add_mesh(self,
-                 position_object: str,
-                 topology_object: Optional[str] = None,
-                 cell_type: str = 'triangles',
-                 animated=True,
-                 at: int = 0,
-                 alpha: float = 1.,
-                 c: str = 'green',
-                 colormap: str = 'jet',
-                 scalar_field: ndarray = array([]),
-                 wireframe: bool = False,
-                 line_width: float = -1.) -> int:
+    def add_mesh_callback(self,
+                          position_object: str,
+                          topology_object: Optional[str] = None,
+                          cell_type: str = 'triangles',
+                          animated=True,
+                          at: int = 0,
+                          alpha: float = 1.,
+                          c: str = 'green',
+                          colormap: str = 'jet',
+                          scalar_field: ndarray = array([]),
+                          wireframe: bool = False,
+                          line_width: float = -1.) -> int:
         """
-        Add a new Mesh to the Factory.
+        Add a new Mesh to the Factory with an update callback at each time step.
 
         :param position_object: Path to an object containing position and eventually topology Data.
         :param topology_object: Path to an object containing topology Data. If not defined, topology data will be
@@ -277,62 +227,33 @@ class UserAPI(Sofa.Core.Controller):
         positions = self.__get_position_data(position_object=position_object)
 
         # Add object
-        idx = self.__factory.add_mesh(positions=positions,
-                                      cells=cells,
-                                      at=at,
-                                      alpha=alpha,
-                                      c=c,
-                                      colormap=colormap,
-                                      scalar_field=scalar_field,
-                                      wireframe=wireframe,
-                                      line_width=line_width)
+        idx = self.add_mesh(positions=positions,
+                            cells=cells,
+                            at=at,
+                            alpha=alpha,
+                            c=c,
+                            colormap=colormap,
+                            scalar_field=scalar_field,
+                            wireframe=wireframe,
+                            line_width=line_width)
 
         # Register object
         if animated:
-            self.__updates[idx] = ('Mesh', position_object)
+            self.__callbacks[idx] = ('Mesh', position_object)
         return idx
 
-    def update_mesh(self,
-                    object_id: int,
-                    positions: Optional[ndarray] = None,
-                    alpha: Optional[float] = None,
-                    c: Optional[str] = None,
-                    scalar_field: Optional[ndarray] = None,
-                    wireframe: Optional[bool] = None) -> None:
+    def add_points_callback(self,
+                            position_object: str,
+                            position_indices: Optional[ndarray] = None,
+                            animated=True,
+                            at: int = 0,
+                            alpha: float = 1.,
+                            c: str = 'green',
+                            colormap: str = 'jet',
+                            scalar_field: ndarray = array([]),
+                            point_size: int = 4) -> int:
         """
-        Update an existing Mesh in the Factory.
-
-        :param object_id: Index of the object (follows the global order of creation).
-        :param positions: Positions of the Mesh DOFs.
-        :param alpha: Mesh opacity.
-        :param c: Mesh color.
-        :param scalar_field: Scalar values used to color the Mesh regarding the colormap.
-        :param wireframe: If True, the Mesh will be rendered as wireframe.
-        """
-
-        self.__factory.update_mesh(object_id=object_id,
-                                   positions=positions,
-                                   alpha=alpha,
-                                   c=c,
-                                   scalar_field=scalar_field,
-                                   wireframe=wireframe)
-
-    ##########
-    # POINTS #
-    ##########
-
-    def add_points(self,
-                   position_object: str,
-                   position_indices: Optional[ndarray] = None,
-                   animated=True,
-                   at: int = 0,
-                   alpha: float = 1.,
-                   c: str = 'green',
-                   colormap: str = 'jet',
-                   scalar_field: ndarray = array([]),
-                   point_size: int = 4) -> int:
-        """
-        Add a new Mesh to the Factory.
+        Add a new Point Cloud to the Factory with an update callback at each time step.
 
         :param position_object: Path to an object containing position Data.
         :param position_indices: Indices of the positions to extract. If None, all the positions are used.
@@ -353,64 +274,35 @@ class UserAPI(Sofa.Core.Controller):
         positions = positions[position_indices] if position_indices is not None else positions
 
         # Add object
-        idx = self.__factory.add_points(positions=positions,
-                                        at=at,
-                                        alpha=alpha,
-                                        c=c,
-                                        colormap=colormap,
-                                        scalar_field=scalar_field,
-                                        point_size=point_size)
+        idx = self.add_points(positions=positions,
+                              at=at,
+                              alpha=alpha,
+                              c=c,
+                              colormap=colormap,
+                              scalar_field=scalar_field,
+                              point_size=point_size)
 
         # Register object
         if animated:
-            self.__updates[idx] = ('Points', (position_object, position_indices))
+            self.__callbacks[idx] = ('Points', (position_object, position_indices))
         return idx
 
-    def update_points(self,
-                      object_id: int,
-                      positions: Optional[ndarray] = None,
-                      alpha: Optional[float] = None,
-                      c: Optional[str] = None,
-                      scalar_field: Optional[ndarray] = None,
-                      point_size: Optional[int] = None) -> None:
+    def add_arrows_callback(self,
+                            position_object: str,
+                            vector_object: Optional[str] = None,
+                            dest_object: Optional[str] = None,
+                            start_indices: Optional[ndarray] = None,
+                            end_indices: Optional[ndarray] = None,
+                            scale: float = 1.,
+                            animated: bool = True,
+                            at: int = 0,
+                            alpha: float = 1.,
+                            c: str = 'green',
+                            colormap: str = 'jet',
+                            scalar_field: ndarray = array([]),
+                            res: int = 12) -> int:
         """
-        Update an existing Point Cloud in the Factory.
-
-        :param object_id: Index of the object (follows the global order of creation).
-        :param positions: Positions of the Point Cloud DOFs.
-        :param alpha: Point Cloud opacity.
-        :param c: Point Cloud color.
-        :param scalar_field: Scalar values used to color the Point Cloud regarding the colormap.
-        :param point_size: Size of the points.
-        """
-
-        self.__factory.update_points(object_id=object_id,
-                                     positions=positions,
-                                     alpha=alpha,
-                                     c=c,
-                                     scalar_field=scalar_field,
-                                     point_size=point_size)
-
-    ##########
-    # ARROWS #
-    ##########
-
-    def add_arrows(self,
-                   position_object: str,
-                   vector_object: Optional[str] = None,
-                   dest_object: Optional[str] = None,
-                   start_indices: Optional[ndarray] = None,
-                   end_indices: Optional[ndarray] = None,
-                   scale: float = 1.,
-                   animated: bool = True,
-                   at: int = 0,
-                   alpha: float = 1.,
-                   c: str = 'green',
-                   colormap: str = 'jet',
-                   scalar_field: ndarray = array([]),
-                   res: int = 12) -> int:
-        """
-        Add new Arrows to the Factory.
+        Add new Arrows to the Factory with an update callback at each time step.
 
         :param position_object: Path to an object containing start position Data.
         :param vector_object: Path to an object containing vector Data. If None, vectors will be computed from
@@ -454,68 +346,39 @@ class UserAPI(Sofa.Core.Controller):
             vectors = tile(vectors, (len(positions), 1))
 
         # Add object
-        idx = self.__factory.add_arrows(positions=positions,
-                                        vectors=vectors * scale,
-                                        at=at,
-                                        alpha=alpha,
-                                        c=c,
-                                        colormap=colormap,
-                                        scalar_field=scalar_field,
-                                        res=res)
+        idx = self.add_arrows(positions=positions,
+                              vectors=vectors * scale,
+                              at=at,
+                              alpha=alpha,
+                              c=c,
+                              colormap=colormap,
+                              scalar_field=scalar_field,
+                              res=res)
 
         # Register object
         if animated:
             if vector_object is not None:
-                self.__updates[idx] = ('Arrows', ('vec', position_object, start_indices, vector_object,
-                                                  end_indices, scale))
+                self.__callbacks[idx] = ('Arrows', ('vec', position_object, start_indices, vector_object,
+                                                    end_indices, scale))
             else:
-                self.__updates[idx] = ('Arrows', ('dst', position_object, start_indices, dest_object,
-                                                  end_indices, scale))
+                self.__callbacks[idx] = ('Arrows', ('dst', position_object, start_indices, dest_object,
+                                                    end_indices, scale))
         return idx
 
-    def update_arrows(self,
-                      object_id: int,
-                      positions: Optional[ndarray] = None,
-                      vectors: Optional[ndarray] = None,
-                      alpha: Optional[float] = None,
-                      c: Optional[str] = None,
-                      scalar_field: Optional[ndarray] = None) -> None:
+    def add_markers_callback(self,
+                             normal_to: int,
+                             indices: ndarray,
+                             animated: bool = True,
+                             at: int = 0,
+                             alpha: float = 1.,
+                             c: str = 'green',
+                             colormap: str = 'jet',
+                             scalar_field: ndarray = array([]),
+                             symbol: str = 'o',
+                             size: float = 1.,
+                             filled: bool = True) -> int:
         """
-        Update existing Arrows in the Factory.
-
-        :param object_id: Index of the object (follows the global order of creation).
-        :param positions: Positions of the Arrows DOFs.
-        :param vectors: Vectors of the Arrows.
-        :param alpha: Arrows opacity.
-        :param c: Arrows color.
-        :param scalar_field: Scalar values used to color the Arrows regarding the colormap.
-        """
-
-        self.__factory.update_arrows(object_id=object_id,
-                                     positions=positions,
-                                     vectors=vectors,
-                                     alpha=alpha,
-                                     c=c,
-                                     scalar_field=scalar_field)
-
-    ###########
-    # MARKERS #
-    ###########
-
-    def add_markers(self,
-                    normal_to: int,
-                    indices: ndarray,
-                    animated: bool = True,
-                    at: int = 0,
-                    alpha: float = 1.,
-                    c: str = 'green',
-                    colormap: str = 'jet',
-                    scalar_field: ndarray = array([]),
-                    symbol: str = 'o',
-                    size: float = 1.,
-                    filled: bool = True) -> int:
-        """
-        Add new Markers to the Factory.
+        Add new Markers to the Factory with an update callback at each time step.
 
         :param normal_to: Index of the object that defines normals of the Markers.
         :param indices: Indices of the DOFs of the object where the Markers will be centered.
@@ -531,111 +394,17 @@ class UserAPI(Sofa.Core.Controller):
         """
 
         # Add object
-        idx = self.__factory.add_markers(normal_to=normal_to,
-                                         indices=indices,
-                                         at=at,
-                                         alpha=alpha,
-                                         c=c,
-                                         colormap=colormap,
-                                         scalar_field=scalar_field,
-                                         symbol=symbol,
-                                         size=size,
-                                         filled=filled)
+        idx = self.add_markers(normal_to=normal_to,
+                               indices=indices,
+                               at=at,
+                               alpha=alpha,
+                               c=c,
+                               colormap=colormap,
+                               scalar_field=scalar_field,
+                               symbol=symbol,
+                               size=size,
+                               filled=filled)
         # Register object
         if animated:
-            self.__updates[idx] = ('Markers', None)
+            self.__callbacks[idx] = ('Markers', None)
         return idx
-
-    def update_markers(self,
-                       object_id: int,
-                       normal_to: Optional[int] = None,
-                       indices: Optional[ndarray] = None,
-                       alpha: Optional[float] = None,
-                       c: Optional[str] = None,
-                       scalar_field: Optional[ndarray] = None,
-                       symbol: Optional[str] = None,
-                       size: Optional[float] = None,
-                       filled: Optional[bool] = None) -> None:
-        """
-        Update existing Markers in the Factory.
-
-        :param object_id: Index of the object (follows the global order of creation).
-        :param normal_to: Index of the object that defines normals of the Markers.
-        :param indices: Indices of the DOFs of the object where the Markers will be centered.
-        :param alpha: Markers opacity.
-        :param c: Markers color.
-        :param scalar_field: Scalar values used to color the Markers regarding the colormap.
-        :param symbol: Symbol of a Marker.
-        :param size: Size of a Marker.
-        :param filled: If True, the symbol is filled.
-        """
-
-        self.__factory.update_markers(object_id=object_id,
-                                      normal_to=normal_to,
-                                      indices=indices,
-                                      alpha=alpha,
-                                      c=c,
-                                      scalar_field=scalar_field,
-                                      symbol=symbol,
-                                      size=size,
-                                      filled=filled)
-
-    ########
-    # TEXT #
-    ########
-
-    def add_text(self,
-                 content: str,
-                 at: int = 0,
-                 corner: str = 'BR',
-                 c: str = 'black',
-                 font: str = 'Arial',
-                 size: int = -1,
-                 bold: bool = False,
-                 italic: bool = False) -> int:
-        """
-        Add new 2D Text to the Factory.
-
-        :param content: Content of the Text.
-        :param at: Index of the window in which the Text will be rendered.
-        :param corner: Horizontal and vertical positions of the Text between T (top), M (middle) and B (bottom) - for
-                       instance, 'BR' stands for 'bottom-right'.
-        :param c: Text color.
-        :param font: Font of the Text.
-        :param size: Size of the font.
-        :param bold: Apply bold style to the Text.
-        :param italic: Apply italic style to the Text.
-        """
-
-        # Add object
-        idx = self.__factory.add_text(content=content,
-                                      at=at,
-                                      corner=corner,
-                                      c=c,
-                                      font=font,
-                                      size=size,
-                                      bold=bold,
-                                      italic=italic)
-        return idx
-
-    def update_text(self,
-                    object_id: int,
-                    content: Optional[str] = None,
-                    c: Optional[str] = None,
-                    bold: Optional[bool] = None,
-                    italic: Optional[bool] = None) -> None:
-        """
-        Update existing Text in the Factory.
-
-        :param object_id: Index of the object (follows the global order of creation).
-        :param content: Content of the Text.
-        :param c: Text color.
-        :param bold: Apply bold style to the Text.
-        :param italic: Apply italic style to the Text.
-        """
-
-        self.__factory.update_text(object_id=object_id,
-                                   content=content,
-                                   c=c,
-                                   bold=bold,
-                                   italic=italic)

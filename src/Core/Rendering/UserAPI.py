@@ -140,13 +140,13 @@ class UserAPI:
                         self.__socket.close()
                         self.__socket = None
                 except ConnectionResetError:
-                    self.kill()
+                    self.__kill()
                 except BrokenPipeError:
-                    self.kill()
+                    self.__kill()
             else:
-                self.kill()
+                self.__kill()
 
-    def kill(self):
+    def __kill(self):
         """
         Kill the program on Visualizer close.
         """

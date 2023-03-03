@@ -20,7 +20,7 @@ class BaseReplay:
         self.database = database
 
         # Visualization parameters
-        self.fps: float = 1 / min(max(1, abs(fps)), 50)
+        self.fps: float = 1 / min(max(1, abs(fps)), 100)
         self.nb_sample: Dict[str, int] = {}
         self.step: int = 1
 

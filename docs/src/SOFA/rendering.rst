@@ -36,6 +36,8 @@ Adding callbacks is very simple, since you only have to specify:
    (depending on the object type).
  * option ``animated=True`` (by default)
 
+It is also possible to create and update objects manually such as in the ``Core`` version.
+
 
 .. tabs::
 
@@ -66,12 +68,12 @@ Adding callbacks is very simple, since you only have to specify:
 
             # Create a new Factory
             factory = UserAPI(root=root, database_name='ball', remove_existing=True)
-            factory.add_points(position_object='@ball.BallMO', animated=False,
-                               at=0, c='red4', point_size=8)
-            factory.add_mesh(position_object='@ball.visual.BallOGL', cell_type='triangles', animated=True,
-                             at=0, c='green', alpha=0.8)
-            factory.add_mesh(position_object='@ball.visual.BallOGL', cell_type='quads', animated=True,
-                             at=0, c='green', alpha=0.8)
+            factory.add_points_callback(position_object='@ball.BallMO', animated=False,
+                                        at=0, c='red4', point_size=8)
+            factory.add_mesh_callback(position_object='@ball.visual.BallOGL', cell_type='triangles', animated=True,
+                                      at=0, c='green', alpha=0.8)
+            factory.add_mesh_callback(position_object='@ball.visual.BallOGL', cell_type='quads', animated=True,
+                                      at=0, c='green', alpha=0.8)
             factory.launch_visualizer(backend='vedo')
 
             # Init the scene graph and run some step of the simulation
@@ -104,12 +106,12 @@ Adding callbacks is very simple, since you only have to specify:
 
                 # Create a new Visualizer and a new Factory (pay attention to offscreen flag)
                 factory = UserAPI(root=root, database_name='ball', remove_existing=True)
-                factory.add_points(position_object='@ball.BallMO', animated=False,
-                                   at=0, c='red4', point_size=8)
-                factory.add_mesh(position_object='@ball.visual.BallOGL', cell_type='triangles', animated=True,
-                                 at=0, c='green', alpha=0.8)
-                factory.add_mesh(position_object='@ball.visual.BallOGL', cell_type='quads', animated=True,
-                                 at=0, c='green', alpha=0.8)
+                factory.add_points_callback(position_object='@ball.BallMO', animated=False,
+                                            at=0, c='red4', point_size=8)
+                factory.add_mesh_callback(position_object='@ball.visual.BallOGL', cell_type='triangles', animated=True,
+                                          at=0, c='green', alpha=0.8)
+                factory.add_mesh_callback(position_object='@ball.visual.BallOGL', cell_type='quads', animated=True,
+                                          at=0, c='green', alpha=0.8)
                 factory.launch_visualizer(offscreen=True)
 
 

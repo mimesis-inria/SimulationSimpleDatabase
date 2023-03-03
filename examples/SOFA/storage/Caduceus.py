@@ -148,6 +148,6 @@ class Caduceus(Sofa.Core.Controller):
                                    data={'U': coll_mo.position.array() - coll_mo.rest_position.array()})
 
             # Shape Data
-            X = self.root.snake.visual.body.getObject('OglBody').position.array()
+            shape = self.root.snake.visual.body.getObject('OglBody').position.array()
             self.database.add_data(table_name='SnakeShape',
-                                   data={'height': X.max(), 'size': X.max() - X.min()})
+                                   data={'height': shape.max(), 'size': shape.max() - shape.min()})

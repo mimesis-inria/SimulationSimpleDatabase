@@ -109,26 +109,26 @@ class Caduceus(Sofa.Core.Controller):
         if self.factory is not None:
 
             # Window 1: Snake visual meshes for body (id=0) and eyes (id=1)
-            self.factory.add_mesh(position_object='@snake.visual.body.OglBody', cell_type='quads', animated=True,
-                                  at=0, c='#93493a')
-            self.factory.add_mesh(position_object='@snake.visual.eye.OglEye', cell_type='quads', animated=True,
-                                  at=0, c='yellow5')
+            self.factory.add_mesh_callback(position_object='@snake.visual.body.OglBody', cell_type='quads',
+                                           animated=True, at=0, c='#93493a')
+            self.factory.add_mesh_callback(position_object='@snake.visual.eye.OglEye', cell_type='quads',
+                                           animated=True, at=0, c='yellow5')
 
             # Window 1: Base visual meshes for quads (id=2) and triangles (id=3)
-            self.factory.add_mesh(position_object='@base.visual.OglBase', cell_type='quads', animated=False,
-                                  at=0, c='orange4')
-            self.factory.add_mesh(position_object='@base.visual.OglBase', cell_type='triangles', animated=False,
-                                  at=0, c='orange4')
+            self.factory.add_mesh_callback(position_object='@base.visual.OglBase', cell_type='quads',
+                                           animated=False, at=0, c='orange4')
+            self.factory.add_mesh_callback(position_object='@base.visual.OglBase', cell_type='triangles',
+                                           animated=False, at=0, c='orange4')
 
             # Window 2: Snake collision mesh (id=4)
-            self.factory.add_mesh(position_object='@snake.collision.SnakeCollMo', animated=True,
-                                  topology_object='@snake.collision.SnakeCollTopo', cell_type='triangles',
-                                  at=1, c='orange7', wireframe=True, line_width=2)
+            self.factory.add_mesh_callback(position_object='@snake.collision.SnakeCollMo', animated=True,
+                                           topology_object='@snake.collision.SnakeCollTopo', cell_type='triangles',
+                                           at=1, c='orange7', wireframe=True, line_width=2)
 
             # Window 2: Base Collision meshes for stick (id=5), blobs (id=6) and foot (id=7)
-            self.factory.add_mesh(position_object='@base.stick.StickCollTopo', cell_type='edges', animated=False,
-                                  at=1, c='orange7', wireframe=True, line_width=2)
-            self.factory.add_mesh(position_object='@base.blobs.BlobsCollTopo', cell_type='triangles', animated=False,
-                                  at=1, c='orange7', wireframe=True, line_width=2)
-            self.factory.add_mesh(position_object='@base.foot.FootCollTopo', cell_type='triangles', animated=False,
-                                  at=1, c='orange7', wireframe=True, line_width=2)
+            self.factory.add_mesh_callback(position_object='@base.stick.StickCollTopo', cell_type='edges',
+                                           animated=False, at=1, c='orange7', wireframe=True, line_width=2)
+            self.factory.add_mesh_callback(position_object='@base.blobs.BlobsCollTopo', cell_type='triangles',
+                                           animated=False, at=1, c='orange7', wireframe=True, line_width=2)
+            self.factory.add_mesh_callback(position_object='@base.foot.FootCollTopo', cell_type='triangles',
+                                           animated=False, at=1, c='orange7', wireframe=True, line_width=2)
