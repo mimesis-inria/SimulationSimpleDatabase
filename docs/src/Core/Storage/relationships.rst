@@ -44,12 +44,12 @@ Data can still be added either line by line either per batch of lines:
     new_array = np.random.uniform(size=(10,))
 
     # Add a single line to Tables independently
-    stats = db.add_data(table_name='Stats',
-                        data={'mean': new_array.mean(),
-                              'max':  new_array.max()})
+    id_stats_line = db.add_data(table_name='Stats',
+                                data={'mean': new_array.mean(),
+                                      'max':  new_array.max()})
     db.add_data(table_name='Arrays',
                 data={'array': new_array,
-                      'stats': stats})
+                      'stats': id_stats_line})
 
     # Add a single line to Tables using the main Table
     db.add_data(table_name='Arrays',
@@ -62,12 +62,12 @@ Data can still be added either line by line either per batch of lines:
     new_arrays = [np.random.uniform(size=(10,)) for _ in range(5)]
 
     # Add a batch to Tables independently
-    stats = [db.add_data(table_name='Stats',
-                         data={'mean': new_array.mean(),
-                               'max':  new_array.max()}) for new_array in new_arrays]
+    id_stats_lines = db.add_batch(table_name='Stats',
+                                  data={'mean': [new_array.mean() for new_array in new_arrays],
+                                        'max':  [new_array.max() for new_array in new_arrays]})
     db.add_batch(table_name='Arrays',
                  batch={'array': new_arrays,
-                        'stats': stats})
+                        'stats': id_stats_lines})
 
     # Add a batch to Tables using th main Table
     db.add_batch(table_name='Arrays',

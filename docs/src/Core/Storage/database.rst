@@ -117,7 +117,7 @@ Adding data to a Table
 ----------------------
 
 Adding data to a *Table* can be done either line by line either per batch of lines.
-In both cases, data must be passed as a dictionary:
+In both cases, data must be passed as a dictionary and the index of the created line(s) are returned:
 
 .. code-block:: python
 

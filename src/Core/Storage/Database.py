@@ -337,7 +337,7 @@ class Database:
                  table_name: str,
                  data: Dict[str, Any]):
         """
-        Execute a line insert query.
+        Execute a line insert query. Return the index of the new line in the Table.
 
         :param table_name: Name of the Table.
         :param data: New line of the Table.
@@ -351,7 +351,7 @@ class Database:
                   table_name: str,
                   batch: Dict[str, List[Any]]):
         """
-        Execute a batch insert query.
+        Execute a batch insert query. Return the indices of the new lines in the Table.
 
         :param table_name: Name of the Table.
         :param batch: New lines of the Table.
@@ -364,9 +364,9 @@ class Database:
             if len(unique(samples := [len(b) for b in batch_values])) != 1:
                 raise ValueError(f"The number of samples per batch must be the same for all fields. Number of samples "
                                  f"received per field: {dict(zip(batch.keys(), samples))}")
-        self.__add_data(table_name=table_name,
-                        data=batch,
-                        batched=True)
+        return self.__add_data(table_name=table_name,
+                               data=batch,
+                               batched=True)
 
     def __add_data(self,
                    table_name: str,

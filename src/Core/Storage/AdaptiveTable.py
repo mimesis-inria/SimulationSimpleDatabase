@@ -149,7 +149,7 @@ class StoringTable(AdaptiveTable):
                 for chunk in chunked(batch, 100):
                     cls.insert_many(chunk, fields=fields).execute()
             N = cls.select().count()
-            return [cls.get_by_id(i + 1) for i in range(n, N)]
+            return [cls.get_by_id(i + 1).id for i in range(n, N)]
 
 
 class ExchangeTable(AdaptiveTable):
@@ -165,14 +165,17 @@ class ExchangeTable(AdaptiveTable):
             cls.delete().execute()
             line = cls(**dict(zip(fields_names, fields_values)))
             line.save()
-            return line
+            return line.id
 
         else:
             fields = [getattr(cls, field) for field in fields_names]
             batch = [tuple(samples) for samples in zip(*fields_values)]
             cls.delete().execute()
             pre_save.send(cls, created=False)
+            n = cls.select().count()
             with cls.database().atomic():
                 for chunk in chunked(batch, 100):
                     cls.insert_many(chunk, fields=fields).execute()
+            N = cls.select().count()
             post_save.send(cls, created=False)
+            return [cls.get_by_id(i + 1).id for i in range(n, N)]
