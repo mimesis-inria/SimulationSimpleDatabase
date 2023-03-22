@@ -1,6 +1,7 @@
 from typing import Union, List, Type, Dict, Tuple, Optional, Any, Callable
 from os import remove, mkdir
 from os.path import exists, join, sep, getsize
+from inspect import getmembers
 from playhouse.migrate import SqliteDatabase
 from playhouse.signals import Signal, pre_save, post_save
 from datetime import datetime
@@ -255,6 +256,11 @@ class Database:
                 field_name, field_type = field[0], field[1]
                 field_default = '_null_' if len(field) == 2 else field[2]
 
+                # As peewee.Model creates a new attribute named field_name, check that this attribute does not exist
+                if field_name in [m[0] for m in getmembers(table)]:
+                    raise ValueError(f"Tried to create a field '{field_name}' in the Table '{table_name}'. "
+                                     f"You are not allowed to create a field with this name, please rename it.")
+
                 # Extend the Table
                 if field_name not in table.fields():
                     # FK
@@ -353,10 +359,11 @@ class Database:
 
         table_name = self.make_name(table_name)
         # Check that the batch is well-formed
-        batch_values = [batch[key] for key in set(batch.keys()) - set(self.__fk[table_name])]
-        if len(unique(samples := [len(b) for b in batch_values])) != 1:
-            raise ValueError(f"The number of samples per batch must be the same for all fields. Number of samples "
-                             f"received per field: {dict(zip(batch.keys(), samples))}")
+        if table_name in self.__fk:
+            batch_values = [batch[key] for key in set(batch.keys()) - set(self.__fk[table_name])]
+            if len(unique(samples := [len(b) for b in batch_values])) != 1:
+                raise ValueError(f"The number of samples per batch must be the same for all fields. Number of samples "
+                                 f"received per field: {dict(zip(batch.keys(), samples))}")
         self.__add_data(table_name=table_name,
                         data=batch,
                         batched=True)
@@ -371,7 +378,7 @@ class Database:
         fields_values = list(data.values())
         fields_types = []
         for name, value in zip(fields_names, fields_values):
-            if name in self.__fk[table_name]:
+            if table_name in self.__fk and name in self.__fk[table_name]:
                 fields_types.append(self.__fk[table_name][name])
             elif batched:
                 fields_types.append(type(value[0]))
@@ -571,8 +578,8 @@ class Database:
             if lines_range is not None and len(lines_range) != 2:
                 raise ValueError("The range of lines must contains the first and the last line indices.")
             nb_line = self.nb_lines(table_name=table_name)
-            first_line_id = 1 if lines_range is None else lines_range[0]
-            last_line_id = nb_line if lines_range is None else lines_range[1]
+            first_line_id = lines_range[0] if lines_range is not None else 1
+            last_line_id = lines_range[1] if lines_range is not None else nb_line
             _slice = [first_line_id, last_line_id]
             for i, idx in enumerate(_slice):
                 if idx < 0:
