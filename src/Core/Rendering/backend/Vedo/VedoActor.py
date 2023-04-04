@@ -47,7 +47,7 @@ class VedoActor(BaseActor):
 
         # Use 'cmap' method for Meshes and Points
         if self.type in ['Mesh', 'Points']:
-            self.instance.cmap(cname=data['colormap'],
+            self.instance.cmap(input_cmap=data['colormap'],
                                input_array=data['scalar_field'][0])
 
         # Re-create a new object with specified color vector for Arrows and Markers
