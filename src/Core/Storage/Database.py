@@ -476,15 +476,13 @@ class Database:
     def get_line(self,
                  table_name: str,
                  fields: Optional[Union[str, List[str]]] = None,
-                 line_id: int = -1,
-                 joins: Optional[Union[str, List[str]]] = None):
+                 line_id: int = -1):
         """
         Get a line of a Table.
 
         :param table_name: Name of the Table on which to perform the query.
         :param fields: Name(s) of the Field(s) to request.
         :param line_id: Index of the line to get.
-        :param joins: Name(s) of Table(s) to join to the selection.
         """
 
         # Check the Table existence
@@ -501,13 +499,6 @@ class Database:
             for field in fields:
                 if field in table.fields():
                     fields_selection += (table.fields(only_names=False)[field],)
-            if joins is not None:
-                joins = [joins] if type(joins) == str else joins
-                for j in joins:
-                    if j in self.__fk[table_name].values() and j not in fields:
-                        field_name = list(self.__fk[table_name].keys())[
-                            list(self.__fk[table_name].values()).index(j)]
-                        fields_selection += (table.fields(only_names=False)[field_name],)
 
         # Define the index of the line to select
         nb_line = self.nb_lines(table_name=table_name)
@@ -520,16 +511,11 @@ class Database:
         data = table.select(*fields_selection).where(table.id == line_id).dicts()[0]
 
         # Join
-        if joins is not None:
-            joins = [joins] if type(joins) == str else joins
-            for j in joins:
-                if j in self.__fk[table_name].values():
-                    field_name = list(self.__fk[table_name].keys())[list(self.__fk[table_name].values()).index(j)]
-                    if field_name in data:
-                        data[field_name] = self.get_line(table_name=j,
-                                                         fields=fields,
-                                                         line_id=data[field_name],
-                                                         joins=j)
+        for field in fields:
+            if field in self.__fk[table_name].keys():
+                data[field] = self.get_line(table_name=self.__fk[table_name][field],
+                                      fields=fields,
+                                      line_id=data[field])
 
         return data
 
@@ -538,7 +524,6 @@ class Database:
                   fields: Optional[Union[str, List[str]]] = None,
                   lines_id: Optional[List[int]] = None,
                   lines_range: Optional[List[int]] = None,
-                  joins: Optional[Union[str, List[str]]] = None,
                   batched: bool = False):
         """
         Get a set of lines of a Table.
@@ -547,7 +532,6 @@ class Database:
         :param fields: Name(s) of the Field(s) to select.
         :param lines_id: Indices of the lines to get. If not specified, 'lines_range' value will be used.
         :param lines_range: Range of indices of the lines to get. If not specified, all lines will be selected.
-        :param joins: Name(s) of Table(s) to join to the selection.
         :param batched: If True, data is returned as one batch per field. Otherwise, data is returned as list of lines.
         """
 
@@ -565,13 +549,6 @@ class Database:
             for field in fields:
                 if field in table.fields():
                     fields_selection += (table.fields(only_names=False)[field],)
-            if joins is not None:
-                joins = [joins] if type(joins) == str else joins
-                for j in joins:
-                    if j in self.__fk[table_name].values() and j not in fields:
-                        field_name = list(self.__fk[table_name].keys())[
-                            list(self.__fk[table_name].values()).index(j)]
-                        fields_selection += (table.fields(only_names=False)[field_name],)
 
         # Define the indices of lines to select
         if lines_id is None:
@@ -601,27 +578,17 @@ class Database:
             lines = [line for line in query]
 
         # Join
-        if joins is not None:
-            joins = [joins] if type(joins) == str else joins
-            for j in joins:
-                if j in self.__fk[table_name].values():
-                    field_name = list(self.__fk[table_name].keys())[
-                        list(self.__fk[table_name].values()).index(j)]
-                    dict_keys = lines.keys() if batched else lines[0].keys()
-                    if field_name in dict_keys:
-                        lines_id = lines[field_name] if batched else [line[field_name] for line in lines]
-                        data = self.get_lines(table_name=j,
-                                              fields=fields,
-                                              lines_id=lines_id,
-                                              joins=joins,
-                                              batched=batched)
-
-                        if batched:
-                            lines[field_name] = data
-                        else:
-                            for i, l in enumerate(data):
-                                lines[i][field_name] = l
-
+        for field in fields:
+            if field in self.__fk[table_name].keys():
+                data = self.get_lines(table_name=self.__fk[table_name][field],
+                                      fields=fields,
+                                      lines_id=lines[field] if batched else [line[field] for line in lines],
+                                      batched=batched)
+                if batched:
+                    lines[field] = data
+                else:
+                    for i, l in enumerate(data):
+                        lines[i][field] = l
         return lines
 
     def nb_lines(self,
