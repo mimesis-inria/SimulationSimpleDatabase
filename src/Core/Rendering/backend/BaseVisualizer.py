@@ -92,6 +92,7 @@ class BaseVisualizer:
         clients = {}
         for _ in range(nb_clients):
             client, _ = self.server.accept()
+            client.settimeout(0.1)
             idx_client: int = unpack('i', client.recv(4))[0]
             clients[idx_client] = client
 
@@ -194,15 +195,18 @@ class BaseVisualizer:
         """
 
         while not self.is_done[idx_client]:
-            msg = self.clients[idx_client].recv(4)
-            if len(msg) == 0:
+            try:
+                msg = self.clients[idx_client].recv(4)
+                if len(msg) == 0:
+                    pass
+                elif msg == b'exit':
+                    self.is_done[idx_client] = True
+                    self.exit(force_quit=False)
+                else:
+                    step = unpack('i', msg)[0]
+                    self.requests.append((idx_client, step))
+            except socket.timeout:
                 pass
-            elif msg == b'exit':
-                self.is_done[idx_client] = True
-                self.exit(force_quit=False)
-            else:
-                step = unpack('i', msg)[0]
-                self.requests.append((idx_client, step))
 
     def update_actors(self,
                       step: int,

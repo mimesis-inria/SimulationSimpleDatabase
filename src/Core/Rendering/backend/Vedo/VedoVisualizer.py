@@ -1,3 +1,4 @@
+import socket
 from typing import Dict, Optional
 from struct import unpack
 from vedo import show, Plotter
@@ -112,16 +113,19 @@ class VedoVisualizer(BaseVisualizer):
         Timer callback for a single Factory.
         """
 
-        msg = self.clients[0].recv(4)
-        if len(msg) == 0:
+        try:
+            msg = self.clients[0].recv(4)
+            if len(msg) == 0:
+                pass
+            elif msg == b'exit':
+                self.is_done[0] = True
+                self.exit(force_quit=False)
+            else:
+                step = unpack('i', msg)[0]
+                self.update_visualizer(step=step, idx_factory=0)
+                self.clients[0].send(b'done')
+        except socket.timeout:
             pass
-        elif msg == b'exit':
-            self.is_done[0] = True
-            self.exit(force_quit=False)
-        else:
-            step = unpack('i', msg)[0]
-            self.update_visualizer(step=step, idx_factory=0)
-            self.clients[0].send(b'done')
 
     def multiple_clients_thread(self, _) -> None:
         """

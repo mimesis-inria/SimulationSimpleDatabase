@@ -1,3 +1,4 @@
+import socket
 from typing import Dict, Optional, Tuple
 from threading import Thread
 from struct import unpack
@@ -115,20 +116,22 @@ class Open3dVisualizer(BaseApp, BaseVisualizer):
         """
 
         while not self.is_done[0]:
-
-            msg = self.clients[0].recv(4)
-            if len(msg) == 0:
+            try:
+                msg = self.clients[0].recv(4)
+                if len(msg) == 0:
+                    pass
+                elif msg == b'exit':
+                    self.is_done[0] = True
+                    self.exit(force_quit=False)
+                else:
+                    self.__step = (0, unpack('i', msg)[0])
+                    process_time = time()
+                    gui.Application.instance.post_to_main_thread(self._window,
+                                                                 self.update_visualizer)
+                    dt = max(0., self.fps - (time() - process_time))
+                    sleep(dt)
+            except socket.timeout:
                 pass
-            elif msg == b'exit':
-                self.is_done[0] = True
-                self.exit(force_quit=False)
-            else:
-                self.__step = (0, unpack('i', msg)[0])
-                process_time = time()
-                gui.Application.instance.post_to_main_thread(self._window,
-                                                             self.update_visualizer)
-                dt = max(0., self.fps - (time() - process_time))
-                sleep(dt)
 
         gui.Application.instance.quit()
 
