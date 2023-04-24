@@ -445,6 +445,9 @@ class Database:
 
         # Define the line index
         nb_line = self.nb_lines(table_name=table_name)
+        if nb_line == 0:
+            self.add_data(table_name=table_name, data=data)
+            return
         if line_id < 0:
             line_id += nb_line + 1
         elif line_id > nb_line:
