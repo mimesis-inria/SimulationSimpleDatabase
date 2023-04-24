@@ -422,13 +422,15 @@ class Database:
     def update(self,
                table_name: str,
                data: Dict[str, Any],
-               line_id: int = -1):
+               line_id: int = -1,
+               create_fields: bool = False):
         """
         Update a line of a Table.
 
         :param table_name: Name of the Table on which to perform the query.
         :param data: Updated data of the line.
         :param line_id: Index of the line to update.
+        :param create_fields: Create missing fields.
         """
 
         # Check table existence
@@ -449,6 +451,10 @@ class Database:
             line_id = nb_line
 
         # Check fields existence
+        undefined_fields = set(fields_names) - set(table.fields())
+        if create_fields:
+            fields_to_create = [(undef, type(data[undef])) for undef in undefined_fields]
+            self.create_fields(table_name=table_name, fields=fields_to_create)
         undefined_fields = set(fields_names) - set(table.fields())
         if len(undefined_fields) > 0:
             raise ValueError(f"[{self.__class__.__name__}]  Some fields where not defined in table {table}."
