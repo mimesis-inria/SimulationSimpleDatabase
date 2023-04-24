@@ -502,12 +502,13 @@ class Database:
 
         # Define the fields to select
         fields_selection = ()
-        if fields is not None:
-            fields_selection += (table.id,)
-            fields = [fields] if type(fields) == str else fields
-            for field in fields:
-                if field in table.fields():
-                    fields_selection += (table.fields(only_names=False)[field],)
+        if fields is None:
+            fields = table.fields()
+        fields_selection += (table.id,)
+        fields = [fields] if type(fields) == str else fields
+        for field in fields:
+            if field in table.fields():
+                fields_selection += (table.fields(only_names=False)[field],)
 
         # Define the index of the line to select
         nb_line = self.nb_lines(table_name=table_name)
@@ -552,12 +553,13 @@ class Database:
 
         # Define the fields to select
         fields_selection = ()
-        if fields is not None:
-            fields_selection += (table.id,)
-            fields = [fields] if type(fields) == str else fields
-            for field in fields:
-                if field in table.fields():
-                    fields_selection += (table.fields(only_names=False)[field],)
+        if fields is None:
+            fields = table.fields()
+        fields_selection += (table.id,)
+        fields = [fields] if type(fields) == str else fields
+        for field in fields:
+            if field in table.fields():
+                fields_selection += (table.fields(only_names=False)[field],)
 
         # Define the indices of lines to select
         if lines_id is None:
