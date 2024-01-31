@@ -131,14 +131,16 @@ def execute_cli():
         clean_examples_dir()
         return
 
-    examples = {'visualization': 'Core.rendering.visualization.py',
+    examples = {'write': 'Core.storage.write_db.py',
+                'read': 'Core.storage.read_db.py',
+                'update': 'Core.storage.update_db.py',
+                'signal': 'Core.storage.signal_db.py',
+                'foreignkey': 'Core.storage.foreignkey_db.py',
+
+                'visualization': 'Core.rendering.visualization.py',
                 'replay': 'Core.rendering.replay.py',
                 'offscreen': 'Core.rendering.offscreen.py',
-                'foreignkey': 'Core.storage.foreignkeyDB.py',
-                'reading': 'Core.storage.readingDB.py',
-                'signal': 'Core.storage.signalDB.py',
-                'updating': 'Core.storage.updatingDB.py',
-                'writing': 'Core.storage.writingDB.py',
+
                 'liver': ['SOFA.rendering.record.py', 'SOFA.rendering.replay.py'],
                 'caduceus': ['SOFA.rendering-offscreen.record.py', 'SOFA.rendering-offscreen.replay.py'],
                 'caduceus_store': 'SOFA.storage.record.py'}

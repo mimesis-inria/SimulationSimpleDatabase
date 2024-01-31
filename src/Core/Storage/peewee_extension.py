@@ -2,45 +2,43 @@ from peewee import IntegerField, ForeignKeyField, BareField, CompositeKey, AutoF
 from playhouse.reflection import Introspector, SqliteDatabase, SqliteMetadata, UnknownField
 import warnings
 
-from SSD.Core.Storage.AdaptiveTable import StoringTable, ExchangeTable
-from SSD.Core.Storage.ExtendedFields import NumpyField
+from SSD.Core.Storage.adaptive_table import StoringTable, ExchangeTable
+from SSD.Core.Storage.numpy_field import NumpyField
 
 
 def generate_models(database, schema=None, **options):
-    # Use extended inspector
-    introspector = _ExtendedIntrospector.from_database(database, schema=schema)
+
+    # EXTENSION: Use extended inspector
+    introspector = ExtendedIntrospector.from_database(database, schema=schema)
     return introspector.generate_models(**options)
 
 
-class _ExtendedSqliteMetadata(SqliteMetadata):
+class ExtendedSqliteMetadata(SqliteMetadata):
 
     def __init__(self, database):
         super().__init__(database)
-        # Extend the columns mapper
+        # EXTENSION: Extend the columns mapper with the new NumpyField
         self.column_map['numpy'] = NumpyField
 
 
-class _ExtendedIntrospector(Introspector):
+class ExtendedIntrospector(Introspector):
 
     @classmethod
     def from_database(cls, database, schema=None):
         if isinstance(database, SqliteDatabase):
-            # Use extended metadata class
-            metadata = _ExtendedSqliteMetadata(database)
+            # EXTENSION: Use extended metadata class
+            metadata = ExtendedSqliteMetadata(database)
             return cls(metadata, schema=schema)
         return Introspector.from_database(database, schema)
 
-    def generate_models(self, skip_invalid=False, table_names=None,
-                        literal_column_names=False, bare_fields=False,
+    def generate_models(self, skip_invalid=False, table_names=None, literal_column_names=False, bare_fields=False,
                         include_views=False):
 
-        database = self.introspect(table_names, literal_column_names,
-                                   include_views)
+        database = self.introspect(table_names, literal_column_names, include_views)
         models = {}
         pending = set()
 
         def _create_model(table, models):
-
             pending.add(table)
             for foreign_key in database.foreign_keys[table]:
                 dest = foreign_key.dest_table
@@ -68,7 +66,11 @@ class _ExtendedIntrospector(Introspector):
             # Fix models with multi-column primary keys.
             composite_key = False
             if len(primary_keys) == 0:
-                primary_keys = columns.keys()
+                if 'id' not in columns:
+                    Meta.primary_key = False
+                else:
+                    primary_keys = columns.keys()
+
             if len(primary_keys) > 1:
                 Meta.primary_key = CompositeKey(*[
                     field.name for col, field in columns.items()
@@ -112,14 +114,16 @@ class _ExtendedIntrospector(Introspector):
                     constraint = SQL('DEFAULT %s' % column.default)
                     params['constraints'] = [constraint]
 
-                if column_name in column_indexes and not \
-                   column.is_primary_key():
-                    if column_indexes[column_name]:
-                        params['unique'] = True
-                    elif not column.is_foreign_key():
-                        params['index'] = True
+                if not column.is_primary_key():
+                    if column_name in column_indexes:
+                        if column_indexes[column_name]:
+                            params['unique'] = True
+                        elif not column.is_foreign_key():
+                            params['index'] = True
+                    else:
+                        params['index'] = False
 
-                attrs[column_name] = FieldClass(**params)
+                attrs[column.name] = FieldClass(**params)
 
             # EXTENSION: BaseModel must inherit from our adaptive models
             class BaseModel(ExchangeTable if '_dt_' in database.columns[table] else StoringTable):

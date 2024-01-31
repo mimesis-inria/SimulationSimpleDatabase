@@ -2,14 +2,15 @@ from typing import Union, List, Type, Dict, Tuple, Optional, Any, Callable
 from os import remove, mkdir
 from os.path import exists, join, sep, getsize
 from inspect import getmembers
+from peewee import ForeignKeyField
 from playhouse.migrate import SqliteDatabase
 from playhouse.signals import Signal, pre_save, post_save
 from datetime import datetime
 from numpy import unique
 
-from SSD.Core.Storage.AdaptiveTable import AdaptiveTable, StoringTable, ExchangeTable, ForeignKeyField
-from SSD.Core.Storage.ExtendedPeewee import generate_models
-from SSD.Core.Storage.Exporter import Exporter, ExporterJson, ExporterCSV
+from SSD.Core.Storage.adaptive_table import AdaptiveTable, StoringTable, ExchangeTable
+from SSD.Core.Storage.peewee_extension import generate_models
+from SSD.Core.Storage.exporter import Exporter
 
 FieldType = Union[Tuple[str, Type], Tuple[str, Type, Any], Tuple[str, str]]
 
@@ -36,11 +37,9 @@ class Database:
         self.__tables: Dict[str, type(AdaptiveTable)] = {}
         self.__fk: Dict[str, Dict[str, str]] = {}
         self.__signals: List[Tuple[str, Signal, str, Callable, str]] = []
-        self.__exporters: Dict[str, Tuple[Type[Exporter], str]] = {'json': (ExporterJson, 'json'),
-                                                                   'csv': (ExporterCSV, 'csv')}
 
     @staticmethod
-    def make_name(table_name: str):
+    def make_name(table_name: str) -> str:
         """
         Harmonize the Table names.
 
@@ -49,8 +48,7 @@ class Database:
 
         return table_name[0] + table_name[1:].lower() if len(table_name) > 1 else table_name
 
-    def new(self,
-            remove_existing: bool = False):
+    def new(self, remove_existing: bool = False) -> 'Database':
         """
         Create a new Database file.
 
@@ -77,8 +75,7 @@ class Database:
         self.__database = SqliteDatabase(database_path)
         return self
 
-    def load(self,
-             show_architecture: bool = False):
+    def load(self, show_architecture: bool = False) -> 'Database':
         """
         Load an existing Database file.
 
@@ -118,7 +115,7 @@ class Database:
 
         return self
 
-    def get_path(self):
+    def get_path(self) -> Tuple[str, str]:
         """
         Access the Database file path.
         """
@@ -744,20 +741,25 @@ class Database:
     def export(self,
                exporter: str,
                filename: str,
-               tables: Optional[Union[str, List[str]]] = None):
+               tables: Optional[Union[str, List[str]]] = None) -> None:
+        """
+        Export the Database to a CSV or JSON file.
+
+        :param exporter: Exporter type ('json' or 'csv').
+        :param filename: Exported filename.
+        :param tables: Tables to export.
+        """
 
         # Check exporter format
         exporter = exporter.lower()
-        if exporter not in self.__exporters:
-            raise ValueError(f"Unknown exporter with name {exporter}. "
-                             f"Available exporters are {self.__exporters.keys()}.")
+        if exporter not in ['json', 'csv']:
+            raise ValueError(f"Unknown exporter with name {exporter}. Available exporters are ['json', 'csv'].")
 
         # Set good file extension
         file_path = filename.split(sep)
         file_name = file_path.pop(-1)
         file_name = file_name if len(file_name.split('.')) == 1 else file_name.split('.')[0]
         filename = join(*file_path[:-1], file_name)
-        extension = self.__exporters[exporter][1]
 
         # Get the tables to export
         tables = self.get_tables() if tables is None else tables
@@ -769,11 +771,10 @@ class Database:
         # Export each table
         # Todo: see 'at once' version
         for table in tables:
-            _filename = filename + f'_{table}.{extension}'
+            _filename = filename + f'_{table}.{exporter}'
             if exporter == 'json':
-                query = self.get_lines(table_name=table,
-                                       batched=True)
+                query = self.get_lines(table_name=table, batched=True)
+                Exporter.export_json(filename=_filename, query=query)
             else:
                 query = self.__tables[table].select().tuples()
-            self.__exporters[exporter][0].export(filename=_filename,
-                                                 query=query)
+                Exporter.export_csv(filename=_filename, query=query)

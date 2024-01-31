@@ -10,10 +10,10 @@ Each *Table* from all *Databases* will be duplicated in the new *Database*; in t
 
 .. code-block:: python
 
-    from SSD.Core import merge
+    from SSD.Core.Storage import merge
 
-    merge(database_names=['my_Database1', 'my_Database2'],
-          new_database_name='my_MergedDatabase',
+    merge(database_files=['my_Database1', 'my_Database2'],
+          new_database_file='my_MergedDatabase',
           remove_existing=True)
     """
     >> DATABASE my_Database1.db
@@ -51,7 +51,9 @@ Each *Table* from all *Databases* will be duplicated in the new *Database*; in t
             - _dt_ (DATETIME) (default)
             - my_Data (FLOAT)
 
-    >> Confirm new Database architecture ? (y/n):
+    >> Confirm new Database architecture ? (y/n): y
+    Proceeding...
+    Merge complete.
     """
 
 
@@ -63,9 +65,9 @@ Both methods require tuples defines as :guilabel:`(current_name, new_name)`:
 
 .. code-block:: python
 
-    from SSD.Core import rename_tables, rename_fields
+    from SSD.Core.Storage import rename_tables, rename_fields
 
-    rename_tables(database_name='my_Database',
+    rename_tables(database_file='my_Database',
                   renamed_tables=[('my_StoringTable', 'my_NewStoringTable'), ('my_ExchangeTable', 'my_NewExchangeTable')])
     """
     >> DATABASE my_Database.db
@@ -80,7 +82,7 @@ Both methods require tuples defines as :guilabel:`(current_name, new_name)`:
             - my_Data (FLOAT)
     """
 
-    rename_fields(database_name='my_Database',
+    rename_fields(database_file='my_Database',
                   table_name='my_NewStoringTable',
                   renamed_fields=('my_Condition', 'my_Test'))
     """
@@ -104,7 +106,7 @@ The ``remove_tables`` and ``remove_fields`` tools allows users to remove *Tables
 
 .. code-block:: python
 
-    from SSD.Core import remove_tables, remove_fields
+    from SSD.Core.Storage import remove_tables, remove_fields
 
     rename_tables(database_name='my_Database',
                   remove_tables='my_ExchangeTable')
@@ -135,7 +137,7 @@ The ``export`` tool allows users to export a *Database* either in CSV format eit
 
 .. code-block:: python
 
-    from SSD.Core import export
+    from SSD.Core.Storage import export
 
     export(database_name='my_Database',
            exporter='csv',

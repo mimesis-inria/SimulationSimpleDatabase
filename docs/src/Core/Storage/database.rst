@@ -9,7 +9,7 @@ To create this file with a `.db` extension, a call to the ``new`` method is requ
 
 .. code-block:: python
 
-    from SSD.Core import Database
+    from SSD.Core.Storage import Database
 
     # Create a new Database object and a new storage file
     db = Database(database_dir='my_directory',
@@ -28,7 +28,7 @@ Loading an existing *Database* is pretty similar as creating a new one, except t
 
 .. code-block:: python
 
-    from SSD.Core import Database
+    from SSD.Core.Storage import Database
 
     # Create a new Database object and load an exiting storage file
     db = Database(database_dir='my_directory',
@@ -107,7 +107,7 @@ The following *Field* types are available:
     +--------------+--------------------------------------+---------------------------------------------------------------------------------------+
     | ``bool``     | :guilabel:`bool`                     | `BooleanField <http://docs.peewee-orm.com/en/latest/peewee/api.html#BooleanField>`_   |
     +--------------+--------------------------------------+---------------------------------------------------------------------------------------+
-    | ``ndarray``  | :guilabel:`import numpy.ndarray`     | See ``AdaptiveDB/ExtendedFields.py``                                                  |
+    | ``ndarray``  | :guilabel:`import numpy.ndarray`     | Field class for storing numpy arrays.                                                 |
     +--------------+--------------------------------------+---------------------------------------------------------------------------------------+
     | ``datetime`` | :guilabel:`import datetime.datetime` | `DateTimeField <http://docs.peewee-orm.com/en/latest/peewee/api.html#DateTimeField>`_ |
     +--------------+--------------------------------------+---------------------------------------------------------------------------------------+

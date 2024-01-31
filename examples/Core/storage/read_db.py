@@ -1,11 +1,11 @@
 from os.path import exists, join
 from os import system
 
-from SSD.Core import Database
+from SSD.Core.Storage import Database
 
 # Assert DB existence
 if not exists(join('my_databases', 'database_1.db')) or not exists(join('my_databases', 'database_2.db')):
-    system('python3 writingDB.py')
+    system('python3 write_db.py')
 
 
 # Load an existing Database storage file

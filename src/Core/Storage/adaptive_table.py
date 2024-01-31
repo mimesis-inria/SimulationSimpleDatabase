@@ -3,9 +3,10 @@ from peewee import IntegerField, FloatField, TextField, BooleanField, BlobField,
 from peewee import chunked
 from playhouse.signals import Model, pre_save, post_save
 from playhouse.migrate import migrate, SqliteMigrator, SqliteDatabase
+from numpy import ndarray
 from datetime import datetime
 
-from SSD.Core.Storage.ExtendedFields import NumpyField, ndarray
+from SSD.Core.Storage.numpy_field import NumpyField
 
 
 class AdaptiveTable(Model):
@@ -32,14 +33,12 @@ class AdaptiveTable(Model):
         return cls._meta.database
 
     @classmethod
-    def fields(cls,
-               only_names: bool = True) -> Union[List[str], Dict[str, Field]]:
+    def fields(cls, only_names: bool = True) -> Union[List[str], Dict[str, Field]]:
 
         return list(cls._meta.fields.keys()) if only_names else cls._meta.fields
 
     @classmethod
-    def connect(cls,
-                database: SqliteDatabase):
+    def connect(cls, database: SqliteDatabase) -> None:
 
         cls.bind(database)
         cls.database().create_tables([cls])
@@ -48,7 +47,7 @@ class AdaptiveTable(Model):
     def extend(cls,
                field_name: str,
                data_type: Type,
-               default_value: Any):
+               default_value: Any) -> None:
 
         migrator = SqliteMigrator(cls.database())
         atts = {'null': True}
@@ -67,7 +66,7 @@ class AdaptiveTable(Model):
     @classmethod
     def extend_fk(cls,
                   model: Model,
-                  field_name: str):
+                  field_name: str) -> None:
 
         migrator = SqliteMigrator(cls.database())
         field = ForeignKeyField(model=model, backref=field_name, null=True, field=model._meta.primary_key)
@@ -77,7 +76,7 @@ class AdaptiveTable(Model):
     @classmethod
     def rename_table(cls,
                      old_table_name: str,
-                     new_table_name: str):
+                     new_table_name: str) -> None:
 
         migrator = SqliteMigrator(cls.database())
         migrate(migrator.rename_table(old_table_name, new_table_name))
@@ -85,7 +84,7 @@ class AdaptiveTable(Model):
     @classmethod
     def rename_field(cls,
                      old_field_name: str,
-                     new_field_name: str):
+                     new_field_name: str) -> None:
 
         migrator = SqliteMigrator(cls.database())
         migrate(migrator.rename_column(cls._meta.name, old_field_name, new_field_name))
@@ -94,7 +93,7 @@ class AdaptiveTable(Model):
 
     @classmethod
     def remove_field(cls,
-                     field_name: str):
+                     field_name: str) -> None:
 
         migrator = SqliteMigrator(cls.database())
         migrate(migrator.drop_column(cls._meta.name, field_name))
@@ -122,7 +121,7 @@ class AdaptiveTable(Model):
     def add_data(cls,
                  fields_names: List[str],
                  fields_values: List[Any],
-                 batched: bool = False):
+                 batched: bool = False) -> Union[int, List[int]]:
 
         pass
 
@@ -134,7 +133,7 @@ class StoringTable(AdaptiveTable):
     def add_data(cls,
                  fields_names: List[str],
                  fields_values: List[Any],
-                 batched: bool = False):
+                 batched: bool = False) -> Union[int, List[int]]:
 
         if not batched:
             line = cls(**dict(zip(fields_names, fields_values)))
@@ -159,7 +158,7 @@ class ExchangeTable(AdaptiveTable):
     def add_data(cls,
                  fields_names: List[str],
                  fields_values: List[Any],
-                 batched: bool = False):
+                 batched: bool = False) -> Union[int, List[int]]:
 
         if not batched:
             cls.delete().execute()
