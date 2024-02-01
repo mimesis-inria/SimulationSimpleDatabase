@@ -1,33 +1,33 @@
 from typing import Dict, Any, Callable, Optional, List
 
 
-class BaseActor:
+class BaseObject:
 
     def __init__(self,
-                 actor_type: str,
-                 actor_name: str,
-                 actor_group: int):
+                 object_type: str,
+                 object_name: str,
+                 object_group: int):
         """
-        The BaseActor is the common API for all backend Actors.
+        The BaseObject is the common API for all backend Objects.
 
-        :param actor_type: Type of the Actor.
-        :param actor_name: Name of the Actor.
-        :param actor_group: Index of the group of the Actor.
+        :param object_type: Type of the Object.
+        :param object_name: Name of the Object.
+        :param object_group: Index of the group of the Object.
         """
 
-        # Actor identification
-        self.type = actor_type
-        self.name = actor_name
-        self.group = actor_group
+        # Object identification
+        self.type = object_type
+        self.name = object_name
+        self.group = object_group
         self.instance: Optional[Any] = None
 
-        # Actor data
+        # Object data
         self._object_data: Dict[str, Any] = {}
         self._cmap_data: Dict[str, Any] = {}
         self._updated_fields: List[str] = []
         self.__updated_cmap: bool = False
 
-        # Actor specialization
+        # Object specialization
         self._create_object: Optional[Callable] = None
         self._update_object: Optional[Callable] = None
         self._cmap_object: Optional[Callable] = None
@@ -47,9 +47,9 @@ class BaseActor:
     def create(self,
                data: Dict[str, Any]) -> None:
         """
-        Register data and create visual object.
+        Register data and create visual Object.
 
-        :param data: Initial object data.
+        :param data: Initial Object data.
         """
 
         # Register & sort data
@@ -71,7 +71,7 @@ class BaseActor:
         """
         Register updated data.
 
-        :param data: Updated object data.
+        :param data: Updated Object data.
         """
 
         # Sort data
@@ -79,7 +79,7 @@ class BaseActor:
         cmap_data = cmap_data if 'scalar_field' in cmap_data and len(cmap_data['scalar_field']) > 0 else {}
         self.__updated_cmap = len(cmap_data.keys()) > 0
 
-        # Register Actor data
+        # Register Object data
         self._updated_fields = []
         for key, value in data.items():
             self._object_data[key] = value
@@ -89,7 +89,7 @@ class BaseActor:
 
     def update(self) -> None:
         """
-        Update visual object.
+        Update visual Object.
         """
 
         # Update the object

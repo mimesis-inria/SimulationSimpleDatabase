@@ -4,10 +4,10 @@ from struct import unpack
 from vedo import show, Plotter
 from threading import Thread
 
-from SSD.Core.Storage.Database import Database
-from SSD.Core.Rendering.backend.BaseVisualizer import BaseVisualizer
-from SSD.Core.Rendering.backend.Vedo.VedoActor import VedoActor
-from SSD.Core.Rendering.backend.Vedo.utils import do_remove
+from SSD.Core.Storage.database import Database
+from SSD.Core.Rendering.backend.base_visualizer import BaseVisualizer
+from SSD.Core.Rendering.backend.vedo.vedo_objet import VedoObject
+from SSD.Core.Rendering.backend.vedo.utils import do_remove
 
 
 class VedoVisualizer(BaseVisualizer):
@@ -19,7 +19,7 @@ class VedoVisualizer(BaseVisualizer):
                  remove_existing: bool = False,
                  fps: int = 20):
         """
-        The VedoVisualizer is used to manage the creation, update and rendering of Vedo Actors.
+        The VedoVisualizer is used to manage the creation, update and rendering of Vedo Objects.
 
         :param database: Database to connect to.
         :param database_dir: Directory which contains the Database file (used if 'database' is not defined).
@@ -35,55 +35,55 @@ class VedoVisualizer(BaseVisualizer):
                                 remove_existing=remove_existing,
                                 fps=fps)
 
-        self.actors: Dict[int, Dict[str, VedoActor]] = {}
+        self.objects: Dict[int, Dict[str, VedoObject]] = {}
         self.__plotter: Optional[Plotter] = None
 
-    def get_actor(self,
-                  actor_name: str) -> VedoActor:
+    def get_object(self,
+                   object_name: str) -> VedoObject:
         """
-        Get an Actor instance.
+        Get an Object instance.
 
-        :param actor_name: Name of the Actor.
-        """
-
-        group = self.groups[actor_name]
-        return self.actors[group][actor_name]
-
-    def create_actor_backend(self,
-                             actor_name: str,
-                             actor_type: str,
-                             actor_group: int) -> None:
-        """
-        Specific Actor creation instructions.
-
-        :param actor_name: Name of the Actor.
-        :param actor_type: Type of the Actor.
-        :param actor_group: Group of the Actor.
+        :param object_name: Name of the Object.
         """
 
-        self.actors[actor_group][actor_name] = VedoActor(actor_type=actor_type,
-                                                         actor_name=actor_name,
-                                                         actor_group=actor_group)
+        group = self.groups[object_name]
+        return self.objects[group][object_name]
+
+    def create_object_backend(self,
+                              object_name: str,
+                              object_type: str,
+                              object_group: int) -> None:
+        """
+        Specific Object creation instructions.
+
+        :param object_name: Name of the Object.
+        :param object_type: Type of the Object.
+        :param object_group: Group of the Object.
+        """
+
+        self.objects[object_group][object_name] = VedoObject(object_type=object_type,
+                                                             object_name=object_name,
+                                                             object_group=object_group)
 
     def launch_visualizer(self,
                           nb_clients: int) -> None:
         """
-        Start the Visualizer: create all Actors and render them.
+        Start the Visualizer: create all Objects and render them.
 
         :param nb_clients: Number of Factories to connect to.
         """
 
-        # 1. Create the list of actors to render
-        actors = []
-        for group in self.actors.keys():
-            actors.append([])
-            for actor in self.actors[group].values():
-                actors[-1].append(actor.instance)
+        # 1. Create the list of objects to render
+        objects = []
+        for group in self.objects.keys():
+            objects.append([])
+            for v_object in self.objects[group].values():
+                objects[-1].append(v_object.instance)
 
         # 2. Create a non-interactive Plotter instance
-        self.__plotter = show(actors,
+        self.__plotter = show(objects,
                               new=True,
-                              N=len(actors),
+                              N=len(objects),
                               sharecam=True,
                               interactive=False,
                               title='SSD',
@@ -147,25 +147,25 @@ class VedoVisualizer(BaseVisualizer):
         :param idx_factory: Index of the Factory to update.
         """
 
-        self.update_actors(step=step,
-                           idx_factory=idx_factory)
+        self.update_objects(step=step,
+                            idx_factory=idx_factory)
         self.__plotter.render()
 
-    def update_actor_backend(self,
-                             actor: VedoActor) -> None:
+    def update_object_backend(self,
+                              v_object: VedoObject) -> None:
         """
-        Specific Actor update instructions.
+        Specific Object update instructions.
 
-        :param actor: Actor object.
+        :param v_object: Object object.
         """
 
         removed = False
-        if do_remove(actor, actor.updated_fields):
-            self.__plotter.remove(actor.instance, at=actor.group)
+        if do_remove(v_object, v_object.updated_fields):
+            self.__plotter.remove(v_object.instance, at=v_object.group)
             removed = True
-        actor.update()
+        v_object.update()
         if removed:
-            self.__plotter.add(actor.instance, at=actor.group)
+            self.__plotter.add(v_object.instance, at=v_object.group)
 
     def exit(self,
              force_quit: bool = True) -> None:

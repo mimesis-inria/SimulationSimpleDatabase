@@ -4,8 +4,8 @@ from subprocess import run
 from sys import executable, argv
 from inspect import stack, getmodule
 
-from SSD.Core.Storage.Database import Database
-from SSD.Core.Rendering.backend.BaseVisualizer import BaseVisualizer
+from SSD.Core.Storage.database import Database
+from SSD.Core.Rendering.backend.base_visualizer import BaseVisualizer
 
 
 class Visualizer:
@@ -38,14 +38,14 @@ class Visualizer:
         # Create the Visualizer
         self.__visualizer: BaseVisualizer
         if backend.lower() == 'vedo':
-            from SSD.Core.Rendering.backend.Vedo.VedoVisualizer import VedoVisualizer
+            from SSD.Core.Rendering.backend.vedo.vedo_visualizer import VedoVisualizer
             self.__visualizer = VedoVisualizer(database=database,
                                                database_dir=database_dir,
                                                database_name=database_name,
                                                remove_existing=remove_existing,
                                                fps=fps)
         else:
-            from SSD.Core.Rendering.backend.Open3d.Open3dVisualizer import Open3dVisualizer
+            from SSD.Core.Rendering.backend.open3d.open3d_visualizer import Open3dVisualizer
             self.__visualizer = Open3dVisualizer(database=database,
                                                  database_dir=database_dir,
                                                  database_name=database_name,
@@ -61,7 +61,7 @@ class Visualizer:
 
         return self.__visualizer.database
 
-    def get_database_path(self) -> Tuple[str]:
+    def get_database_path(self) -> Tuple[str, str]:
         """
         Get the path to the Database.
         """

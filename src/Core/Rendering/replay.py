@@ -1,5 +1,5 @@
-from SSD.Core.Storage.Database import Database
-from SSD.Core.Rendering.backend.BaseReplay import BaseReplay
+from SSD.Core.Storage.database import Database
+from SSD.Core.Rendering.backend.base_replay import BaseReplay
 
 
 class Replay:
@@ -28,15 +28,15 @@ class Replay:
         # Create the Visualizer
         self.__replay: BaseReplay
         if backend.lower() == 'vedo':
-            from SSD.Core.Rendering.backend.Vedo.VedoReplay import VedoReplay
+            from SSD.Core.Rendering.backend.vedo.vedo_replay import VedoReplay
             self.__replay = VedoReplay(database=database,
                                        fps=fps)
         else:
-            from SSD.Core.Rendering.backend.Open3d.Open3dReplay import Open3dReplay
+            from SSD.Core.Rendering.backend.open3d.open3d_replay import Open3dReplay
             self.__replay = Open3dReplay(database=database,
                                          fps=fps)
 
-    def launch(self):
+    def launch(self) -> None:
         """
         Initialize the Visualizer: create all Actors and render them in a Plotter.
         """

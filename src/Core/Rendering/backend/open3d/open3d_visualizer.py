@@ -6,10 +6,10 @@ from copy import copy
 from time import time, sleep
 import open3d.visualization.gui as gui
 
-from SSD.Core.Storage.Database import Database
-from SSD.Core.Rendering.backend.BaseVisualizer import BaseVisualizer
-from SSD.Core.Rendering.backend.Open3d.Open3dActor import Open3dActor
-from SSD.Core.Rendering.backend.Open3d.Open3dBaseApp import BaseApp
+from SSD.Core.Storage.database import Database
+from SSD.Core.Rendering.backend.base_visualizer import BaseVisualizer
+from SSD.Core.Rendering.backend.open3d.open3d_object import Open3dObject
+from SSD.Core.Rendering.backend.open3d.open3d_app import BaseApp
 
 
 class Open3dVisualizer(BaseApp, BaseVisualizer):
@@ -37,40 +37,40 @@ class Open3dVisualizer(BaseApp, BaseVisualizer):
                                 remove_existing=remove_existing,
                                 fps=fps)
 
-        self.actors: Dict[int, Dict[str, Open3dActor]] = {}
+        self.objects: Dict[int, Dict[str, Open3dObject]] = {}
         self.__current_group: int = 0
         self.__previous_group: int = 0
         self.__group_change: bool = False
         self.__step: Tuple[int, int] = (1, 1)
 
-    def get_actor(self,
-                  actor_name: str) -> Open3dActor:
+    def get_object(self,
+                   object_name: str) -> Open3dObject:
         """
         Get an Actor instance.
 
-        :param actor_name: Name of the Actor.
+        :param object_name: Name of the Actor.
         """
 
-        group = self.groups[actor_name]
-        return self.actors[group][actor_name]
+        group = self.groups[object_name]
+        return self.objects[group][object_name]
 
-    def create_actor_backend(self,
-                             actor_name: str,
-                             actor_type: str,
-                             actor_group: int) -> None:
+    def create_object_backend(self,
+                              object_name: str,
+                              object_type: str,
+                              object_group: int) -> None:
         """
         Specific Actor creation instructions.
 
-        :param actor_name: Name of the Actor.
-        :param actor_type: Type of the Actor.
-        :param actor_group: Group of the Actor.
+        :param object_name: Name of the Actor.
+        :param object_type: Type of the Actor.
+        :param object_group: Group of the Actor.
         """
 
-        self.actors[actor_group][actor_name] = Open3dActor(actor_type=actor_type,
-                                                           actor_name=actor_name,
-                                                           actor_group=actor_group)
-        if actor_type == 'Text':
-            self.additional_labels[actor_name] = self.actors[actor_group][actor_name]
+        self.objects[object_group][object_name] = Open3dObject(object_type=object_type,
+                                                               object_name=object_name,
+                                                               object_group=object_group)
+        if object_type == 'Text':
+            self.additional_labels[object_name] = self.objects[object_group][object_name]
 
     def launch_visualizer(self,
                           nb_clients: int) -> None:
@@ -81,20 +81,20 @@ class Open3dVisualizer(BaseApp, BaseVisualizer):
         """
 
         # 1. Init Visualizer instance
-        self._create_settings(len(self.actors))
+        self._create_settings(len(self.objects))
         self._window.set_on_close(self.exit)
 
         # 2 Add all Text
-        for actor in self.additional_labels.values():
-            self._window.add_child(actor.instance)
-            actor.instance.visible = False
+        for v_object in self.additional_labels.values():
+            self._window.add_child(v_object.instance)
+            v_object.instance.visible = False
 
         # 3. Add geometries to the Visualizer
-        for actor in self.actors[self.__current_group].values():
-            if actor.type == 'Text':
-                actor.instance.visible = True
+        for v_object in self.objects[self.__current_group].values():
+            if v_object.type == 'Text':
+                v_object.instance.visible = True
             else:
-                self._scene.scene.add_geometry(actor.name, actor.instance, actor.material)
+                self._scene.scene.add_geometry(v_object.name, v_object.instance, v_object.material)
         bounds = self._scene.scene.bounding_box
         self._scene.setup_camera(60, bounds, bounds.get_center())
 
@@ -163,40 +163,40 @@ class Open3dVisualizer(BaseApp, BaseVisualizer):
         if self.__group_change:
             self.__group_change = False
             # Remove previous group
-            for table_name in self.actors[self.__previous_group].keys():
-                actor: Open3dActor = self.get_actor(table_name)
-                if actor.type == 'Text':
-                    actor.instance.visible = False
+            for table_name in self.objects[self.__previous_group].keys():
+                v_object: Open3dObject = self.get_object(table_name)
+                if v_object.type == 'Text':
+                    v_object.instance.visible = False
                 else:
-                    self._scene.scene.remove_geometry(actor.name)
+                    self._scene.scene.remove_geometry(v_object.name)
             # Add new group
-            for table_name in self.actors[self.__current_group].keys():
-                actor = self.get_actor(table_name)
-                if actor.type == 'Text':
-                    actor.instance.visible = True
+            for table_name in self.objects[self.__current_group].keys():
+                v_object = self.get_object(table_name)
+                if v_object.type == 'Text':
+                    v_object.instance.visible = True
                 else:
-                    self._scene.scene.add_geometry(actor.name, actor.instance, actor.material)
+                    self._scene.scene.add_geometry(v_object.name, v_object.instance, v_object.material)
 
         # 2. Update all the Actors
-        self.update_actors(step=step,
-                           idx_factory=idx_factory)
+        self.update_objects(step=step,
+                            idx_factory=idx_factory)
         self.clients[idx_factory].send(b'done')
 
-    def update_actor_backend(self,
-                             actor: Open3dActor) -> None:
+    def update_object_backend(self,
+                              v_object: Open3dObject) -> None:
         """
         Specific Actor update instructions.
 
-        :param actor: Actor object.
+        :param v_object: Actor object.
         """
 
-        actor.update()
-        if actor.group == self.__current_group:
-            if actor.type == 'Text':
+        v_object.update()
+        if v_object.group == self.__current_group:
+            if v_object.type == 'Text':
                 pass
             else:
-                self._scene.scene.remove_geometry(actor.name)
-                self._scene.scene.add_geometry(actor.name, actor.instance, actor.material)
+                self._scene.scene.remove_geometry(v_object.name)
+                self._scene.scene.add_geometry(v_object.name, v_object.instance, v_object.material)
 
     def exit(self,
              force_quit: bool = True) -> None:

@@ -2,34 +2,26 @@ from typing import Any, Dict
 from numpy import array, ndarray
 from vedo.utils import is_sequence
 
-from SSD.Core.Storage.Database import Database
+from SSD.Core.Storage.database import Database
 
 
-class DataTables:
+class RenderingTable:
 
     def __init__(self,
                  database: Database,
                  table_name: str):
         """
-        The DataTables are used to create a specific Table in the Database for each object type.
+        A RenderingTable is used to create a specific Table in the Database for each object type.
         
         :param database: Database to connect to.
         :param table_name: Name of the Table to create. Should be '<obj_type>_<factory_idx>_<obj_idx>'.
         """
-        
+
         # Table information
         self.database: Database = database
         self.table_name: str = table_name
         self.table_type: str = table_name.split('_')[0]
 
-        # Select the good methods according to the Table type
-        create_columns = {'Mesh': self.__create_mesh_columns,
-                          'Points': self.__create_points_columns,
-                          'Arrows': self.__create_arrows_columns,
-                          'Markers': self.__create_markers_columns,
-                          'Text': self.__create_text_columns}
-        self.create_columns = create_columns[self.table_type]
-        
     def send_data(self,
                   data: Dict[str, Any],
                   update: bool) -> None:
@@ -49,7 +41,19 @@ class DataTables:
             self.database.add_data(table_name=self.table_name,
                                    data=self.__format_data(data=data))
 
-    def __create_mesh_columns(self):
+    def create_columns(self) -> 'RenderingTable':
+        """
+        Create the Fields of the Table for a specific object type.
+        """
+
+        return {'Mesh': self.__create_mesh_columns,
+                'Points': self.__create_points_columns,
+                'Arrows': self.__create_arrows_columns,
+                'Markers': self.__create_markers_columns,
+                'Text': self.__create_text_columns
+                }[self.table_type]()
+
+    def __create_mesh_columns(self) -> 'RenderingTable':
 
         self.database.create_table(table_name=self.table_name,
                                    fields=[('positions', ndarray),
@@ -64,7 +68,7 @@ class DataTables:
                                            ])
         return self
 
-    def __create_points_columns(self):
+    def __create_points_columns(self) -> 'RenderingTable':
 
         self.database.create_table(table_name=self.table_name,
                                    fields=[('positions', ndarray),
@@ -77,7 +81,7 @@ class DataTables:
                                            ])
         return self
 
-    def __create_arrows_columns(self):
+    def __create_arrows_columns(self) -> 'RenderingTable':
 
         self.database.create_table(table_name=self.table_name,
                                    fields=[('positions', ndarray),
@@ -91,7 +95,7 @@ class DataTables:
                                            ])
         return self
 
-    def __create_markers_columns(self):
+    def __create_markers_columns(self) -> 'RenderingTable':
 
         self.database.create_table(table_name=self.table_name,
                                    fields=[('normal_to', str),
@@ -107,7 +111,7 @@ class DataTables:
                                            ])
         return self
 
-    def __create_text_columns(self):
+    def __create_text_columns(self) -> 'RenderingTable':
 
         self.database.create_table(table_name=self.table_name,
                                    fields=[('content', str),
@@ -142,4 +146,3 @@ class DataTables:
                 vec = [vec]
             vec = array(vec)
         return vec
-        

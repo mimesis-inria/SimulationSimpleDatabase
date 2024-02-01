@@ -3,32 +3,32 @@ from vedo import Mesh, Points, Arrows, Marker, Glyph, Text2D
 from matplotlib.colors import Normalize
 from matplotlib.pyplot import get_cmap
 
-from SSD.Core.Rendering.backend.BaseActor import BaseActor
+from SSD.Core.Rendering.backend.base_object import BaseObject
 
 
-class VedoActor(BaseActor):
+class VedoObject(BaseObject):
 
     def __init__(self,
-                 actor_type: str,
-                 actor_name: str,
-                 actor_group: int):
+                 object_type: str,
+                 object_name: str,
+                 object_group: int):
         """
-        The VedoActor is used to create and update Vedo object instances.
+        The VedoObject is used to create and update Vedo object instances.
 
-        :param actor_type: Type of the Actor.
-        :param actor_name: Name of the Actor.
-        :param actor_group: Index of the group of the Actor.
+        :param object_type: Type of the Object.
+        :param object_name: Name of the Object.
+        :param object_group: Index of the group of the Object.
         """
 
-        BaseActor.__init__(self,
-                           actor_type=actor_type,
-                           actor_name=actor_name,
-                           actor_group=actor_group)
+        BaseObject.__init__(self,
+                            object_type=object_type,
+                            object_name=object_name,
+                            object_group=object_group)
 
-        # Actor information
+        # Object information
         self.instance: Optional[Points] = None
 
-        # Actor specialization
+        # Object specialization
         spec = {'Mesh': (self.__create_mesh, self.__update_mesh),
                 'Points': (self.__create_points, self.__update_points),
                 'Arrows': (self.__create_arrows, self.__update_arrows),
@@ -76,9 +76,11 @@ class VedoActor(BaseActor):
                       data: Dict[str, Any],
                       updated_fields: List[str]) -> None:
 
+        self.instance: Mesh
+
         # Update positions
         if 'positions' in updated_fields:
-            self.instance.points(data['positions'])
+            self.instance.vertices = data['positions']
 
         # Update rendering style
         if 'line_width' in updated_fields or 'wireframe' in updated_fields:
@@ -106,9 +108,11 @@ class VedoActor(BaseActor):
                         data: Dict[str, Any],
                         updated_fields: List[str]) -> None:
 
+        self.instance: Points
+
         # Update positions
         if 'positions' in updated_fields:
-            self.instance.points(data['positions'])
+            self.instance.vertices = data['positions']
 
         # Update rendering style
         if 'point_size' in updated_fields:
@@ -162,15 +166,15 @@ class VedoActor(BaseActor):
     def __create_markers(self,
                          data: Dict[str, Any]) -> None:
 
-        # Get position and orientation information from the associated Actor
-        normal_to = data['normal_to']
-        positions = normal_to.instance.points()[data['indices']][0]
-        orientations = normal_to.instance.normals()[data['indices']][0]
+        # Get position and orientation information from the associated Object
+        normal_to: Mesh = data['normal_to'].instance
+        positions = normal_to.vertices[data['indices']][0]
+        orientations = normal_to.vertex_normals[data['indices']][0]
 
         # Create the Marker object
         marker = Marker(symbol=data['symbol'],
                         s=data['size'],
-                        filled=data['filled']).orientation(newaxis=[1, 0, 0], rotation=90, rad=False)
+                        filled=data['filled']).rotate(axis=[0, 1, 0], angle=90, rad=False)
 
         # With a colormap, create a color vector
         if 'scalar_field' in data:
@@ -194,7 +198,7 @@ class VedoActor(BaseActor):
                          data: Dict[str, Any],
                          updated_fields: List[str]) -> None:
 
-        # Re-create instance to update any change (from current Actor or from associated Actor's positions)
+        # Re-create instance to update any change (from current Object or from associated Object's positions)
         if len(updated_fields) > 0 or 'positions' in data['normal_to'].updated_fields:
             self._create_object(data)
 
@@ -224,6 +228,8 @@ class VedoActor(BaseActor):
     def __update_text(self,
                       data: Dict[str, Any],
                       updated_fields: List[str]) -> None:
+
+        self.instance: Text2D
 
         # Update text content
         if 'content' in updated_fields:

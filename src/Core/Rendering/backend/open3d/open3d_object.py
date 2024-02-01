@@ -8,35 +8,35 @@ from numpy.linalg import norm
 from matplotlib.colors import Normalize
 from matplotlib.pyplot import get_cmap
 
-from SSD.Core.Rendering.backend.BaseActor import BaseActor
-from SSD.Core.Rendering.backend.Open3d.utils import get_rotation_matrix
+from SSD.Core.Rendering.backend.base_object import BaseObject
+from SSD.Core.Rendering.backend.open3d.utils import get_rotation_matrix
 
 
-class Open3dActor(BaseActor):
+class Open3dObject(BaseObject):
 
     def __init__(self,
-                 actor_type: str,
-                 actor_name: str,
-                 actor_group: int):
+                 object_type: str,
+                 object_name: str,
+                 object_group: int):
         """
-        The Open3dActor is used to create and update Open3D object instances.
+        The Open3dObject is used to create and update Open3D object instances.
 
-        :param actor_type: Type of the Actor.
-        :param actor_name: Name of the Actor.
-        :param actor_group: Index of the group of the Actor.
+        :param object_type: Type of the Object.
+        :param object_name: Name of the Object.
+        :param object_group: Index of the group of the Object.
         """
 
-        BaseActor.__init__(self,
-                           actor_type=actor_type,
-                           actor_name=actor_name,
-                           actor_group=actor_group)
+        BaseObject.__init__(self,
+                            object_type=object_type,
+                            object_name=object_name,
+                            object_group=object_group)
 
-        # Actor information
+        # Object information
         self.instance: Optional[o3d.geometry.Geometry3D] = None
         self.material = o3d.visualization.rendering.MaterialRecord()
         self.utils: Optional[Any] = None
 
-        # Actor specialization
+        # Object specialization
         spec = {'Mesh': (self.__create_mesh, self.__update_mesh, self.__cmap_mesh),
                 'Points': (self.__create_points, self.__update_points, self.__cmap_points),
                 'Arrows': (self.__create_arrows, self.__update_arrows, self.__cmap_arrows),
@@ -256,12 +256,12 @@ class Open3dActor(BaseActor):
 
         # Create the Marker mesh
         vedo_marker = Marker(symbol=data['symbol'],
-                             s=data['size']).orientation(newaxis=[1, 0, 0], rotation=90, rad=False)
+                             s=data['size']).rotate(axis=[0, 1, 0], angle=90, rad=False)
         vedo_glyph = Glyph(mesh=positions,
                            glyph=vedo_marker,
                            orientation_array=orientations).triangulate()
-        self.instance = o3d.geometry.TriangleMesh(vertices=o3d.utility.Vector3dVector(vedo_glyph.points()),
-                                                  triangles=o3d.utility.Vector3iVector(array(vedo_glyph.cells())))
+        self.instance = o3d.geometry.TriangleMesh(vertices=o3d.utility.Vector3dVector(vedo_glyph.vertices),
+                                                  triangles=o3d.utility.Vector3iVector(array(vedo_glyph.cells)))
         self.instance.compute_vertex_normals()
 
     def __update_markers(self,

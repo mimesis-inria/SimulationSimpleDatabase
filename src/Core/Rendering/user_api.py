@@ -3,9 +3,9 @@ from numpy import array, ndarray
 from socket import socket, AF_INET, SOCK_STREAM, SOL_SOCKET, SO_REUSEADDR
 from struct import pack
 
-from SSD.Core.Storage.Database import Database
-from SSD.Core.Rendering.Visualizer import Visualizer
-from SSD.Core.Rendering.backend.DataTables import DataTables
+from SSD.Core.Storage.database import Database
+from SSD.Core.Rendering.visualizer import Visualizer
+from SSD.Core.Rendering.backend.rendering_table import RenderingTable
 
 
 class UserAPI:
@@ -41,7 +41,7 @@ class UserAPI:
         self.__non_storing = non_storing
 
         # Information about all Tables
-        self.__tables: List[DataTables] = []
+        self.__tables: List[RenderingTable] = []
         self.__current_id: int = 0
         self.__idx: int = idx_instance
         self.__step: int = 1
@@ -59,7 +59,7 @@ class UserAPI:
 
         return self.__database
 
-    def get_database_path(self) -> Tuple[str]:
+    def get_database_path(self) -> Tuple[str, str]:
         """
         Get the path to the Database.
         """
@@ -187,7 +187,7 @@ class UserAPI:
         self.__current_id += 1
 
         # Create the Table and register the object
-        table = DataTables(database=self.__database, table_name=table_name).create_columns()
+        table = RenderingTable(database=self.__database, table_name=table_name).create_columns()
         table.send_data(data=data, update=False)
         self.__tables.append(table)
         return self.__current_id - 1

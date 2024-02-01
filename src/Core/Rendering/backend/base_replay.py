@@ -1,7 +1,7 @@
 from typing import Dict
 
-from SSD.Core.Storage.Database import Database
-from SSD.Core.Rendering.backend.BaseActor import BaseActor
+from SSD.Core.Storage.database import Database
+from SSD.Core.Rendering.backend.base_object import BaseObject
 
 
 class BaseReplay:
@@ -24,32 +24,32 @@ class BaseReplay:
         self.nb_sample: Dict[str, int] = {}
         self.step: int = 1
 
-        # Actors parameters
-        self.actors: Dict[int, Dict[str, BaseActor]] = {}
+        # Objects parameters
+        self.objects: Dict[int, Dict[str, BaseObject]] = {}
         self.groups: Dict[str, int] = {}
 
-    def get_actor(self,
-                  actor_name: str) -> BaseActor:
+    def get_object(self,
+                   object_name: str) -> BaseObject:
         """
-        Get an Actor instance.
+        Get an Object instance.
 
-        :param actor_name: Name of the Actor.
+        :param object_name: Name of the Object.
         """
 
-        group = self.groups[actor_name]
-        return self.actors[group][actor_name]
+        group = self.groups[object_name]
+        return self.objects[group][object_name]
 
     def start_replay(self) -> None:
         """
-        Start the Replay: create all Actors and render them.
+        Start the Replay: create all Objects and render them.
         """
 
-        self.create_actors()
+        self.create_objects()
         self.launch_visualizer()
 
-    def create_actors(self) -> None:
+    def create_objects(self) -> None:
         """
-        Create an Actor object for each table in the Database.
+        Create an Object for each table in the Database.
         """
 
         # 1. Sort the Table names per factory and per object indices
@@ -66,7 +66,7 @@ class BaseReplay:
             for table_id in sorted(sorter[factory_id].keys()):
                 sorted_table_names.append(sorter[factory_id][table_id])
 
-        # 2. Retrieve visual data and create Actors (one Table per Actor)
+        # 2. Retrieve visual data and create Objects (one Table per Object)
         for table_name in sorted_table_names:
 
             # 2.1. Get the number of sample
@@ -78,51 +78,51 @@ class BaseReplay:
             object_data.pop('id')
             group = object_data.pop('at')
 
-            # 2.3. Retrieve the good indexing of the Actor
-            actor_type = table_name.split('_')[0]
-            if group not in self.actors:
-                self.actors[group] = {}
+            # 2.3. Retrieve the good indexing of the Object
+            object_type = table_name.split('_')[0]
+            if group not in self.objects:
+                self.objects[group] = {}
 
-            # 2.4. Create the Actor
-            self.create_actor_backend(actor_name=table_name,
-                                      actor_type=actor_type,
-                                      actor_group=group)
-            if actor_type == 'Markers':
-                object_data['normal_to'] = self.get_actor(object_data['normal_to'])
-            self.actors[group][table_name].create(data=object_data)
+            # 2.4. Create the Object
+            self.create_object_backend(object_name=table_name,
+                                       object_type=object_type,
+                                       object_group=group)
+            if object_type == 'Markers':
+                object_data['normal_to'] = self.get_object(object_data['normal_to'])
+            self.objects[group][table_name].create(data=object_data)
             self.groups[table_name] = group
 
-    def create_actor_backend(self,
-                             actor_name: str,
-                             actor_type: str,
-                             actor_group: int) -> None:
+    def create_object_backend(self,
+                              object_name: str,
+                              object_type: str,
+                              object_group: int) -> None:
         """
-        Specific Actor creation instructions.
+        Specific Object creation instructions.
 
-        :param actor_name: Name of the Actor.
-        :param actor_type: Type of the Actor.
-        :param actor_group: Group of the Actor.
+        :param object_name: Name of the Object.
+        :param object_type: Type of the Object.
+        :param object_group: Group of the Object.
         """
 
         raise NotImplementedError
 
     def launch_visualizer(self) -> None:
         """
-        Start the Visualizer: create all Actors and render them.
+        Start the Visualizer: create all Objects and render them.
         """
 
         raise NotImplementedError
 
-    def update_actors(self,
-                      step: int) -> None:
+    def update_objects(self,
+                       step: int) -> None:
         """
-        Update the Actors of a Factory.
+        Update the Objects of a Factory.
 
         :param step: Index of the current step.
         """
 
-        for group in self.actors.keys():
-            for table_name in self.actors[group].keys():
+        for group in self.objects.keys():
+            for table_name in self.objects[group].keys():
 
                 # Get the current step line in the Table
                 object_data = self.database.get_line(table_name=table_name,
@@ -130,22 +130,22 @@ class BaseReplay:
                 object_data = dict(filter(lambda item: item[1] is not None, object_data.items()))
                 object_data.pop('id')
 
-                # Update the Actor and its visualization
+                # Update the Object and its visualization
                 if len(object_data.keys()) > 0 or 'Markers' in table_name:
-                    actor = self.get_actor(table_name)
+                    v_object = self.get_object(table_name)
                     # Markers are updated if their associated object was updated
-                    if actor.type == 'Markers' and 'normal_to' in object_data.keys():
-                        object_data['normal_to'] = self.get_actor(object_data['normal_to'])
+                    if v_object.type == 'Markers' and 'normal_to' in object_data.keys():
+                        object_data['normal_to'] = self.get_object(object_data['normal_to'])
                     # Update
-                    actor.update_data(data=object_data)
-                    self.update_actor_backend(actor=actor)
+                    v_object.update_data(data=object_data)
+                    self.update_object_backend(v_object=v_object)
 
-    def update_actor_backend(self,
-                             actor: BaseActor) -> None:
+    def update_object_backend(self,
+                              v_object: BaseObject) -> None:
         """
-        Specific Actor update instructions.
+        Specific Object update instructions.
 
-        :param actor: Actor object.
+        :param v_object: Object object.
         """
 
         raise NotImplementedError

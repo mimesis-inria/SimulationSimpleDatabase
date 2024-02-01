@@ -2,8 +2,8 @@ from typing import Optional, Tuple, Dict, List
 from socket import socket, AF_INET, SOCK_STREAM, SOL_SOCKET, SO_REUSEADDR
 from struct import unpack
 
-from SSD.Core.Storage.Database import Database
-from SSD.Core.Rendering.backend.BaseActor import BaseActor
+from SSD.Core.Storage.database import Database
+from SSD.Core.Rendering.backend.base_object import BaseObject
 
 
 class BaseVisualizer:
@@ -36,8 +36,8 @@ class BaseVisualizer:
         # Visualization parameters
         self.fps: float = 1 / min(max(1, abs(fps)), 50)
 
-        # Actors parameters
-        self.actors: Dict[int, Dict[str, BaseActor]] = {}
+        # Objects parameters
+        self.objects: Dict[int, Dict[str, BaseObject]] = {}
         self.groups: Dict[str, int] = {}
         self.factories: Dict[int, List[str]] = {}
 
@@ -48,30 +48,30 @@ class BaseVisualizer:
         self.requests: List[Tuple[int, int]] = []
 
     @property
-    def database_path(self) -> Tuple[str]:
+    def database_path(self) -> Tuple[str, str]:
         return self.database.get_path()
 
-    def get_actor(self,
-                  actor_name: str) -> BaseActor:
+    def get_object(self,
+                   object_name: str) -> BaseObject:
         """
-        Get an Actor instance.
+        Get an Object instance.
 
-        :param actor_name: Name of the Actor.
+        :param object_name: Name of the Object.
         """
 
-        group = self.groups[actor_name]
-        return self.actors[group][actor_name]
+        group = self.groups[object_name]
+        return self.objects[group][object_name]
 
     def start_visualizer(self,
                          nb_clients: int) -> None:
         """
-        Start the Visualizer: create all Actors and render them.
+        Start the Visualizer: create all Objects and render them.
 
         :param nb_clients: Number of Factories to connect to.
         """
 
         self.launch_server(nb_clients=nb_clients)
-        self.create_actors()
+        self.create_objects()
         self.launch_visualizer(nb_clients=nb_clients)
 
     def launch_server(self,
@@ -92,7 +92,7 @@ class BaseVisualizer:
         clients = {}
         for _ in range(nb_clients):
             client, _ = self.server.accept()
-            client.settimeout(0.1)
+            # client.settimeout(0.1)
             idx_client: int = unpack('i', client.recv(4))[0]
             clients[idx_client] = client
 
@@ -101,9 +101,9 @@ class BaseVisualizer:
             self.clients.append(clients[idx_client])
             self.is_done.append(False)
 
-    def create_actors(self) -> None:
+    def create_objects(self) -> None:
         """
-        Create an Actor object for each table in the Database.
+        Create an Object for each table in the Database.
         """
 
         # 1. Sort the Table names per factory index and per object index
@@ -120,7 +120,7 @@ class BaseVisualizer:
             for table_id in sorted(sorter[factory_id].keys()):
                 sorted_table_names.append(sorter[factory_id][table_id])
 
-        # 2. Retrieve visual data and create Actors (one Table per Actor)
+        # 2. Retrieve visual data and create Objects (one Table per Object)
         pre_groups = {}
         for table_name in sorted_table_names:
 
@@ -129,49 +129,49 @@ class BaseVisualizer:
             object_data.pop('id')
             group = object_data.pop('at')
 
-            # 2.2. Retrieve the good indexing of Actors
-            actor_type, factory_id = table_name.split('_')[0:2]
-            if group not in self.actors:
-                self.actors[group] = {}
+            # 2.2. Retrieve the good indexing of Objects
+            object_type, factory_id = table_name.split('_')[0:2]
+            if group not in self.objects:
+                self.objects[group] = {}
                 pre_groups[group] = []
             if (factory_id := int(factory_id)) not in self.factories:
                 self.factories[factory_id] = []
             self.factories[factory_id].append(table_name)
 
-            # 2.3. Create the Actor
-            self.create_actor_backend(actor_name=table_name,
-                                      actor_type=actor_type,
-                                      actor_group=group)
-            if actor_type == 'Markers':
-                object_data['normal_to'] = self.get_actor(object_data['normal_to'])
-            self.actors[group][table_name].create(data=object_data)
+            # 2.3. Create the Object
+            self.create_object_backend(object_name=table_name,
+                                       object_type=object_type,
+                                       object_group=group)
+            if object_type == 'Markers':
+                object_data['normal_to'] = self.get_object(object_data['normal_to'])
+            self.objects[group][table_name].create(data=object_data)
             self.groups[table_name] = group
             pre_groups[group].append(table_name)
 
         # 3. Update the group values
-        for i, group in enumerate(sorted(self.actors.keys())):
+        for i, group in enumerate(sorted(self.objects.keys())):
 
             # 3.1. Update value in the Database
             if i != group:
                 for table_name in pre_groups[group]:
                     self.database.update(table_name=table_name,
                                          data={'at': i})
-            # 3.2. Update value in the Actors
-            self.actors[i] = self.actors.pop(group)
-            for idx, actor in self.actors[i].items():
-                actor.group = i
+            # 3.2. Update value in the Objects
+            self.objects[i] = self.objects.pop(group)
+            for idx, v_object in self.objects[i].items():
+                v_object.group = i
                 self.groups[idx] = i
 
-    def create_actor_backend(self,
-                             actor_name: str,
-                             actor_type: str,
-                             actor_group: int) -> None:
+    def create_object_backend(self,
+                              object_name: str,
+                              object_type: str,
+                              object_group: int) -> None:
         """
-        Specific Actor creation instructions.
+        Specific Object creation instructions.
 
-        :param actor_name: Name of the Actor.
-        :param actor_type: Type of the Actor.
-        :param actor_group: Group of the Actor.
+        :param object_name: Name of the Object.
+        :param object_type: Type of the Object.
+        :param object_group: Group of the Object.
         """
 
         raise NotImplementedError
@@ -179,7 +179,7 @@ class BaseVisualizer:
     def launch_visualizer(self,
                           nb_clients: int) -> None:
         """
-        Start the Visualizer: create all Actors and render them.
+        Start the Visualizer: create all Objects and render them.
 
         :param nb_clients: Number of Factories to connect to.
         """
@@ -208,11 +208,11 @@ class BaseVisualizer:
             except socket.timeout:
                 pass
 
-    def update_actors(self,
-                      step: int,
-                      idx_factory: int) -> None:
+    def update_objects(self,
+                       step: int,
+                       idx_factory: int) -> None:
         """
-        Update the Actors of a Factory.
+        Update the Objects of a Factory.
 
         :param step: Index of the current step.
         :param idx_factory: Index of the Factory to update.
@@ -226,22 +226,22 @@ class BaseVisualizer:
             object_data = dict(filter(lambda item: item[1] is not None, object_data.items()))
             object_data.pop('id')
 
-            # Update the Actor and its visualization
+            # Update the Object and its visualization
             if len(object_data.keys()) > 0 or 'Markers' in table_name:
-                actor = self.get_actor(table_name)
+                v_object = self.get_object(table_name)
                 # Markers are updated if their associated object was updated
-                if actor.type == 'Markers' and 'normal_to' in object_data.keys():
-                    object_data['normal_to'] = self.get_actor(object_data['normal_to'])
+                if v_object.type == 'Markers' and 'normal_to' in object_data.keys():
+                    object_data['normal_to'] = self.get_object(object_data['normal_to'])
                 # Update
-                actor.update_data(data=object_data)
-                self.update_actor_backend(actor=actor)
+                v_object.update_data(data=object_data)
+                self.update_object_backend(v_object=v_object)
 
-    def update_actor_backend(self,
-                             actor: BaseActor) -> None:
+    def update_object_backend(self,
+                              v_object: BaseObject) -> None:
         """
-        Specific Actor update instructions.
+        Specific Object update instructions.
 
-        :param actor: Actor object.
+        :param v_object: Visual Object.
         """
 
         raise NotImplementedError
