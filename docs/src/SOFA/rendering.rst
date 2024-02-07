@@ -46,7 +46,7 @@ It is also possible to create and update objects manually such as in the ``Core`
         .. code-block:: python
 
             import Sofa
-            from SSD.SOFA import UserAPI
+            from SSD.SOFA.Rendering import UserAPI
 
             # Create the root node
             root = Sofa.Core.Node('root')
@@ -87,7 +87,7 @@ It is also possible to create and update objects manually such as in the ``Core`
 
         .. code-block:: python
 
-            from SSD.SOFA import UserAPI
+            from SSD.SOFA.Rendering import UserAPI
 
             def createScene(root):
 

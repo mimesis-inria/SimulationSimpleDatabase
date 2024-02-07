@@ -4,10 +4,8 @@ API
 Storage
 -------
 
-Database
-""""""""
 
-.. autoclass:: SSD.SOFA.Storage.Database.Database
+.. autoclass:: SSD.SOFA.Storage.database.Database
     :special-members: __init__
     :members:
 
@@ -15,25 +13,17 @@ Database
 Rendering
 ---------
 
-UserAPI
-"""""""
 
-.. autoclass:: SSD.SOFA.Rendering.UserAPI.UserAPI
+.. autoclass:: SSD.SOFA.Rendering.user_api.UserAPI
     :special-members: __init__
     :members:
 
 
-Visualizer
-""""""""""
-
-.. autoclass:: SSD.SOFA.Rendering.Visualizer.Visualizer
+.. autoclass:: SSD.SOFA.Rendering.visualizer.Visualizer
     :special-members: __init__
     :members:
 
 
-Replay
-""""""
-
-.. autoclass:: SSD.SOFA.Rendering.Replay.Replay
+.. autoclass:: SSD.SOFA.Rendering.replay.Replay
     :special-members: __init__
     :members:
