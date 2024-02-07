@@ -1,11 +1,11 @@
 from typing import Any, Dict, Tuple
 import Sofa
 
-from SSD.Core.Storage.Database import Database as _Database
+from SSD.Core.Storage.database import Database as CoreDatabase
 from SSD.SOFA.utils import error_message
 
 
-class Database(Sofa.Core.Controller, _Database):
+class Database(Sofa.Core.Controller, CoreDatabase):
 
     def __init__(self,
                  root: Sofa.Core.Node,
@@ -23,9 +23,9 @@ class Database(Sofa.Core.Controller, _Database):
         """
 
         Sofa.Core.Controller.__init__(self, *args, **kwargs)
-        _Database.__init__(self,
-                           database_dir=database_dir,
-                           database_name=database_name)
+        CoreDatabase.__init__(self,
+                              database_dir=database_dir,
+                              database_name=database_name)
 
         # Add the Database controller to the scene graph
         self.root: Sofa.Core.Node = root
@@ -141,7 +141,7 @@ class Database(Sofa.Core.Controller, _Database):
         # Otherwise, create a new line
         else:
             self.__dirty[table_name] = True
-            _Database.add_data(self, table_name=table_name, data=data)
+            CoreDatabase.add_data(self, table_name=table_name, data=data)
 
     def print_architecture(self):
         """

@@ -1,10 +1,10 @@
 from typing import Optional
 
-from SSD.SOFA.Storage.Database import Database
-from SSD.Core.Rendering.Visualizer import Visualizer as _Visualizer
+from SSD.SOFA.Storage.database import Database
+from SSD.Core.Rendering.visualizer import Visualizer as CoreVisualizer
 
 
-class Visualizer(_Visualizer):
+class Visualizer(CoreVisualizer):
 
     def __init__(self,
                  backend: str = 'vedo',
@@ -26,11 +26,11 @@ class Visualizer(_Visualizer):
         :param fps: Max frame rate.
         """
 
-        _Visualizer.__init__(self,
-                             backend=backend,
-                             database=database,
-                             database_dir=database_dir,
-                             database_name=database_name,
-                             remove_existing=remove_existing,
-                             fps=fps,
-                             nb_clients=nb_clients)
+        CoreVisualizer.__init__(self,
+                                backend=backend,
+                                database=database,
+                                database_dir=database_dir,
+                                database_name=database_name,
+                                remove_existing=remove_existing,
+                                fps=fps,
+                                nb_clients=nb_clients)

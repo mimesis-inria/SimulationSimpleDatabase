@@ -1,7 +1,7 @@
-from SSD.Core.Rendering.Replay import Replay as _Replay
+from SSD.Core.Rendering.replay import Replay as CoreReplay
 
 
-class Replay(_Replay):
+class Replay(CoreReplay):
 
     def __init__(self,
                  database_name: str,
@@ -17,8 +17,8 @@ class Replay(_Replay):
         :param fps: Max frame rate.
         """
 
-        _Replay.__init__(self,
-                         database_name=database_name,
-                         database_dir=database_dir,
-                         backend=backend,
-                         fps=fps)
+        CoreReplay.__init__(self,
+                            database_name=database_name,
+                            database_dir=database_dir,
+                            backend=backend,
+                            fps=fps)

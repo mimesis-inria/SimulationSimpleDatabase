@@ -4,7 +4,7 @@ from numpy.linalg import norm
 from numpy import zeros, array
 import Sofa
 
-from SSD.SOFA import UserAPI
+from SSD.SOFA.Rendering import UserAPI
 
 
 class Liver(Sofa.Core.Controller):
@@ -20,14 +20,12 @@ class Liver(Sofa.Core.Controller):
 
         # Root
         self.root.dt.value = 0.02
-        required_plugins = ['Sofa.Component', 'Sofa.GL.Component']
+        with open('plugins.txt', 'r') as file:
+            required_plugins = [plugin[:-1] if plugin.endswith('\n') else plugin for plugin in file.readlines()
+                                if plugin != '\n']
         self.root.addObject('RequiredPlugin', pluginName=required_plugins)
         self.root.addObject('VisualStyle', displayFlags='showVisual')
-        self.root.addObject('DefaultPipeline', verbose=0)
-        self.root.addObject('BruteForceBroadPhase')
-        self.root.addObject('BVHNarrowPhase')
-        self.root.addObject('DiscreteIntersection')
-        self.root.addObject('DefaultContactManager')
+        self.root.addObject('DefaultAnimationLoop')
 
         # Liver.Physics
         self.root.addChild('liver')
@@ -37,19 +35,18 @@ class Liver(Sofa.Core.Controller):
         self.root.liver.addObject('TetrahedronSetTopologyContainer', name='Grid', src='@Liver')
         self.root.liver.addObject('TetrahedronSetGeometryAlgorithms', template='Vec3d')
         self.root.liver.addObject('MechanicalObject', name='GridMO', src='@Liver')
-        self.root.liver.addObject('DiagonalMass', massDensity=1.)
+        self.root.liver.addObject('DiagonalMass', massDensity=0.1)
         self.root.liver.addObject('TetrahedralCorotationalFEMForceField', template='Vec3d', method='large',
                                   youngModulus=50000, poissonRatio=0.4, computeGlobalMatrix=False)
-        self.root.liver.addObject('FixedConstraint', indices=[3, 39, 64])
+        self.root.liver.addObject('FixedProjectiveConstraint', indices=[3, 39, 64])
 
         # Liver.Surface
         self.root.liver.addChild('surface')
         self.root.liver.surface.addObject('SphereLoader', name='Spheres', filename='mesh/liver.sph')
         self.root.liver.surface.addObject('MechanicalObject', name='SurfaceMO', position='@Spheres.position')
-        self.root.liver.surface.addObject('SphereCollisionModel', listRadius='@Spheres.listRadius')
         self.root.liver.surface.addObject('BarycentricMapping', input='@..', output='@.')
         self.cff = self.root.liver.surface.addObject('ConstantForceField', name='CFF', indices=[33],
-                                                     force=[0., 0., 0.], showArrowSize=5e-4)
+                                                     forces=[[0., 0., 0.]], showArrowSize=5e-4)
 
         # Liver.Visual
         self.root.liver.addChild('visual')
@@ -91,10 +88,9 @@ class Liver(Sofa.Core.Controller):
 
         # Change the force value every 50 time steps
         if self.step % 50 == 0:
-            f = uniform(-1, 1, (3,))
+            f = uniform(-1, 1, (1, 3))
             f = (f / norm(f)) * 5e3
-            self.cff.force.value = f
-
+            self.cff.forces.value = f
         self.step += 1
 
     def onAnimateEndEvent(self, _):

@@ -1,6 +1,6 @@
 import Sofa
 
-from SSD.SOFA import UserAPI
+from SSD.SOFA.Rendering import UserAPI
 from Liver import Liver
 
 USE_GUI = True

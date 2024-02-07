@@ -2,12 +2,12 @@ from typing import Optional, Dict, Tuple, Any
 from numpy import array, ndarray, tile
 import Sofa
 
-from SSD.Core.Storage.Database import Database
-from SSD.Core.Rendering.UserAPI import UserAPI as _UserAPI
+from SSD.Core.Storage.database import Database
+from SSD.Core.Rendering.user_api import UserAPI as CoreUserAPI
 from SSD.SOFA.utils import error_message
 
 
-class UserAPI(Sofa.Core.Controller, _UserAPI):
+class UserAPI(Sofa.Core.Controller, CoreUserAPI):
 
     def __init__(self,
                  root: Sofa.Core.Node,
@@ -34,14 +34,14 @@ class UserAPI(Sofa.Core.Controller, _UserAPI):
         """
 
         Sofa.Core.Controller.__init__(self, *args, **kwargs)
-        _UserAPI.__init__(self,
-                          database=database,
-                          database_dir=database_dir,
-                          database_name=database_name,
-                          remove_existing=remove_existing,
-                          non_storing=non_storing,
-                          exit_on_window_close=exit_on_window_close,
-                          idx_instance=idx_instance)
+        CoreUserAPI.__init__(self,
+                             database=database,
+                             database_dir=database_dir,
+                             database_name=database_name,
+                             remove_existing=remove_existing,
+                             non_storing=non_storing,
+                             exit_on_window_close=exit_on_window_close,
+                             idx_instance=idx_instance)
 
         # Add the Factory controller to the scene graph
         self.root: Sofa.Core.Node = root
