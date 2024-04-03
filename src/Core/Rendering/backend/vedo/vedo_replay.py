@@ -75,7 +75,7 @@ class VedoReplay(BaseReplay):
                               axes=4)
 
         # 3. Add a timer callback and set the Plotter in interactive mode
-        self.__plotter.add_callback('Timer', self.update_thread)
+        self.__plotter.add_callback('Timer', self.update_thread, enable_picking=False)
         self.__plotter.timer_callback('create', dt=int(self.fps * 1e3))
         self.__plotter.add_button(self.__reset, states=['start'])
         self.__plotter.interactive()

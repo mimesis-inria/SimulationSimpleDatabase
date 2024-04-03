@@ -3,7 +3,7 @@
 ![logo](docs/src/_static/images/logo.svg)
 
 The **SSD** project provides Python3 tools allowing users to easily develop **data storage** and **visualization** 
-strategies for their **numerical simulations** with az minimal lines of code.
+strategies for their **numerical simulations** with a minimal lines of code.
 
 This project has two main objectives:
 * Easy **storage** management system for **any data** from a numerical simulation;

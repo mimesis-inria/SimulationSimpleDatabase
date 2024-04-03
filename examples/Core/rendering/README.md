@@ -8,5 +8,6 @@ It is recommended to inspect and run the python scripts following this order:
 * ``replay.py``: how to replay a simulation from a *Database*.
 * ``offscreen.py``: an example of off-screen rendering.
 * ``several_factories.py``: how to manage several *Factories* with a single *Visualizer*.
+* ``several_factories_offsceen.py``: how to manage several *Factories* with a single *Visualizer* in off-screen mode.
 
 Run the examples using ``python3 <example_name>.py <backend>`` with backend being either 'vedo' (by default) or 'open3d'.

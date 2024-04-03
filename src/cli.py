@@ -74,7 +74,7 @@ def print_available_examples(examples):
     example_names = sorted(list(examples.keys()))
     example_per_repo = {}
     for example_name in example_names:
-        if type(examples[example_name]) == str:
+        if isinstance(type(examples[example_name]), str):
             root, repo = examples[example_name].split('.')[0], examples[example_name].split('.')[1]
         else:
             root, repo = examples[example_name][0].split('.')[0], examples[example_name][0].split('.')[1]
@@ -174,7 +174,7 @@ def execute_cli():
             visualizer.append(backend.lower())
 
         # Run the example
-        if type(examples[example]) == str:
+        if isinstance(examples[example], str):
             root, repo, script, _ = examples[example].split('.')
             # Check SOFA installation
             if root == 'SOFA' and not is_SOFA_installed():
