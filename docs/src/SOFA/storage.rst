@@ -38,7 +38,7 @@ Adding callbacks is very simple, since you only have to specify:
         .. code-block:: python
 
             import Sofa
-            from SSD.SOFA import Database
+            from SSD.SOFA.Storage import Database
 
             # Create the root node
             root = Sofa.Core.Node('root')
@@ -76,7 +76,7 @@ Adding callbacks is very simple, since you only have to specify:
 
         .. code-block:: python
 
-            from SSD.SOFA import Database
+            from SSD.SOFA.Storage import Database
 
             def createScene(root):
 

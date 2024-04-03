@@ -1,5 +1,7 @@
 # Excluded files
 *.db
+*.csv
+*.json
 
 # Excluded folders
 .idea

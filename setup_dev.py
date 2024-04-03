@@ -3,13 +3,14 @@ from os import symlink, unlink, mkdir, listdir, remove, sep
 from os.path import join, islink, isdir, isfile, dirname
 from shutil import rmtree, which
 from pathlib import Path
-from site import USER_SITE
+from site import getsitepackages
 from pip._internal.operations.install.wheel import PipScriptMaker
 
 
 # Package information
 PROJECT = 'SSD'
 root = join(Path(__file__).parent.absolute(), 'src')
+USER_SITE = getsitepackages()[0]
 
 # Check user entry
 if len(argv) == 2 and argv[1] not in ['set', 'del']:

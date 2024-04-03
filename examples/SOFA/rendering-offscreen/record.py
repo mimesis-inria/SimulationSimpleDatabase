@@ -1,6 +1,6 @@
 import Sofa
 
-from SSD.SOFA import UserAPI
+from SSD.SOFA.Rendering import UserAPI
 from Caduceus import Caduceus
 
 USE_GUI = True

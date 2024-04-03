@@ -1,10 +1,8 @@
 API
 ===
 
-Database
---------
 
-.. autoclass:: SSD.Core.Storage.Database.Database
+.. autoclass:: SSD.Core.Storage.database.Database
     :special-members: __init__
     :members:
 

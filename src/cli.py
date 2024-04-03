@@ -74,7 +74,7 @@ def print_available_examples(examples):
     example_names = sorted(list(examples.keys()))
     example_per_repo = {}
     for example_name in example_names:
-        if type(examples[example_name]) == str:
+        if isinstance(type(examples[example_name]), str):
             root, repo = examples[example_name].split('.')[0], examples[example_name].split('.')[1]
         else:
             root, repo = examples[example_name][0].split('.')[0], examples[example_name][0].split('.')[1]
@@ -131,14 +131,16 @@ def execute_cli():
         clean_examples_dir()
         return
 
-    examples = {'visualization': 'Core.rendering.visualization.py',
+    examples = {'write': 'Core.storage.write_db.py',
+                'read': 'Core.storage.read_db.py',
+                'update': 'Core.storage.update_db.py',
+                'signal': 'Core.storage.signal_db.py',
+                'foreignkey': 'Core.storage.foreignkey_db.py',
+
+                'visualization': 'Core.rendering.visualization.py',
                 'replay': 'Core.rendering.replay.py',
                 'offscreen': 'Core.rendering.offscreen.py',
-                'foreignkey': 'Core.storage.foreignkeyDB.py',
-                'reading': 'Core.storage.readingDB.py',
-                'signal': 'Core.storage.signalDB.py',
-                'updating': 'Core.storage.updatingDB.py',
-                'writing': 'Core.storage.writingDB.py',
+
                 'liver': ['SOFA.rendering.record.py', 'SOFA.rendering.replay.py'],
                 'caduceus': ['SOFA.rendering-offscreen.record.py', 'SOFA.rendering-offscreen.replay.py'],
                 'caduceus_store': 'SOFA.storage.record.py'}
@@ -172,7 +174,7 @@ def execute_cli():
             visualizer.append(backend.lower())
 
         # Run the example
-        if type(examples[example]) == str:
+        if isinstance(examples[example], str):
             root, repo, script, _ = examples[example].split('.')
             # Check SOFA installation
             if root == 'SOFA' and not is_SOFA_installed():

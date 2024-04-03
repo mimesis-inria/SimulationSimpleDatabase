@@ -1,3 +1,3 @@
-from .Replay import Replay
-from .Visualizer import Visualizer
-from .UserAPI import UserAPI
+from .replay import Replay
+from .visualizer import Visualizer
+from .user_api import UserAPI

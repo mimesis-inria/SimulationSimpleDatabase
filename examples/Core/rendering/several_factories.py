@@ -3,7 +3,8 @@ from numpy.random import random
 from threading import Thread
 from sys import argv
 
-from SSD.Core import Database, UserAPI, Visualizer
+from SSD.Core.Storage import Database
+from SSD.Core.Rendering import UserAPI, Visualizer
 
 
 class Simulation:
@@ -13,12 +14,12 @@ class Simulation:
                  idx_instance: int):
 
         # Create the Mesh object
-        self.armadillo = Mesh('armadillo.obj')
+        self.mesh = Mesh('armadillo.obj')
         # Create a Factory and add the Mesh object
         self.factory = UserAPI(database=database,
                                idx_instance=idx_instance)
-        self.factory.add_mesh(positions=self.armadillo.points(),
-                              cells=self.armadillo.cells(),
+        self.factory.add_mesh(positions=self.mesh.vertices,
+                              cells=self.mesh.cells,
                               at=idx_instance,
                               c='orange3' if idx_instance == 0 else 'blue3')
 
@@ -30,7 +31,7 @@ class Simulation:
     def step(self):
 
         # Update the Mesh positions
-        updated_positions = self.armadillo.points() + 0.1 * random(self.armadillo.points().shape)
+        updated_positions = self.mesh.vertices + 0.1 * random(self.mesh.vertices.shape)
         self.factory.update_mesh(object_id=0,
                                  positions=updated_positions)
         self.factory.render()
@@ -44,7 +45,8 @@ class Simulation:
 if __name__ == '__main__':
 
     # 1. Create a new Database
-    db = Database(database_name='several_factories').new(remove_existing=True)
+    db = Database(database_dir='my_databases',
+                  database_name='several_factories').new(remove_existing=True)
 
     # 2. Create several simulations
     nb_simu = 2
@@ -54,6 +56,7 @@ if __name__ == '__main__':
     # 3. Connect a single Visualizer to the Factories
     # 3.1. Create a new Visualizer
     Visualizer.launch(backend='vedo' if len(argv) == 1 else argv[1],
+                      database_dir='my_databases',
                       database_name='several_factories',
                       nb_clients=nb_simu)
     # 3.2. Connect each Factory to the Visualizer (must be launched in thread)

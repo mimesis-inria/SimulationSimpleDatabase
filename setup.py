@@ -27,7 +27,7 @@ with open('README.md') as f:
 
 # Installation
 setup(name='SimulationSimpleDatabase',
-      version='22.12.4',
+      version='24.1',
       description='A simplified API to use SQL Databases with numerical simulation.',
       long_description=long_description,
       long_description_content_type='text/markdown',
@@ -37,9 +37,9 @@ setup(name='SimulationSimpleDatabase',
       packages=packages,
       package_dir=packages_dir,
       package_data={f'{PROJECT}.examples.Core.rendering': ['armadillo.obj']},
-      install_requires=['numpy >= 1.23.5',
-                        'peewee >= 3.15.1',
-                        'vedo >= 2022.4.1',
-                        'matplotlib >= 3.6.2',
+      install_requires=['numpy >= 1.26.4',
+                        'peewee >= 3.17.0',
+                        'vedo >= 2024.5.1',
+                        'matplotlib >= 3.8.3',
                         'open3d >= 0.16.0'],
       entry_points={'console_scripts': ['SSD=SSD.cli:execute_cli']})

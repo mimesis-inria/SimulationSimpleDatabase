@@ -1,26 +1,26 @@
 from typing import List, Tuple, Union, Optional
 
-from SSD.Core.Storage.Database import Database
-from SSD.Core.Storage.AdaptiveTable import AdaptiveTable
+from SSD.Core.Storage.adaptive_table import AdaptiveTable
+from SSD.Core.Storage.database import Database
 
 
-def merge(database_names: List[str],
-          new_database_name: str = 'merged',
+def merge(database_files: List[str],
+          new_database_file: str = 'merged',
           remove_existing: bool = False):
     """
     Merge Databases in a new Database.
 
-    :param database_names: List of Databases files.
-    :param new_database_name: Name of the new Database.
+    :param database_files: List of Databases files.
+    :param new_database_file: Name of the new Database.
     :param remove_existing: If True, Database file with name 'new_database_name' will be overwritten.
     """
 
     # Load working Databases
-    databases = [Database(database_name=database_name).load() for database_name in database_names]
-    merged_database = Database(database_name=new_database_name).new(remove_existing=remove_existing)
+    databases = [Database(database_name=database_name).load() for database_name in database_files]
+    merged_database = Database(database_name=new_database_file).new(remove_existing=remove_existing)
 
     # Create Tables with their Fields
-    print("Merging the following Databases...")
+    print("\nMerging the following Databases...")
     table_type = AdaptiveTable.table_type
     for db in databases:
         db.print_architecture()
@@ -57,17 +57,17 @@ def merge(database_names: List[str],
     print("Merge complete.")
 
 
-def rename_tables(database_name: str,
+def rename_tables(database_file: str,
                   renamed_tables: Union[Tuple[str, str], List[Tuple[str, str]]]):
     """
     Rename Tables of the Database.
 
-    :param database_name: Database filename.
+    :param database_file: Database filename.
     :param renamed_tables: Tuple or list of tuples defined as ('old_name', 'new_name').
     """
 
     # Load the Database
-    db = Database(database_name=database_name).load()
+    db = Database(database_name=database_file).load()
 
     # Check the table names to change
     renamed_tables = [renamed_tables] if type(renamed_tables) != list else renamed_tables
@@ -78,27 +78,28 @@ def rename_tables(database_name: str,
                              f"Available Tables are {current_tables}.")
 
     # Renaming
-    print("Proceeding...")
+    print("\nRenaming Table(s). \nProceeding...")
     for (old_table_name, new_table_name) in renamed_tables:
         db.rename_table(table_name=old_table_name,
                         new_table_name=new_table_name)
     db.print_architecture()
+    db.close()
     print("Renaming done.")
 
 
-def rename_fields(database_name: str,
+def rename_fields(database_file: str,
                   table_name: str,
                   renamed_fields: Union[Tuple[str, str], List[Tuple[str, str]]]):
     """
     Rename Fields of a Table of the Database.
 
-    :param database_name: Database filename.
+    :param database_file: Database filename.
     :param table_name: Name of the Table.
     :param renamed_fields: Tuple or list of tuples defined as ('old_name', 'new_name').
     """
 
     # Load the Database
-    db = Database(database_name=database_name).load()
+    db = Database(database_name=database_file).load()
 
     # Check the fields to change
     renamed_fields = [renamed_fields] if type(renamed_fields) != list else renamed_fields
@@ -110,50 +111,51 @@ def rename_fields(database_name: str,
             raise ValueError(f"The field '{old_field_name} is not in the list of available fields: {current_fields}")
 
     # Renaming
-    print("Proceeding...")
+    print("\nRenaming Field(s). \nProceeding...")
     for (old_field_name, new_field_name) in renamed_fields:
         db.rename_field(table_name=table_name,
                         field_name=old_field_name,
                         new_field_name=new_field_name)
     db.print_architecture()
+    db.close()
     print("Renaming done.")
-    print(db.get_fields('Training'))
 
 
-def remove_table(database_name: str,
+def remove_table(database_file: str,
                  table_names: Union[str, List[str]]):
     """
     Remove Tables of the Database.
 
-    :param database_name: Database filename.
+    :param database_file: Database filename.
     :param table_names: Table(s) to remove from the Database.
     """
 
     # Load the Database
-    db = Database(database_name=database_name).load()
+    db = Database(database_name=database_file).load()
     table_names = [table_names] if type(table_names) != list else table_names
 
     # Removing
-    print("Proceeding...")
+    print("\nRemoving Table(s). \nProceeding...")
     for table_name in table_names:
         db.remove_table(table_name=table_name)
     db.print_architecture()
+    db.close()
     print("Removing done.")
 
 
-def remove_field(database_name: str,
+def remove_field(database_file: str,
                  table_name: str,
                  fields: Union[str, List[str]]):
     """
     Remove Fields of a Table of the Database.
 
-    :param database_name: Database filename.
+    :param database_file: Database filename.
     :param table_name: Name of the Table.
     :param fields: Field(s) to remove from the Table.
     """
 
     # Load the Database
-    db = Database(database_name=database_name).load()
+    db = Database(database_name=database_file).load()
 
     # Check the fields to remove
     fields = [fields] if type(fields) != list else fields
@@ -165,7 +167,7 @@ def remove_field(database_name: str,
             raise ValueError(f"The field '{field} is not in the list of available fields: {current_fields}")
 
     # Removing
-    print("Proceeding...")
+    print("\nRemoving Filed(s). \nProceeding...")
     for field in fields:
         db.remove_field(table_name=table_name,
                         field_name=field)
@@ -173,13 +175,20 @@ def remove_field(database_name: str,
     print("Removing done.")
 
 
-def export(database_name: str,
+def export(database_file: str,
            exporter: str,
-           filename: Optional[str] = None,
-           remove_existing: bool = False):
+           filename: Optional[str] = None) -> None:
+    """
+    Export the Database file to CSV or JSON formats.
+
+    :param database_file: Database filename.
+    :param exporter: Exporter type (either 'csv' or 'json').
+    :param filename: Exported filename.
+    """
 
     # Load the Database
-    db = Database(database_name=database_name).load()
+    db = Database(database_name=database_file).load()
 
+    # Export to file
     db.export(exporter=exporter,
-              filename=filename)
+              filename=filename if filename is not None else 'export')
