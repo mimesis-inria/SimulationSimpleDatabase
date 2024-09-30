@@ -46,7 +46,7 @@ class Database:
         :param table_name: Name of the Table.
         """
 
-        return table_name[0] + table_name[1:].lower() if len(table_name) > 1 else table_name
+        return table_name[0].upper() + table_name[1:].lower() if len(table_name) > 1 else table_name.upper()
 
     def new(self, remove_existing: bool = False) -> 'Database':
         """

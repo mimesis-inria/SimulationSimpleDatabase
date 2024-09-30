@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "SimulationSimpleDatabase"
+description = "A simplified API to use SQL Databases with numerical simulation."
+readme = "README.md"
+authors = [{name= "Robin ENJALBERT"}, {name= "Alban ODOT"}]
+requires-python = ">=3.10"
+dependencies = ["numpy >= 1.26.4", "peewee >= 3.17.0"]
+dynamic = ["version"]
+
+[tool.setuptools.dynamic]
+version = {attr = "SSD.__version__"}
+
+[tool.setuptools.package-data]
+SimExporter = ["static/*"]
