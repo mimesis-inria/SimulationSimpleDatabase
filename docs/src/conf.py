@@ -10,15 +10,11 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 
-from os.path import abspath, join, pardir
+import os
 import sys
 
-# Modules imports
-import SSD
-# for parent in ['Core', 'SOFA']:
-#     for child in ['Storage', 'Rendering']:
-#         path = abspath(join(abspath(__file__), pardir, pardir, pardir, 'src', parent, child))
-#         sys.path.append(path)
+sys.path.insert(0, os.path.abspath('../../src'))
+
 
 # -- Project information -----------------------------------------------------
 
@@ -37,8 +33,8 @@ extensions = ['sphinx.ext.duration',
               'sphinx.ext.autosummary',
               'sphinx.ext.viewcode',
               'sphinx.ext.extlinks',
-              'sphinx_tabs.tabs'
-              ]
+              'sphinx_tabs.tabs',
+              'sphinx_copybutton']
 
 intersphinx_mapping = {'python': ('https://docs.python.org/3/', None),
                        'sphinx': ('https://www.sphinx-doc.org/en/master/', None),
@@ -69,12 +65,10 @@ master_doc = "index"
 
 extlinks = {'Peewee': ('https://docs.peewee-orm.com/en/latest/%s', '%s'),
             'DeepPhysX': ('https://deepphysx.readthedocs.io/en/latest/%s', '%s'),
-            'SOFA': ('https://www.sofa-framework.org/%s', '%s'),
+            'sofa': ('https://www.sofa-framework.org/%s', '%s'),
             'SP3': ('https://sofapython3.readthedocs.io/en/latest/%s', '%s'),
             'Numpy': ('https://numpy.org/%s', '%s'),
             'PyPi': ('https://pypi.org/project/SimulationSimpleDatabase/%s', '%s'),
-            'Vedo': ('https://vedo.embl.es/%s', '%s'),
-            'Open3D': ('http://www.open3d.org/%s', '%s')
             }
 
 autodoc_mock_imports = ['Sofa']
