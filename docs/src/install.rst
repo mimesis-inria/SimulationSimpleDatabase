@@ -35,7 +35,7 @@ Install with *pip*
 
 .. code-block:: bash
 
-    $ pip install git+https://github.com/mimesis-inria/SimulationSimpleDatabase.git
+    pip install git+https://github.com/mimesis-inria/SimulationSimpleDatabase.git
 
 Then, you should be able to run:
 
