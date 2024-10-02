@@ -1,0 +1,21 @@
+.wy-nav-content {
+    max-width: 75% !important;
+}
+
+.docutils caption {
+    caption-side: bottom;
+}
+
+div.leftside {
+    width: 45%;
+    margin-left: 2%;
+    float: left;
+}
+
+div.rightside {
+    margin-left: 48%;
+}
+
+.tight-table td {
+    white-space: normal !important;
+}
