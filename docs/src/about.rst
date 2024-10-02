@@ -8,7 +8,7 @@ The data storage model is designed with the following concepts:
  * each *Table* contains several *Fields* (columns of the *Table*);
  * each row of the *Table* contains data.
 
-.. figure:: ../_static/images/overview_storage.png
+.. figure:: _static/images/about.png
     :alt: overview_storage.png
     :align: center
     :width: 85%

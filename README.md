@@ -3,25 +3,11 @@
 ![logo](docs/src/_static/images/logo.svg)
 
 The **SSD** project provides Python3 tools to easily develop a **storage** management system for **any synthetic data**
-from **numerical simulations** with a minimal lines of code.
+from **numerical simulations** on runtime with a minimal lines of code.
 
 The project is mainly using the [Peewee](http://docs.peewee-orm.com/en/latest/) Python3 library and was mostly designed 
 to fit the [**DeepPhysX**](https://github.com/mimesis-inria/DeepPhysX) and [**SOFA**](https://www.sofa-framework.org/) 
 frameworks.
-
-Discover more about the project on the dedicated 
-[**Documentation**](https://simulationsimpledatabase.readthedocs.io/en/latest/).
-
-
-## Gallery
-
-|      **examples/SOFA/rendering-offscreen/replay.py**      |
-|:---------------------------------------------------------:|
-| ![caduceus](docs/src/_static/images/gallery_caduceus.png) |
-
-|        **examples/SOFA/rendering/replay.py**        |
-|:---------------------------------------------------:|
-| ![liver](docs/src/_static/images/gallery_liver.png) |
 
 
 ## Features
@@ -49,3 +35,8 @@ $ git clone https://github.com/mimesis-inria/SimulationSimpleDatabase.git
 $ cd SimRender
 $ pip install -e .
 ```
+
+
+## Documentation
+
+See more ⟶ [**documentation**](https://mimesis-inria.github.io/SimulationSimpleDatabase/)

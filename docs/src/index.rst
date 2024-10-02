@@ -33,21 +33,6 @@ The **SSD** project provides the following features:
         +------------------------------------------------------+------------------------------------------------------+
 
 
-Gallery
--------
-
-.. figure:: http://mimesis.inria.fr/wp-content/uploads/2022/10/gallery_caduceus.gif
-    :align: center
-
-    **examples/SOFA/rendering-offscreen/replay.py**
-
-
-.. figure:: http://mimesis.inria.fr/wp-content/uploads/2022/10/gallery_liver.gif
-    :align: center
-
-    **examples/SOFA/rendering/replay.py**
-
-
 .. toctree::
     :caption: PRESENTATION
     :maxdepth: 1
