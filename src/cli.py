@@ -10,7 +10,7 @@ from argparse import ArgumentParser
 
 def is_pip_installed():
 
-    import SSD.Core
+    import SSD.core
     return not islink(SSD.Core.__path__[0])
 
 
@@ -131,19 +131,19 @@ def execute_cli():
         clean_examples_dir()
         return
 
-    examples = {'write': 'Core.storage.write_db.py',
-                'read': 'Core.storage.read_db.py',
-                'update': 'Core.storage.update_db.py',
-                'signal': 'Core.storage.signal_db.py',
-                'foreignkey': 'Core.storage.foreignkey_db.py',
+    examples = {'write': 'core.core.write_db.py',
+                'read': 'core.core.read_db.py',
+                'update': 'core.core.update_db.py',
+                'signal': 'core.core.signal_db.py',
+                'foreignkey': 'core.core.foreignkey_db.py',
 
-                'visualization': 'Core.rendering.visualization.py',
-                'replay': 'Core.rendering.replay.py',
-                'offscreen': 'Core.rendering.offscreen.py',
+                'visualization': 'core.rendering.visualization.py',
+                'replay': 'core.rendering.replay.py',
+                'offscreen': 'core.rendering.offscreen.py',
 
-                'liver': ['SOFA.rendering.record.py', 'SOFA.rendering.replay.py'],
-                'caduceus': ['SOFA.rendering-offscreen.record.py', 'SOFA.rendering-offscreen.replay.py'],
-                'caduceus_store': 'SOFA.storage.record.py'}
+                'liver': ['sofa.rendering.record.py', 'sofa.rendering.replay.py'],
+                'caduceus': ['sofa.rendering-offscreen.record.py', 'sofa.rendering-offscreen.replay.py'],
+                'caduceus_store': 'sofa.core.record.py'}
 
     # Run a demo script
     if (example := args.run) is not None:
@@ -155,7 +155,7 @@ def execute_cli():
 
         # Get the example directory
         if not is_pip_installed():
-            import SSD.Core
+            import SSD.core
             source_dir = readlink(SSD.Core.__path__[0])
             examples_dir = join(dirname(dirname(source_dir)), 'examples')
         elif (source_dir := get_sources()) is not None:
@@ -176,18 +176,18 @@ def execute_cli():
         # Run the example
         if isinstance(examples[example], str):
             root, repo, script, _ = examples[example].split('.')
-            # Check SOFA installation
-            if root == 'SOFA' and not is_SOFA_installed():
-                quit(print(f"SOFA bindings were not found, unable to run {example} example "
+            # Check sofa installation
+            if root == 'sofa' and not is_SOFA_installed():
+                quit(print(f"sofa bindings were not found, unable to run {example} example "
                            f"({join(root, repo, script)}.py)"))
             # Run example
             run([f'{executable}', f'{script}.py'] + visualizer, cwd=join(examples_dir, root, repo))
         else:
             root, repo, example_record, extension = examples[example][0].split('.')
             _, _, example_replay, _ = examples[example][1].split('.')
-            # Check SOFA installation
-            if root == 'SOFA' and not is_SOFA_installed():
-                quit(print(f"SOFA bindings were not found, unable to run {example} example "
+            # Check sofa installation
+            if root == 'sofa' and not is_SOFA_installed():
+                quit(print(f"sofa bindings were not found, unable to run {example} example "
                            f"({join(root, repo, example_record)}.py)"))
             chdir(join(examples_dir, root, repo))
             # Get user input between record and replay
