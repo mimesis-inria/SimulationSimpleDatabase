@@ -1,0 +1,391 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SSD.sofa.database &mdash; SimulationSimpleDatabase  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/theme.css?v=556d74e5" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="author" title="About these documents" href="../../../about.html" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            SimulationSimpleDatabase
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">PRESENTATION</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../install.html">Install</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../install.html#prerequisites">Prerequisites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../install.html#id1">Install</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../install.html#install-with-pip">Install with <em>pip</em></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../install.html#install-from-sources">Install from sources</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../about.html">About</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">STORAGE</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../core/database.html">Database</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../core/database.html#creating-a-database">Creating a Database</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../core/database.html#loading-a-database">Loading a Database</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../core/database.html#creating-a-new-table">Creating a new Table</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../core/database.html#creating-a-new-field">Creating a new Field</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../core/database.html#adding-data-to-a-table">Adding data to a Table</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../core/database.html#updating-data-in-a-table">Updating data in a Table</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../core/database.html#getting-data-from-a-table">Getting data from a Table</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../core/database.html#connecting-signals">Connecting Signals</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../core/relationships.html">Table Relationships</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../core/relationships.html#creating-a-relation-between-tables">Creating a relation between Tables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../core/relationships.html#adding-data-to-joined-tables">Adding data to joined Tables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../core/relationships.html#updating-data-in-joined-tables">Updating data in joined Tables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../core/relationships.html#getting-data-from-joined-tables">Getting data from joined Tables</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../core/utils.html">Utils</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../core/utils.html#merging-databases">Merging Databases</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../core/utils.html#renaming-tables-and-fields">Renaming Tables and Fields</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../core/utils.html#removing-tables-and-fields">Removing Tables and Fields</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../core/utils.html#exporting-databases">Exporting Databases</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../core/api.html">API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../core/api.html#SSD.core.database.Database"><code class="docutils literal notranslate"><span class="pre">Database</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../core/api.html#SSD.core.database.Database.__init__"><code class="docutils literal notranslate"><span class="pre">Database.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../core/api.html#SSD.core.database.Database.add_batch"><code class="docutils literal notranslate"><span class="pre">Database.add_batch()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../core/api.html#SSD.core.database.Database.add_data"><code class="docutils literal notranslate"><span class="pre">Database.add_data()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../core/api.html#SSD.core.database.Database.close"><code class="docutils literal notranslate"><span class="pre">Database.close()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../core/api.html#SSD.core.database.Database.connect_signals"><code class="docutils literal notranslate"><span class="pre">Database.connect_signals()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../core/api.html#SSD.core.database.Database.create_fields"><code class="docutils literal notranslate"><span class="pre">Database.create_fields()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../core/api.html#SSD.core.database.Database.create_table"><code class="docutils literal notranslate"><span class="pre">Database.create_table()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../core/api.html#SSD.core.database.Database.export"><code class="docutils literal notranslate"><span class="pre">Database.export()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../core/api.html#SSD.core.database.Database.get_architecture"><code class="docutils literal notranslate"><span class="pre">Database.get_architecture()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../core/api.html#SSD.core.database.Database.get_fields"><code class="docutils literal notranslate"><span class="pre">Database.get_fields()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../core/api.html#SSD.core.database.Database.get_line"><code class="docutils literal notranslate"><span class="pre">Database.get_line()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../core/api.html#SSD.core.database.Database.get_lines"><code class="docutils literal notranslate"><span class="pre">Database.get_lines()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../core/api.html#SSD.core.database.Database.get_path"><code class="docutils literal notranslate"><span class="pre">Database.get_path()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../core/api.html#SSD.core.database.Database.get_tables"><code class="docutils literal notranslate"><span class="pre">Database.get_tables()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../core/api.html#SSD.core.database.Database.load"><code class="docutils literal notranslate"><span class="pre">Database.load()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../core/api.html#SSD.core.database.Database.make_name"><code class="docutils literal notranslate"><span class="pre">Database.make_name()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../core/api.html#SSD.core.database.Database.memory_size"><code class="docutils literal notranslate"><span class="pre">Database.memory_size</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../core/api.html#SSD.core.database.Database.nb_lines"><code class="docutils literal notranslate"><span class="pre">Database.nb_lines()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../core/api.html#SSD.core.database.Database.new"><code class="docutils literal notranslate"><span class="pre">Database.new()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../core/api.html#SSD.core.database.Database.print_architecture"><code class="docutils literal notranslate"><span class="pre">Database.print_architecture()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../core/api.html#SSD.core.database.Database.register_post_save_signal"><code class="docutils literal notranslate"><span class="pre">Database.register_post_save_signal()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../core/api.html#SSD.core.database.Database.register_pre_save_signal"><code class="docutils literal notranslate"><span class="pre">Database.register_pre_save_signal()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../core/api.html#SSD.core.database.Database.remove_field"><code class="docutils literal notranslate"><span class="pre">Database.remove_field()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../core/api.html#SSD.core.database.Database.remove_table"><code class="docutils literal notranslate"><span class="pre">Database.remove_table()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../core/api.html#SSD.core.database.Database.rename_field"><code class="docutils literal notranslate"><span class="pre">Database.rename_field()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../core/api.html#SSD.core.database.Database.rename_table"><code class="docutils literal notranslate"><span class="pre">Database.rename_table()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../core/api.html#SSD.core.database.Database.update"><code class="docutils literal notranslate"><span class="pre">Database.update()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../core/api.html#module-SSD.core.utils">Utils</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../core/api.html#SSD.core.utils.export"><code class="docutils literal notranslate"><span class="pre">export()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../core/api.html#SSD.core.utils.merge"><code class="docutils literal notranslate"><span class="pre">merge()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../core/api.html#SSD.core.utils.remove_field"><code class="docutils literal notranslate"><span class="pre">remove_field()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../core/api.html#SSD.core.utils.remove_table"><code class="docutils literal notranslate"><span class="pre">remove_table()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../core/api.html#SSD.core.utils.rename_fields"><code class="docutils literal notranslate"><span class="pre">rename_fields()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../core/api.html#SSD.core.utils.rename_tables"><code class="docutils literal notranslate"><span class="pre">rename_tables()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">SOFA</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../sofa/storage.html">Storage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../sofa/storage.html#specificity">Specificity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../sofa/storage.html#record-data-fields">Record Data fields</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../sofa/api.html">API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../sofa/api.html#storage">Storage</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../sofa/api.html#SSD.sofa.database.Database"><code class="docutils literal notranslate"><span class="pre">Database</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../sofa/api.html#SSD.sofa.database.Database.__init__"><code class="docutils literal notranslate"><span class="pre">Database.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../sofa/api.html#SSD.sofa.database.Database.add_callback"><code class="docutils literal notranslate"><span class="pre">Database.add_callback()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../sofa/api.html#SSD.sofa.database.Database.add_data"><code class="docutils literal notranslate"><span class="pre">Database.add_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../sofa/api.html#SSD.sofa.database.Database.onAnimateBeginEvent"><code class="docutils literal notranslate"><span class="pre">Database.onAnimateBeginEvent()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../sofa/api.html#SSD.sofa.database.Database.onAnimateEndEvent"><code class="docutils literal notranslate"><span class="pre">Database.onAnimateEndEvent()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../sofa/api.html#SSD.sofa.database.Database.print_architecture"><code class="docutils literal notranslate"><span class="pre">Database.print_architecture()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">SimulationSimpleDatabase</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">SSD.sofa.database</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for SSD.sofa.database</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Tuple</span>
+<span class="kn">import</span> <span class="nn">Sofa</span>
+
+<span class="kn">from</span> <span class="nn">SSD.core.database</span> <span class="kn">import</span> <span class="n">Database</span> <span class="k">as</span> <span class="n">CoreDatabase</span>
+<span class="kn">from</span> <span class="nn">SSD.sofa.utils</span> <span class="kn">import</span> <span class="n">error_message</span>
+
+
+<div class="viewcode-block" id="Database">
+<a class="viewcode-back" href="../../../sofa/api.html#SSD.sofa.database.Database">[docs]</a>
+<span class="k">class</span> <span class="nc">Database</span><span class="p">(</span><span class="n">Sofa</span><span class="o">.</span><span class="n">Core</span><span class="o">.</span><span class="n">Controller</span><span class="p">,</span> <span class="n">CoreDatabase</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Database.__init__">
+<a class="viewcode-back" href="../../../sofa/api.html#SSD.sofa.database.Database.__init__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">root</span><span class="p">:</span> <span class="n">Sofa</span><span class="o">.</span><span class="n">Core</span><span class="o">.</span><span class="n">Node</span><span class="p">,</span>
+                 <span class="n">database_dir</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                 <span class="n">database_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;runSofa&#39;</span><span class="p">,</span>
+                 <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Manage the creation and loading of Tables in the Database.</span>
+<span class="sd">        User interface to dynamically add, get and update entries.</span>
+<span class="sd">        Additional callbacks to automatically get sofa objects Data.</span>
+
+<span class="sd">        :param root: Root node of the scene graph.</span>
+<span class="sd">        :param database_dir: Directory which contains the Database file.</span>
+<span class="sd">        :param database_name: Name of the Database file.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">Sofa</span><span class="o">.</span><span class="n">Core</span><span class="o">.</span><span class="n">Controller</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">CoreDatabase</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                              <span class="n">database_dir</span><span class="o">=</span><span class="n">database_dir</span><span class="p">,</span>
+                              <span class="n">database_name</span><span class="o">=</span><span class="n">database_name</span><span class="p">)</span>
+
+        <span class="c1"># Add the Database controller to the scene graph</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">:</span> <span class="n">Sofa</span><span class="o">.</span><span class="n">Core</span><span class="o">.</span><span class="n">Node</span> <span class="o">=</span> <span class="n">root</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">addChild</span><span class="p">(</span><span class="s1">&#39;database&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">database</span><span class="o">.</span><span class="n">addObject</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__callbacks</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Sofa</span><span class="o">.</span><span class="n">Core</span><span class="o">.</span><span class="n">Object</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__dirty</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__path</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span></div>
+
+
+<div class="viewcode-block" id="Database.add_callback">
+<a class="viewcode-back" href="../../../sofa/api.html#SSD.sofa.database.Database.add_callback">[docs]</a>
+    <span class="k">def</span> <span class="nf">add_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                     <span class="n">table_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                     <span class="n">field_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                     <span class="n">record_object</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                     <span class="n">record_field</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add a callback on an object Data field. If the specified Table or Field does not exist, create them.</span>
+
+<span class="sd">        :param table_name: Name of the Table.</span>
+<span class="sd">        :param field_name: Name of the Field.</span>
+<span class="sd">        :param record_object: Path to the sofa object in the scene graph from root node (&#39;@child_node.object_name&#39;).</span>
+<span class="sd">        :param record_field: The name of the Data field to record.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Check Table existence</span>
+        <span class="n">table_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_name</span><span class="p">(</span><span class="n">table_name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">table_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_tables</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">create_table</span><span class="p">(</span><span class="n">table_name</span><span class="o">=</span><span class="n">table_name</span><span class="p">)</span>
+
+        <span class="c1"># Check the path</span>
+        <span class="k">if</span> <span class="n">record_object</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;@&#39;</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">record_object</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">))</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">error_message</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You must give the absolute path to the object to record. &quot;</span>
+                          <span class="sa">f</span><span class="s2">&quot;The path &#39;</span><span class="si">{</span><span class="n">record_object</span><span class="si">}</span><span class="s2">&#39; must be defined such as &#39;@child_node.object_name&#39;.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Access each child node</span>
+        <span class="n">node</span><span class="p">:</span> <span class="n">Sofa</span><span class="o">.</span><span class="n">Core</span><span class="o">.</span><span class="n">Node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span>
+        <span class="n">child_nodes</span> <span class="o">=</span> <span class="n">record_object</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">child_nodes</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">child_nodes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">node</span><span class="o">.</span><span class="n">getName</span><span class="p">():</span>
+            <span class="n">child_nodes</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">child_node</span> <span class="ow">in</span> <span class="n">child_nodes</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">child_node</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">children</span><span class="p">:</span>
+                <span class="n">node_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">getName</span><span class="p">()</span><span class="si">}{</span><span class="n">node</span><span class="o">.</span><span class="n">getPathName</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span>
+                <span class="n">error_message</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The node &#39;</span><span class="si">{</span><span class="n">child_node</span><span class="si">}</span><span class="s2">&#39; is not a child of &#39;</span><span class="si">{</span><span class="n">node_path</span><span class="si">}</span><span class="s2">&#39;. &quot;</span>
+                              <span class="sa">f</span><span class="s2">&quot;Available children are </span><span class="si">{</span><span class="p">[</span><span class="n">n</span><span class="o">.</span><span class="n">getName</span><span class="p">()</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">node</span><span class="o">.</span><span class="n">children</span><span class="p">]</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+            <span class="n">node</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">getChild</span><span class="p">(</span><span class="n">child_node</span><span class="p">)</span>
+
+        <span class="c1"># Access object</span>
+        <span class="n">object_name</span> <span class="o">=</span> <span class="n">record_object</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">object_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">objects</span><span class="p">:</span>
+            <span class="n">node_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">getName</span><span class="p">()</span><span class="si">}{</span><span class="n">node</span><span class="o">.</span><span class="n">getPathName</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="n">error_message</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The object &#39;</span><span class="si">{</span><span class="n">object_name</span><span class="si">}</span><span class="s2"> does not belong to node &#39;</span><span class="si">{</span><span class="n">node_path</span><span class="si">}</span><span class="s2">&#39;. &quot;</span>
+                          <span class="sa">f</span><span class="s2">&quot;Available objects are </span><span class="si">{</span><span class="p">[</span><span class="n">o</span><span class="o">.</span><span class="n">getName</span><span class="p">()</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">o</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">node</span><span class="o">.</span><span class="n">objects</span><span class="p">]</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+        <span class="n">obj</span><span class="p">:</span> <span class="n">Sofa</span><span class="o">.</span><span class="n">Core</span><span class="o">.</span><span class="n">Object</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">getObject</span><span class="p">(</span><span class="n">object_name</span><span class="p">)</span>
+
+        <span class="c1"># Check Data access and get Data type</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">data</span> <span class="o">:=</span> <span class="n">obj</span><span class="o">.</span><span class="n">getData</span><span class="p">(</span><span class="n">record_field</span><span class="p">))</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">error_message</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The object </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">getName</span><span class="p">()</span><span class="si">}</span><span class="s2"> does not have a &#39;</span><span class="si">{</span><span class="n">field_name</span><span class="si">}</span><span class="s2">&#39; Data field.&quot;</span><span class="p">)</span>
+        <span class="n">data_type</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+
+        <span class="c1"># Check Field existence</span>
+        <span class="k">if</span> <span class="n">field_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_fields</span><span class="p">(</span><span class="n">table_name</span><span class="o">=</span><span class="n">table_name</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">create_fields</span><span class="p">(</span><span class="n">table_name</span><span class="o">=</span><span class="n">table_name</span><span class="p">,</span>
+                               <span class="n">fields</span><span class="o">=</span><span class="p">(</span><span class="n">field_name</span><span class="p">,</span> <span class="n">data_type</span><span class="p">))</span>
+
+        <span class="c1"># Register the object</span>
+        <span class="k">if</span> <span class="n">table_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__callbacks</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__callbacks</span><span class="p">[</span><span class="n">table_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__path</span><span class="p">[</span><span class="n">table_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">if</span> <span class="n">field_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__callbacks</span><span class="p">[</span><span class="n">table_name</span><span class="p">]:</span>
+            <span class="n">error_message</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The Field &#39;</span><span class="si">{</span><span class="n">field_name</span><span class="si">}</span><span class="s2">&#39; in Table &#39;</span><span class="si">{</span><span class="n">table_name</span><span class="si">}</span><span class="s2">&#39; is already associated with an object.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__callbacks</span><span class="p">[</span><span class="n">table_name</span><span class="p">][</span><span class="n">field_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">record_field</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__path</span><span class="p">[</span><span class="n">table_name</span><span class="p">][</span><span class="n">field_name</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;@root.</span><span class="si">{</span><span class="n">record_object</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="si">}</span><span class="s1">.</span><span class="si">{</span><span class="n">record_field</span><span class="si">}</span><span class="s1">&#39;</span></div>
+
+
+<div class="viewcode-block" id="Database.onAnimateBeginEvent">
+<a class="viewcode-back" href="../../../sofa/api.html#SSD.sofa.database.Database.onAnimateBeginEvent">[docs]</a>
+    <span class="k">def</span> <span class="nf">onAnimateBeginEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        At the beginning of a time step.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Reset all the dirty flags</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__dirty</span> <span class="o">=</span> <span class="p">{</span><span class="n">table</span><span class="p">:</span> <span class="kc">False</span> <span class="k">for</span> <span class="n">table</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_tables</span><span class="p">()}</span></div>
+
+
+<div class="viewcode-block" id="Database.onAnimateEndEvent">
+<a class="viewcode-back" href="../../../sofa/api.html#SSD.sofa.database.Database.onAnimateEndEvent">[docs]</a>
+    <span class="k">def</span> <span class="nf">onAnimateEndEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        At the end of a time step.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Execute all callbacks</span>
+        <span class="k">for</span> <span class="n">table_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__callbacks</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">field_name</span><span class="p">,</span> <span class="p">(</span><span class="n">record_object</span><span class="p">,</span> <span class="n">record_field</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__callbacks</span><span class="p">[</span><span class="n">table_name</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">data</span><span class="p">[</span><span class="n">field_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">record_object</span><span class="o">.</span><span class="n">getData</span><span class="p">(</span><span class="n">record_field</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_data</span><span class="p">(</span><span class="n">table_name</span><span class="o">=</span><span class="n">table_name</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
+
+        <span class="c1"># If a Table was not updated, add an empty line (keep one line per time step)</span>
+        <span class="k">for</span> <span class="n">table_name</span><span class="p">,</span> <span class="n">dirty</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__dirty</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">dirty</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">add_data</span><span class="p">(</span><span class="n">table_name</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="p">{})</span></div>
+
+
+<div class="viewcode-block" id="Database.add_data">
+<a class="viewcode-back" href="../../../sofa/api.html#SSD.sofa.database.Database.add_data">[docs]</a>
+    <span class="k">def</span> <span class="nf">add_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">table_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                 <span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Execute a line insert query.</span>
+
+<span class="sd">        :param table_name: Name of the Table.</span>
+<span class="sd">        :param data: New line of the Table.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">table_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_name</span><span class="p">(</span><span class="n">table_name</span><span class="p">)</span>
+        <span class="c1"># If the Table was already edited during the time then update it (keep one line per time step)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__dirty</span><span class="p">[</span><span class="n">table_name</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">table_name</span><span class="o">=</span><span class="n">table_name</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
+        <span class="c1"># Otherwise, create a new line</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__dirty</span><span class="p">[</span><span class="n">table_name</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">CoreDatabase</span><span class="o">.</span><span class="n">add_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">table_name</span><span class="o">=</span><span class="n">table_name</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Database.print_architecture">
+<a class="viewcode-back" href="../../../sofa/api.html#SSD.sofa.database.Database.print_architecture">[docs]</a>
+    <span class="k">def</span> <span class="nf">print_architecture</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Print the content of the Database with Table(s), Field(s) and connected sofa objects.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">DATABASE </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__database_name</span><span class="si">}</span><span class="s1">.db&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">table</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_tables</span><span class="p">(</span><span class="n">only_names</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">info</span> <span class="o">=</span> <span class="n">table</span><span class="o">.</span><span class="n">description</span><span class="p">(</span><span class="n">indent</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">info</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]):</span>
+                <span class="n">field_name</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__callbacks</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">field_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__callbacks</span><span class="p">[</span><span class="n">name</span><span class="p">]:</span>
+                        <span class="n">info</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">line</span> <span class="o">+</span> <span class="sa">f</span><span class="s1">&#39; --&gt; </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__path</span><span class="p">[</span><span class="n">name</span><span class="p">][</span><span class="n">field_name</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">info</span><span class="p">)</span> <span class="o">-</span> <span class="mi">2</span><span class="p">):</span>
+                <span class="n">info</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">info</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Mimesis, Inria.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

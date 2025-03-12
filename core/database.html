@@ -1,0 +1,435 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Database &mdash; SimulationSimpleDatabase  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../_static/theme.css?v=556d74e5" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Table Relationship" href="relationships.html" />
+    <link rel="prev" title="About" href="../about.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            SimulationSimpleDatabase
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">PRESENTATION</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../install.html">Install</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../install.html#prerequisites">Prerequisites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../install.html#id1">Install</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../install.html#install-with-pip">Install with <em>pip</em></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../install.html#install-from-sources">Install from sources</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../about.html">About</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">STORAGE</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Database</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#creating-a-database">Creating a Database</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#loading-a-database">Loading a Database</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#creating-a-new-table">Creating a new Table</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#creating-a-new-field">Creating a new Field</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#adding-data-to-a-table">Adding data to a Table</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#updating-data-in-a-table">Updating data in a Table</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#getting-data-from-a-table">Getting data from a Table</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#connecting-signals">Connecting Signals</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="relationships.html">Table Relationships</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="relationships.html#creating-a-relation-between-tables">Creating a relation between Tables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="relationships.html#adding-data-to-joined-tables">Adding data to joined Tables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="relationships.html#updating-data-in-joined-tables">Updating data in joined Tables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="relationships.html#getting-data-from-joined-tables">Getting data from joined Tables</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html">Utils</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#merging-databases">Merging Databases</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#renaming-tables-and-fields">Renaming Tables and Fields</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#removing-tables-and-fields">Removing Tables and Fields</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#exporting-databases">Exporting Databases</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api.html#SSD.core.database.Database"><code class="docutils literal notranslate"><span class="pre">Database</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api.html#SSD.core.database.Database.__init__"><code class="docutils literal notranslate"><span class="pre">Database.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#SSD.core.database.Database.add_batch"><code class="docutils literal notranslate"><span class="pre">Database.add_batch()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#SSD.core.database.Database.add_data"><code class="docutils literal notranslate"><span class="pre">Database.add_data()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#SSD.core.database.Database.close"><code class="docutils literal notranslate"><span class="pre">Database.close()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#SSD.core.database.Database.connect_signals"><code class="docutils literal notranslate"><span class="pre">Database.connect_signals()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#SSD.core.database.Database.create_fields"><code class="docutils literal notranslate"><span class="pre">Database.create_fields()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#SSD.core.database.Database.create_table"><code class="docutils literal notranslate"><span class="pre">Database.create_table()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#SSD.core.database.Database.export"><code class="docutils literal notranslate"><span class="pre">Database.export()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#SSD.core.database.Database.get_architecture"><code class="docutils literal notranslate"><span class="pre">Database.get_architecture()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#SSD.core.database.Database.get_fields"><code class="docutils literal notranslate"><span class="pre">Database.get_fields()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#SSD.core.database.Database.get_line"><code class="docutils literal notranslate"><span class="pre">Database.get_line()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#SSD.core.database.Database.get_lines"><code class="docutils literal notranslate"><span class="pre">Database.get_lines()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#SSD.core.database.Database.get_path"><code class="docutils literal notranslate"><span class="pre">Database.get_path()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#SSD.core.database.Database.get_tables"><code class="docutils literal notranslate"><span class="pre">Database.get_tables()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#SSD.core.database.Database.load"><code class="docutils literal notranslate"><span class="pre">Database.load()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#SSD.core.database.Database.make_name"><code class="docutils literal notranslate"><span class="pre">Database.make_name()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#SSD.core.database.Database.memory_size"><code class="docutils literal notranslate"><span class="pre">Database.memory_size</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#SSD.core.database.Database.nb_lines"><code class="docutils literal notranslate"><span class="pre">Database.nb_lines()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#SSD.core.database.Database.new"><code class="docutils literal notranslate"><span class="pre">Database.new()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#SSD.core.database.Database.print_architecture"><code class="docutils literal notranslate"><span class="pre">Database.print_architecture()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#SSD.core.database.Database.register_post_save_signal"><code class="docutils literal notranslate"><span class="pre">Database.register_post_save_signal()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#SSD.core.database.Database.register_pre_save_signal"><code class="docutils literal notranslate"><span class="pre">Database.register_pre_save_signal()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#SSD.core.database.Database.remove_field"><code class="docutils literal notranslate"><span class="pre">Database.remove_field()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#SSD.core.database.Database.remove_table"><code class="docutils literal notranslate"><span class="pre">Database.remove_table()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#SSD.core.database.Database.rename_field"><code class="docutils literal notranslate"><span class="pre">Database.rename_field()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#SSD.core.database.Database.rename_table"><code class="docutils literal notranslate"><span class="pre">Database.rename_table()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#SSD.core.database.Database.update"><code class="docutils literal notranslate"><span class="pre">Database.update()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#module-SSD.core.utils">Utils</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api.html#SSD.core.utils.export"><code class="docutils literal notranslate"><span class="pre">export()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#SSD.core.utils.merge"><code class="docutils literal notranslate"><span class="pre">merge()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#SSD.core.utils.remove_field"><code class="docutils literal notranslate"><span class="pre">remove_field()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#SSD.core.utils.remove_table"><code class="docutils literal notranslate"><span class="pre">remove_table()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#SSD.core.utils.rename_fields"><code class="docutils literal notranslate"><span class="pre">rename_fields()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#SSD.core.utils.rename_tables"><code class="docutils literal notranslate"><span class="pre">rename_tables()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">SOFA</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../sofa/storage.html">Storage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../sofa/storage.html#specificity">Specificity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../sofa/storage.html#record-data-fields">Record Data fields</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../sofa/api.html">API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../sofa/api.html#storage">Storage</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../sofa/api.html#SSD.sofa.database.Database"><code class="docutils literal notranslate"><span class="pre">Database</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../sofa/api.html#SSD.sofa.database.Database.__init__"><code class="docutils literal notranslate"><span class="pre">Database.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../sofa/api.html#SSD.sofa.database.Database.add_callback"><code class="docutils literal notranslate"><span class="pre">Database.add_callback()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../sofa/api.html#SSD.sofa.database.Database.add_data"><code class="docutils literal notranslate"><span class="pre">Database.add_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../sofa/api.html#SSD.sofa.database.Database.onAnimateBeginEvent"><code class="docutils literal notranslate"><span class="pre">Database.onAnimateBeginEvent()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../sofa/api.html#SSD.sofa.database.Database.onAnimateEndEvent"><code class="docutils literal notranslate"><span class="pre">Database.onAnimateEndEvent()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../sofa/api.html#SSD.sofa.database.Database.print_architecture"><code class="docutils literal notranslate"><span class="pre">Database.print_architecture()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">SimulationSimpleDatabase</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Database</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/core/database.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="database">
+<h1>Database<a class="headerlink" href="#database" title="Link to this heading"></a></h1>
+<section id="creating-a-database">
+<h2>Creating a Database<a class="headerlink" href="#creating-a-database" title="Link to this heading"></a></h2>
+<p>The <em>Database</em> will store its <em>Tables</em> in a single file which name and directory must be specified.
+To create this file with a <cite>.db</cite> extension, a call to the <code class="docutils literal notranslate"><span class="pre">new</span></code> method is required:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">SSD.core</span> <span class="kn">import</span> <span class="n">Database</span>
+
+<span class="c1"># Create a new Database object and a new storage file</span>
+<span class="n">db</span> <span class="o">=</span> <span class="n">Database</span><span class="p">(</span><span class="n">database_dir</span><span class="o">=</span><span class="s1">&#39;my_directory&#39;</span><span class="p">,</span>
+              <span class="n">database_name</span><span class="o">=</span><span class="s1">&#39;my_database&#39;</span><span class="p">)</span>
+<span class="n">db</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">remove_existing</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># Same thing in a single line</span>
+<span class="n">db</span> <span class="o">=</span> <span class="n">Database</span><span class="p">(</span><span class="n">database_dir</span><span class="o">=</span><span class="s1">&#39;my_directory&#39;</span><span class="p">,</span>
+              <span class="n">database_name</span><span class="o">=</span><span class="s1">&#39;my_database&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">remove_existing</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="loading-a-database">
+<h2>Loading a Database<a class="headerlink" href="#loading-a-database" title="Link to this heading"></a></h2>
+<p>Loading an existing <em>Database</em> is pretty similar as creating a new one, except the call to the <code class="docutils literal notranslate"><span class="pre">load</span></code> method:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">SSD.core</span> <span class="kn">import</span> <span class="n">Database</span>
+
+<span class="c1"># Create a new Database object and load an exiting storage file</span>
+<span class="n">db</span> <span class="o">=</span> <span class="n">Database</span><span class="p">(</span><span class="n">database_dir</span><span class="o">=</span><span class="s1">&#39;my_directory&#39;</span><span class="p">,</span>
+              <span class="n">database_name</span><span class="o">=</span><span class="s1">&#39;my_database&#39;</span><span class="p">)</span>
+<span class="n">db</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">show_architecture</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># Same thing in a single line</span>
+<span class="n">db</span> <span class="o">=</span> <span class="n">Database</span><span class="p">(</span><span class="n">database_dir</span><span class="o">=</span><span class="s1">&#39;my_directory&#39;</span><span class="p">,</span>
+              <span class="n">database_name</span><span class="o">=</span><span class="s1">&#39;my_database&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">show_architecture</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="creating-a-new-table">
+<h2>Creating a new Table<a class="headerlink" href="#creating-a-new-table" title="Link to this heading"></a></h2>
+<p>Creating a new <em>Table</em> to the <em>Database</em> only requires its name and the type (either <em>StoringTable</em> or <em>ExchangeTable</em>):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create a StoringTable</span>
+<span class="n">db</span><span class="o">.</span><span class="n">create_table</span><span class="p">(</span><span class="n">table_name</span><span class="o">=</span><span class="s1">&#39;my_StoringTable&#39;</span><span class="p">,</span>
+                <span class="n">storing_table</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># Create an ExchangeTable</span>
+<span class="n">db</span><span class="o">.</span><span class="n">create_table</span><span class="p">(</span><span class="n">table_name</span><span class="o">=</span><span class="s1">&#39;my_ExchangeTable&#39;</span><span class="p">,</span>
+                <span class="n">storing_table</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="creating-a-new-field">
+<h2>Creating a new Field<a class="headerlink" href="#creating-a-new-field" title="Link to this heading"></a></h2>
+<p>Creating a new <em>Field</em> requires a few information in a tuple defined as
+<span class="guilabel">(field_name, field_type, default_value)</span>.
+The default value specifies the value to set in a row if an entry does not contain data for this field.
+The name and the type of the <em>Field</em> are mandatory but the default value is optional; if not set, it will be <code class="docutils literal notranslate"><span class="pre">&lt;null&gt;</span></code>.</p>
+<p><em>Fields</em> can either be created one by one or at once:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create several Fields in the StoringTable</span>
+<span class="n">db</span><span class="o">.</span><span class="n">create_fields</span><span class="p">(</span><span class="n">table_name</span><span class="o">=</span><span class="s1">&#39;my_StoringTable&#39;</span><span class="p">,</span>
+                 <span class="n">fields</span><span class="o">=</span><span class="p">[(</span><span class="s1">&#39;my_Value&#39;</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="mf">0.</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;my_Condition&#39;</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;my_Color&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">)])</span>
+
+<span class="c1"># Create a unique Field in the ExchangeTable</span>
+<span class="n">db</span><span class="o">.</span><span class="n">create_fields</span><span class="p">(</span><span class="n">table_name</span><span class="o">=</span><span class="s1">&#39;my_ExchangeTable&#39;</span><span class="p">,</span>
+                 <span class="n">fields</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;my_Data&#39;</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="mf">0.</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>It is also possible to create fields at <em>Table</em> creation:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create a StoringTable with several fields</span>
+<span class="n">db</span><span class="o">.</span><span class="n">create_table</span><span class="p">(</span><span class="n">table_name</span><span class="o">=</span><span class="s1">&#39;my_StoringTable&#39;</span><span class="p">,</span>
+                <span class="n">storing_table</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">fields</span><span class="o">=</span><span class="p">[(</span><span class="s1">&#39;my_Value&#39;</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="mf">0.</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;my_Condition&#39;</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;my_Color&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">)])</span>
+
+<span class="c1"># Create an ExchangeTable with a unique field</span>
+<span class="n">db</span><span class="o">.</span><span class="n">create_table</span><span class="p">(</span><span class="n">table_name</span><span class="o">=</span><span class="s1">&#39;my_ExchangeTable&#39;</span><span class="p">,</span>
+                <span class="n">storing_table</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                <span class="n">fields</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;my_Data&#39;</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="mf">0.</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>The following <em>Field</em> types are available:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 22.2%" />
+<col style="width: 33.3%" />
+<col style="width: 44.4%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p><strong>Type</strong></p></th>
+<th class="head"><p><strong>Definition</strong></p></th>
+<th class="head"><p><strong>Field Documentation</strong></p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">int</span></code></p></td>
+<td><p><span class="guilabel">int</span></p></td>
+<td><p><a class="reference external" href="http://docs.peewee-orm.com/en/latest/peewee/api.html#IntegerField">IntegerField</a></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">float</span></code></p></td>
+<td><p><span class="guilabel">float</span></p></td>
+<td><p><a class="reference external" href="http://docs.peewee-orm.com/en/latest/peewee/api.html#FloatField">FloatField</a></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p></td>
+<td><p><span class="guilabel">str</span></p></td>
+<td><p><a class="reference external" href="http://docs.peewee-orm.com/en/latest/peewee/api.html#TextField">TextField</a></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">bool</span></code></p></td>
+<td><p><span class="guilabel">bool</span></p></td>
+<td><p><a class="reference external" href="http://docs.peewee-orm.com/en/latest/peewee/api.html#BooleanField">BooleanField</a></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ndarray</span></code></p></td>
+<td><p><span class="guilabel">import numpy.ndarray</span></p></td>
+<td><p>Field class for storing numpy arrays.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">datetime</span></code></p></td>
+<td><p><span class="guilabel">import datetime.datetime</span></p></td>
+<td><p><a class="reference external" href="http://docs.peewee-orm.com/en/latest/peewee/api.html#DateTimeField">DateTimeField</a></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="adding-data-to-a-table">
+<h2>Adding data to a Table<a class="headerlink" href="#adding-data-to-a-table" title="Link to this heading"></a></h2>
+<p>Adding data to a <em>Table</em> can be done either line by line either per batch of lines.
+In both cases, data must be passed as a dictionary and the index of the created line(s) are returned:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Add a batch to the StoringTable</span>
+<span class="n">db</span><span class="o">.</span><span class="n">add_batch</span><span class="p">(</span><span class="n">table_name</span><span class="o">=</span><span class="s1">&#39;my_StoringTable&#39;</span><span class="p">,</span>
+             <span class="n">batch</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;my_Value&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">7.4</span><span class="p">,</span> <span class="mf">5.6</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.1</span><span class="p">],</span>
+                    <span class="s1">&#39;my_Condition&#39;</span><span class="p">:</span> <span class="p">[</span><span class="kc">True</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">],</span>
+                    <span class="s1">&#39;my_Color&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="s1">&#39;orange&#39;</span><span class="p">,</span> <span class="s1">&#39;blue&#39;</span><span class="p">]})</span>
+
+<span class="c1"># Add a single line to the ExchangeTable</span>
+<span class="n">db</span><span class="o">.</span><span class="n">add_data</span><span class="p">(</span><span class="n">table_name</span><span class="o">=</span><span class="s1">&#39;my_ExchangeTable&#39;</span><span class="p">,</span>
+            <span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;my_Data&#39;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">})</span>
+</pre></div>
+</div>
+</section>
+<section id="updating-data-in-a-table">
+<h2>Updating data in a Table<a class="headerlink" href="#updating-data-in-a-table" title="Link to this heading"></a></h2>
+<p>Updating data is also possible and can be only performed line by line.
+The index of the line can be specified (index can be negative to count from the last line).
+By default, the last entry will be updated.
+The data still needs to be passed as a dictionary, only specified <em>Fields</em> will be updated.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Update the 3rd line of the StoringTable</span>
+<span class="n">db</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">table_name</span><span class="o">=</span><span class="s1">&#39;my_StoringTable&#39;</span><span class="p">,</span>
+          <span class="n">line_id</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+          <span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;my_Value&#39;</span><span class="p">:</span> <span class="mf">1.3</span><span class="p">,</span>
+                <span class="s1">&#39;my_Color&#39;</span><span class="p">:</span> <span class="s1">&#39;green&#39;</span><span class="p">})</span>
+
+<span class="c1"># Update the last line of the StoringTable</span>
+<span class="n">db</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">table_name</span><span class="o">=</span><span class="s1">&#39;my_StoringTable&#39;</span><span class="p">,</span>
+          <span class="n">line_id</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+          <span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;my_Value&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mf">1.9</span><span class="p">})</span>
+</pre></div>
+</div>
+</section>
+<section id="getting-data-from-a-table">
+<h2>Getting data from a Table<a class="headerlink" href="#getting-data-from-a-table" title="Link to this heading"></a></h2>
+<p>Getting data from a <em>Table</em> can be done either line by line either per batch of lines.
+By default, all fields are received but a selection can be specified.
+With <code class="docutils literal notranslate"><span class="pre">get_line</span></code> method, the index of the line can be specified; by default, the last line is selected.
+With <code class="docutils literal notranslate"><span class="pre">get_lines</span></code> method, a set of lines can be specified; if this set of lines is not specified, a range of lines can
+be specified; by default, the whole set of lines is selected.
+In both cases, data is received as a dictionary:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Get a batch from the StoringTable</span>
+<span class="n">db</span><span class="o">.</span><span class="n">get_lines</span><span class="p">(</span><span class="n">table_name</span><span class="o">=</span><span class="s1">&#39;my_StoringTable&#39;</span><span class="p">,</span>
+             <span class="n">fields</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;my_Value&#39;</span><span class="p">,</span> <span class="s1">&#39;my_Color&#39;</span><span class="p">],</span>
+             <span class="n">lines_range</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+             <span class="n">batched</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">&gt;&gt; {&#39;my_Value&#39;: [7.4, 5.6, -2.1],</span>
+<span class="sd">    &#39;my_Condition&#39;: [True, True, False],</span>
+<span class="sd">    &#39;my_Color&#39;: [&#39;red&#39;, &#39;orange&#39;, &#39;blue&#39;]}</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1"># Get a line from the ExchangeTable</span>
+<span class="n">db</span><span class="o">.</span><span class="n">get_line</span><span class="p">(</span><span class="n">table_name</span><span class="o">=</span><span class="s1">&#39;my_ExchangeTable&#39;</span>
+            <span class="n">fields</span><span class="o">=</span><span class="s1">&#39;my_Data&#39;</span><span class="p">,</span>
+            <span class="n">line_id</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">&gt;&gt; {&#39;my_Data&#39;: 0.5}</span>
+<span class="sd">&quot;&quot;&quot;</span>
+</pre></div>
+</div>
+</section>
+<section id="connecting-signals">
+<h2>Connecting Signals<a class="headerlink" href="#connecting-signals" title="Link to this heading"></a></h2>
+<p><em>Tables</em> can send two types of signals when data is added: a <code class="docutils literal notranslate"><span class="pre">pre_save_signal</span></code> and a <code class="docutils literal notranslate"><span class="pre">post_save_signal</span></code>.
+Signal handler can be connected to these signals by the <em>Database</em>.
+When data is added to a <em>Table</em>, the registered handlers are triggered in the registration order (just before or just
+after the data insert depending on the signal type).
+Signals must be registered and connected when initializing the <em>Database</em>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create a new Database</span>
+<span class="n">db</span> <span class="o">=</span> <span class="n">Database</span><span class="p">(</span><span class="n">database_dir</span><span class="o">=</span><span class="s1">&#39;my_directory&#39;</span><span class="p">,</span>
+              <span class="n">database_name</span><span class="o">=</span><span class="s1">&#39;my_database&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">remove_existing</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="c1"># Create an ExchangeTable with one Field</span>
+<span class="n">db</span><span class="o">.</span><span class="n">create_fields</span><span class="p">(</span><span class="n">table_name</span><span class="o">=</span><span class="s1">&#39;my_ExchangeTable&#39;</span><span class="p">,</span>
+                 <span class="n">fields</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;my_Data&#39;</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="mf">0.</span><span class="p">))</span>
+
+<span class="c1"># Define handlers</span>
+<span class="k">def</span> <span class="nf">pre_save_handler</span><span class="p">(</span><span class="n">table_name</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Pre-save signal received from </span><span class="si">{</span><span class="n">table_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">post_save_handler</span><span class="p">(</span><span class="n">table_name</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Post-save signal received from </span><span class="si">{</span><span class="n">table_name</span><span class="si">}</span><span class="s2"> with data=</span><span class="si">{</span><span class="n">data</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Register signals</span>
+<span class="n">db</span><span class="o">.</span><span class="n">register_pre_save_signal</span><span class="p">(</span><span class="n">table_name</span><span class="o">=</span><span class="s1">&#39;my_ExchangeTable&#39;</span><span class="p">,</span>
+                            <span class="n">handler</span><span class="o">=</span><span class="n">pre_save_handler</span><span class="p">)</span>
+<span class="n">db</span><span class="o">.</span><span class="n">register_post_save_signal</span><span class="p">(</span><span class="n">table_name</span><span class="o">=</span><span class="s1">&#39;my_ExchangeTable&#39;</span><span class="p">,</span>
+                             <span class="n">handler</span><span class="o">=</span><span class="n">post_save_handler</span><span class="p">)</span>
+
+<span class="c1"># Connect signals once they are all registered</span>
+<span class="n">db</span><span class="o">.</span><span class="n">connect_signals</span><span class="p">()</span>
+
+<span class="c1"># Adding data to the Table</span>
+<span class="n">db</span><span class="o">.</span><span class="n">add_data</span><span class="p">(</span><span class="n">table_name</span><span class="o">=</span><span class="s1">&#39;my_ExchangeTable&#39;</span><span class="p">,</span>
+            <span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;my_Data&#39;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">})</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">&gt;&gt; Pre-save signal received from my_ExchangeTable</span>
+<span class="sd">&gt;&gt; Post-save signal received from my_ExchangeTable with data={&#39;my_Data&#39;: 0.5}</span>
+<span class="sd">&quot;&quot;&quot;</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../about.html" class="btn btn-neutral float-left" title="About" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="relationships.html" class="btn btn-neutral float-right" title="Table Relationship" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Mimesis, Inria.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

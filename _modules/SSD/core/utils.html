@@ -1,0 +1,420 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SSD.core.utils &mdash; SimulationSimpleDatabase  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/theme.css?v=556d74e5" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="author" title="About these documents" href="../../../about.html" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            SimulationSimpleDatabase
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">PRESENTATION</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../install.html">Install</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../install.html#prerequisites">Prerequisites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../install.html#id1">Install</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../install.html#install-with-pip">Install with <em>pip</em></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../install.html#install-from-sources">Install from sources</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../about.html">About</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">STORAGE</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../core/database.html">Database</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../core/database.html#creating-a-database">Creating a Database</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../core/database.html#loading-a-database">Loading a Database</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../core/database.html#creating-a-new-table">Creating a new Table</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../core/database.html#creating-a-new-field">Creating a new Field</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../core/database.html#adding-data-to-a-table">Adding data to a Table</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../core/database.html#updating-data-in-a-table">Updating data in a Table</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../core/database.html#getting-data-from-a-table">Getting data from a Table</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../core/database.html#connecting-signals">Connecting Signals</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../core/relationships.html">Table Relationships</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../core/relationships.html#creating-a-relation-between-tables">Creating a relation between Tables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../core/relationships.html#adding-data-to-joined-tables">Adding data to joined Tables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../core/relationships.html#updating-data-in-joined-tables">Updating data in joined Tables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../core/relationships.html#getting-data-from-joined-tables">Getting data from joined Tables</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../core/utils.html">Utils</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../core/utils.html#merging-databases">Merging Databases</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../core/utils.html#renaming-tables-and-fields">Renaming Tables and Fields</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../core/utils.html#removing-tables-and-fields">Removing Tables and Fields</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../core/utils.html#exporting-databases">Exporting Databases</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../core/api.html">API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../core/api.html#SSD.core.database.Database"><code class="docutils literal notranslate"><span class="pre">Database</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../core/api.html#SSD.core.database.Database.__init__"><code class="docutils literal notranslate"><span class="pre">Database.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../core/api.html#SSD.core.database.Database.add_batch"><code class="docutils literal notranslate"><span class="pre">Database.add_batch()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../core/api.html#SSD.core.database.Database.add_data"><code class="docutils literal notranslate"><span class="pre">Database.add_data()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../core/api.html#SSD.core.database.Database.close"><code class="docutils literal notranslate"><span class="pre">Database.close()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../core/api.html#SSD.core.database.Database.connect_signals"><code class="docutils literal notranslate"><span class="pre">Database.connect_signals()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../core/api.html#SSD.core.database.Database.create_fields"><code class="docutils literal notranslate"><span class="pre">Database.create_fields()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../core/api.html#SSD.core.database.Database.create_table"><code class="docutils literal notranslate"><span class="pre">Database.create_table()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../core/api.html#SSD.core.database.Database.export"><code class="docutils literal notranslate"><span class="pre">Database.export()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../core/api.html#SSD.core.database.Database.get_architecture"><code class="docutils literal notranslate"><span class="pre">Database.get_architecture()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../core/api.html#SSD.core.database.Database.get_fields"><code class="docutils literal notranslate"><span class="pre">Database.get_fields()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../core/api.html#SSD.core.database.Database.get_line"><code class="docutils literal notranslate"><span class="pre">Database.get_line()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../core/api.html#SSD.core.database.Database.get_lines"><code class="docutils literal notranslate"><span class="pre">Database.get_lines()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../core/api.html#SSD.core.database.Database.get_path"><code class="docutils literal notranslate"><span class="pre">Database.get_path()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../core/api.html#SSD.core.database.Database.get_tables"><code class="docutils literal notranslate"><span class="pre">Database.get_tables()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../core/api.html#SSD.core.database.Database.load"><code class="docutils literal notranslate"><span class="pre">Database.load()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../core/api.html#SSD.core.database.Database.make_name"><code class="docutils literal notranslate"><span class="pre">Database.make_name()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../core/api.html#SSD.core.database.Database.memory_size"><code class="docutils literal notranslate"><span class="pre">Database.memory_size</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../core/api.html#SSD.core.database.Database.nb_lines"><code class="docutils literal notranslate"><span class="pre">Database.nb_lines()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../core/api.html#SSD.core.database.Database.new"><code class="docutils literal notranslate"><span class="pre">Database.new()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../core/api.html#SSD.core.database.Database.print_architecture"><code class="docutils literal notranslate"><span class="pre">Database.print_architecture()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../core/api.html#SSD.core.database.Database.register_post_save_signal"><code class="docutils literal notranslate"><span class="pre">Database.register_post_save_signal()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../core/api.html#SSD.core.database.Database.register_pre_save_signal"><code class="docutils literal notranslate"><span class="pre">Database.register_pre_save_signal()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../core/api.html#SSD.core.database.Database.remove_field"><code class="docutils literal notranslate"><span class="pre">Database.remove_field()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../core/api.html#SSD.core.database.Database.remove_table"><code class="docutils literal notranslate"><span class="pre">Database.remove_table()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../core/api.html#SSD.core.database.Database.rename_field"><code class="docutils literal notranslate"><span class="pre">Database.rename_field()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../core/api.html#SSD.core.database.Database.rename_table"><code class="docutils literal notranslate"><span class="pre">Database.rename_table()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../core/api.html#SSD.core.database.Database.update"><code class="docutils literal notranslate"><span class="pre">Database.update()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../core/api.html#module-SSD.core.utils">Utils</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../core/api.html#SSD.core.utils.export"><code class="docutils literal notranslate"><span class="pre">export()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../core/api.html#SSD.core.utils.merge"><code class="docutils literal notranslate"><span class="pre">merge()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../core/api.html#SSD.core.utils.remove_field"><code class="docutils literal notranslate"><span class="pre">remove_field()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../core/api.html#SSD.core.utils.remove_table"><code class="docutils literal notranslate"><span class="pre">remove_table()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../core/api.html#SSD.core.utils.rename_fields"><code class="docutils literal notranslate"><span class="pre">rename_fields()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../core/api.html#SSD.core.utils.rename_tables"><code class="docutils literal notranslate"><span class="pre">rename_tables()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">SOFA</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../sofa/storage.html">Storage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../sofa/storage.html#specificity">Specificity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../sofa/storage.html#record-data-fields">Record Data fields</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../sofa/api.html">API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../sofa/api.html#storage">Storage</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../sofa/api.html#SSD.sofa.database.Database"><code class="docutils literal notranslate"><span class="pre">Database</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../sofa/api.html#SSD.sofa.database.Database.__init__"><code class="docutils literal notranslate"><span class="pre">Database.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../sofa/api.html#SSD.sofa.database.Database.add_callback"><code class="docutils literal notranslate"><span class="pre">Database.add_callback()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../sofa/api.html#SSD.sofa.database.Database.add_data"><code class="docutils literal notranslate"><span class="pre">Database.add_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../sofa/api.html#SSD.sofa.database.Database.onAnimateBeginEvent"><code class="docutils literal notranslate"><span class="pre">Database.onAnimateBeginEvent()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../sofa/api.html#SSD.sofa.database.Database.onAnimateEndEvent"><code class="docutils literal notranslate"><span class="pre">Database.onAnimateEndEvent()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../sofa/api.html#SSD.sofa.database.Database.print_architecture"><code class="docutils literal notranslate"><span class="pre">Database.print_architecture()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">SimulationSimpleDatabase</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">SSD.core.utils</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for SSD.core.utils</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Optional</span>
+
+<span class="kn">from</span> <span class="nn">SSD.core.adaptive_table</span> <span class="kn">import</span> <span class="n">AdaptiveTable</span>
+<span class="kn">from</span> <span class="nn">SSD.core.database</span> <span class="kn">import</span> <span class="n">Database</span>
+
+
+<div class="viewcode-block" id="merge">
+<a class="viewcode-back" href="../../../core/api.html#SSD.core.utils.merge">[docs]</a>
+<span class="k">def</span> <span class="nf">merge</span><span class="p">(</span><span class="n">database_files</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+          <span class="n">new_database_file</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;merged&#39;</span><span class="p">,</span>
+          <span class="n">remove_existing</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Merge Databases in a new Database.</span>
+
+<span class="sd">    :param database_files: List of Databases files.</span>
+<span class="sd">    :param new_database_file: Name of the new Database.</span>
+<span class="sd">    :param remove_existing: If True, Database file with name &#39;new_database_name&#39; will be overwritten.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Load working Databases</span>
+    <span class="n">databases</span> <span class="o">=</span> <span class="p">[</span><span class="n">Database</span><span class="p">(</span><span class="n">database_name</span><span class="o">=</span><span class="n">database_name</span><span class="p">)</span><span class="o">.</span><span class="n">load</span><span class="p">()</span> <span class="k">for</span> <span class="n">database_name</span> <span class="ow">in</span> <span class="n">database_files</span><span class="p">]</span>
+    <span class="n">merged_database</span> <span class="o">=</span> <span class="n">Database</span><span class="p">(</span><span class="n">database_name</span><span class="o">=</span><span class="n">new_database_file</span><span class="p">)</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">remove_existing</span><span class="o">=</span><span class="n">remove_existing</span><span class="p">)</span>
+
+    <span class="c1"># Create Tables with their Fields</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Merging the following Databases...&quot;</span><span class="p">)</span>
+    <span class="n">table_type</span> <span class="o">=</span> <span class="n">AdaptiveTable</span><span class="o">.</span><span class="n">table_type</span>
+    <span class="k">for</span> <span class="n">db</span> <span class="ow">in</span> <span class="n">databases</span><span class="p">:</span>
+        <span class="n">db</span><span class="o">.</span><span class="n">print_architecture</span><span class="p">()</span>
+        <span class="n">tables</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">get_tables</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">table</span> <span class="ow">in</span> <span class="n">tables</span><span class="p">:</span>
+            <span class="n">merged_database</span><span class="o">.</span><span class="n">create_table</span><span class="p">(</span><span class="n">table_name</span><span class="o">=</span><span class="n">table</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">field_name</span><span class="p">,</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">db</span><span class="o">.</span><span class="n">get_fields</span><span class="p">(</span><span class="n">table</span><span class="p">,</span> <span class="n">only_names</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">field_name</span> <span class="o">!=</span> <span class="s1">&#39;id&#39;</span><span class="p">:</span>
+                    <span class="n">field_type</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span> <span class="k">if</span> <span class="n">field</span><span class="o">.</span><span class="vm">__class__</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">table_type</span><span class="o">.</span><span class="n">values</span><span class="p">())</span> <span class="k">else</span> \
+                        <span class="nb">list</span><span class="p">(</span><span class="n">table_type</span><span class="o">.</span><span class="n">keys</span><span class="p">())[</span><span class="nb">list</span><span class="p">(</span><span class="n">table_type</span><span class="o">.</span><span class="n">values</span><span class="p">())</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">field</span><span class="o">.</span><span class="vm">__class__</span><span class="p">)]</span>
+                    <span class="n">merged_database</span><span class="o">.</span><span class="n">create_fields</span><span class="p">(</span><span class="n">table_name</span><span class="o">=</span><span class="n">table</span><span class="p">,</span>
+                                                  <span class="n">fields</span><span class="o">=</span><span class="p">(</span><span class="n">field_name</span><span class="p">,</span> <span class="n">field_type</span><span class="p">))</span>
+
+    <span class="c1"># User confirm</span>
+    <span class="n">merged_database</span><span class="o">.</span><span class="n">print_architecture</span><span class="p">()</span>
+    <span class="k">while</span> <span class="n">confirm</span> <span class="o">:=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Confirm new Database architecture ? (y/n): &quot;</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="s1">&#39;yes&#39;</span><span class="p">,</span> <span class="s1">&#39;n&#39;</span><span class="p">,</span> <span class="s1">&#39;no&#39;</span><span class="p">]:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Cannot interpret your entry.&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">confirm</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;n&#39;</span><span class="p">,</span> <span class="s1">&#39;no&#39;</span><span class="p">]:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Aborting.&quot;</span><span class="p">)</span>
+        <span class="n">quit</span><span class="p">()</span>
+
+    <span class="c1"># Adding data</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Proceeding...&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">db</span> <span class="ow">in</span> <span class="n">databases</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">table_name</span> <span class="ow">in</span> <span class="n">db</span><span class="o">.</span><span class="n">get_tables</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">line_id</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">nb_lines</span><span class="p">(</span><span class="n">table_name</span><span class="o">=</span><span class="n">table_name</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">get_line</span><span class="p">(</span><span class="n">table_name</span><span class="o">=</span><span class="n">table_name</span><span class="p">,</span> <span class="n">line_id</span><span class="o">=</span><span class="n">line_id</span><span class="p">)</span>
+                <span class="k">if</span> <span class="s1">&#39;id&#39;</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+                    <span class="k">del</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span>
+                <span class="n">merged_database</span><span class="o">.</span><span class="n">add_data</span><span class="p">(</span><span class="n">table_name</span><span class="o">=</span><span class="n">table_name</span><span class="p">,</span>
+                                         <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
+        <span class="n">db</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="n">merged_database</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Merge complete.&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="rename_tables">
+<a class="viewcode-back" href="../../../core/api.html#SSD.core.utils.rename_tables">[docs]</a>
+<span class="k">def</span> <span class="nf">rename_tables</span><span class="p">(</span><span class="n">database_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                  <span class="n">renamed_tables</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]]):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Rename Tables of the Database.</span>
+
+<span class="sd">    :param database_file: Database filename.</span>
+<span class="sd">    :param renamed_tables: Tuple or list of tuples defined as (&#39;old_name&#39;, &#39;new_name&#39;).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Load the Database</span>
+    <span class="n">db</span> <span class="o">=</span> <span class="n">Database</span><span class="p">(</span><span class="n">database_name</span><span class="o">=</span><span class="n">database_file</span><span class="p">)</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
+
+    <span class="c1"># Check the table names to change</span>
+    <span class="n">renamed_tables</span> <span class="o">=</span> <span class="p">[</span><span class="n">renamed_tables</span><span class="p">]</span> <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">renamed_tables</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">list</span> <span class="k">else</span> <span class="n">renamed_tables</span>
+    <span class="n">current_tables</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">get_tables</span><span class="p">()</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">old_table_name</span><span class="p">,</span> <span class="n">new_table_name</span><span class="p">)</span> <span class="ow">in</span> <span class="n">renamed_tables</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">old_table_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">current_tables</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The Database does not contain a Table with name &#39;</span><span class="si">{</span><span class="n">old_table_name</span><span class="si">}</span><span class="s2">. &quot;</span>
+                             <span class="sa">f</span><span class="s2">&quot;Available Tables are </span><span class="si">{</span><span class="n">current_tables</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Renaming</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Renaming Table(s). </span><span class="se">\n</span><span class="s2">Proceeding...&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">old_table_name</span><span class="p">,</span> <span class="n">new_table_name</span><span class="p">)</span> <span class="ow">in</span> <span class="n">renamed_tables</span><span class="p">:</span>
+        <span class="n">db</span><span class="o">.</span><span class="n">rename_table</span><span class="p">(</span><span class="n">table_name</span><span class="o">=</span><span class="n">old_table_name</span><span class="p">,</span>
+                        <span class="n">new_table_name</span><span class="o">=</span><span class="n">new_table_name</span><span class="p">)</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">print_architecture</span><span class="p">()</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Renaming done.&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="rename_fields">
+<a class="viewcode-back" href="../../../core/api.html#SSD.core.utils.rename_fields">[docs]</a>
+<span class="k">def</span> <span class="nf">rename_fields</span><span class="p">(</span><span class="n">database_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                  <span class="n">table_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                  <span class="n">renamed_fields</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]]):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Rename Fields of a Table of the Database.</span>
+
+<span class="sd">    :param database_file: Database filename.</span>
+<span class="sd">    :param table_name: Name of the Table.</span>
+<span class="sd">    :param renamed_fields: Tuple or list of tuples defined as (&#39;old_name&#39;, &#39;new_name&#39;).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Load the Database</span>
+    <span class="n">db</span> <span class="o">=</span> <span class="n">Database</span><span class="p">(</span><span class="n">database_name</span><span class="o">=</span><span class="n">database_file</span><span class="p">)</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
+
+    <span class="c1"># Check the fields to change</span>
+    <span class="n">renamed_fields</span> <span class="o">=</span> <span class="p">[</span><span class="n">renamed_fields</span><span class="p">]</span> <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">renamed_fields</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">list</span> <span class="k">else</span> <span class="n">renamed_fields</span>
+    <span class="n">current_fields</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">get_fields</span><span class="p">(</span><span class="n">table_name</span><span class="o">=</span><span class="n">table_name</span><span class="p">)</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">old_field_name</span><span class="p">,</span> <span class="n">new_field_name</span><span class="p">)</span> <span class="ow">in</span> <span class="n">renamed_fields</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">old_field_name</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">,</span> <span class="s1">&#39;_dt_&#39;</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The following fields cannot be renamed: &#39;id&#39;, &#39;_dt_&#39;&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">old_field_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">current_fields</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The field &#39;</span><span class="si">{</span><span class="n">old_field_name</span><span class="si">}</span><span class="s2"> is not in the list of available fields: </span><span class="si">{</span><span class="n">current_fields</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Renaming</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Renaming Field(s). </span><span class="se">\n</span><span class="s2">Proceeding...&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">old_field_name</span><span class="p">,</span> <span class="n">new_field_name</span><span class="p">)</span> <span class="ow">in</span> <span class="n">renamed_fields</span><span class="p">:</span>
+        <span class="n">db</span><span class="o">.</span><span class="n">rename_field</span><span class="p">(</span><span class="n">table_name</span><span class="o">=</span><span class="n">table_name</span><span class="p">,</span>
+                        <span class="n">field_name</span><span class="o">=</span><span class="n">old_field_name</span><span class="p">,</span>
+                        <span class="n">new_field_name</span><span class="o">=</span><span class="n">new_field_name</span><span class="p">)</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">print_architecture</span><span class="p">()</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Renaming done.&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="remove_table">
+<a class="viewcode-back" href="../../../core/api.html#SSD.core.utils.remove_table">[docs]</a>
+<span class="k">def</span> <span class="nf">remove_table</span><span class="p">(</span><span class="n">database_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                 <span class="n">table_names</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Remove Tables of the Database.</span>
+
+<span class="sd">    :param database_file: Database filename.</span>
+<span class="sd">    :param table_names: Table(s) to remove from the Database.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Load the Database</span>
+    <span class="n">db</span> <span class="o">=</span> <span class="n">Database</span><span class="p">(</span><span class="n">database_name</span><span class="o">=</span><span class="n">database_file</span><span class="p">)</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
+    <span class="n">table_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">table_names</span><span class="p">]</span> <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">table_names</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">list</span> <span class="k">else</span> <span class="n">table_names</span>
+
+    <span class="c1"># Removing</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Removing Table(s). </span><span class="se">\n</span><span class="s2">Proceeding...&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">table_name</span> <span class="ow">in</span> <span class="n">table_names</span><span class="p">:</span>
+        <span class="n">db</span><span class="o">.</span><span class="n">remove_table</span><span class="p">(</span><span class="n">table_name</span><span class="o">=</span><span class="n">table_name</span><span class="p">)</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">print_architecture</span><span class="p">()</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Removing done.&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="remove_field">
+<a class="viewcode-back" href="../../../core/api.html#SSD.core.utils.remove_field">[docs]</a>
+<span class="k">def</span> <span class="nf">remove_field</span><span class="p">(</span><span class="n">database_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                 <span class="n">table_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                 <span class="n">fields</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Remove Fields of a Table of the Database.</span>
+
+<span class="sd">    :param database_file: Database filename.</span>
+<span class="sd">    :param table_name: Name of the Table.</span>
+<span class="sd">    :param fields: Field(s) to remove from the Table.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Load the Database</span>
+    <span class="n">db</span> <span class="o">=</span> <span class="n">Database</span><span class="p">(</span><span class="n">database_name</span><span class="o">=</span><span class="n">database_file</span><span class="p">)</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
+
+    <span class="c1"># Check the fields to remove</span>
+    <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span><span class="n">fields</span><span class="p">]</span> <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">fields</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">list</span> <span class="k">else</span> <span class="n">fields</span>
+    <span class="n">current_fields</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">get_fields</span><span class="p">(</span><span class="n">table_name</span><span class="o">=</span><span class="n">table_name</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">field</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">,</span> <span class="s1">&#39;_dt_&#39;</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The following fields cannot be removed: &#39;id&#39;, &#39;_dt_&#39;&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">field</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">current_fields</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The field &#39;</span><span class="si">{</span><span class="n">field</span><span class="si">}</span><span class="s2"> is not in the list of available fields: </span><span class="si">{</span><span class="n">current_fields</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Removing</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Removing Filed(s). </span><span class="se">\n</span><span class="s2">Proceeding...&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">:</span>
+        <span class="n">db</span><span class="o">.</span><span class="n">remove_field</span><span class="p">(</span><span class="n">table_name</span><span class="o">=</span><span class="n">table_name</span><span class="p">,</span>
+                        <span class="n">field_name</span><span class="o">=</span><span class="n">field</span><span class="p">)</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">print_architecture</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Removing done.&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="export">
+<a class="viewcode-back" href="../../../core/api.html#SSD.core.utils.export">[docs]</a>
+<span class="k">def</span> <span class="nf">export</span><span class="p">(</span><span class="n">database_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+           <span class="n">exporter</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+           <span class="n">filename</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Export the Database file to CSV or JSON formats.</span>
+
+<span class="sd">    :param database_file: Database filename.</span>
+<span class="sd">    :param exporter: Exporter type (either &#39;csv&#39; or &#39;json&#39;).</span>
+<span class="sd">    :param filename: Exported filename.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Load the Database</span>
+    <span class="n">db</span> <span class="o">=</span> <span class="n">Database</span><span class="p">(</span><span class="n">database_name</span><span class="o">=</span><span class="n">database_file</span><span class="p">)</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
+
+    <span class="c1"># Export to file</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">export</span><span class="p">(</span><span class="n">exporter</span><span class="o">=</span><span class="n">exporter</span><span class="p">,</span>
+              <span class="n">filename</span><span class="o">=</span><span class="n">filename</span> <span class="k">if</span> <span class="n">filename</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="s1">&#39;export&#39;</span><span class="p">)</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Mimesis, Inria.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

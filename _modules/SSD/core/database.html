@@ -1,0 +1,1072 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SSD.core.database &mdash; SimulationSimpleDatabase  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/theme.css?v=556d74e5" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="author" title="About these documents" href="../../../about.html" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            SimulationSimpleDatabase
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">PRESENTATION</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../install.html">Install</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../install.html#prerequisites">Prerequisites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../install.html#id1">Install</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../install.html#install-with-pip">Install with <em>pip</em></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../install.html#install-from-sources">Install from sources</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../about.html">About</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">STORAGE</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../core/database.html">Database</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../core/database.html#creating-a-database">Creating a Database</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../core/database.html#loading-a-database">Loading a Database</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../core/database.html#creating-a-new-table">Creating a new Table</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../core/database.html#creating-a-new-field">Creating a new Field</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../core/database.html#adding-data-to-a-table">Adding data to a Table</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../core/database.html#updating-data-in-a-table">Updating data in a Table</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../core/database.html#getting-data-from-a-table">Getting data from a Table</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../core/database.html#connecting-signals">Connecting Signals</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../core/relationships.html">Table Relationships</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../core/relationships.html#creating-a-relation-between-tables">Creating a relation between Tables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../core/relationships.html#adding-data-to-joined-tables">Adding data to joined Tables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../core/relationships.html#updating-data-in-joined-tables">Updating data in joined Tables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../core/relationships.html#getting-data-from-joined-tables">Getting data from joined Tables</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../core/utils.html">Utils</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../core/utils.html#merging-databases">Merging Databases</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../core/utils.html#renaming-tables-and-fields">Renaming Tables and Fields</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../core/utils.html#removing-tables-and-fields">Removing Tables and Fields</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../core/utils.html#exporting-databases">Exporting Databases</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../core/api.html">API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../core/api.html#SSD.core.database.Database"><code class="docutils literal notranslate"><span class="pre">Database</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../core/api.html#SSD.core.database.Database.__init__"><code class="docutils literal notranslate"><span class="pre">Database.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../core/api.html#SSD.core.database.Database.add_batch"><code class="docutils literal notranslate"><span class="pre">Database.add_batch()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../core/api.html#SSD.core.database.Database.add_data"><code class="docutils literal notranslate"><span class="pre">Database.add_data()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../core/api.html#SSD.core.database.Database.close"><code class="docutils literal notranslate"><span class="pre">Database.close()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../core/api.html#SSD.core.database.Database.connect_signals"><code class="docutils literal notranslate"><span class="pre">Database.connect_signals()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../core/api.html#SSD.core.database.Database.create_fields"><code class="docutils literal notranslate"><span class="pre">Database.create_fields()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../core/api.html#SSD.core.database.Database.create_table"><code class="docutils literal notranslate"><span class="pre">Database.create_table()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../core/api.html#SSD.core.database.Database.export"><code class="docutils literal notranslate"><span class="pre">Database.export()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../core/api.html#SSD.core.database.Database.get_architecture"><code class="docutils literal notranslate"><span class="pre">Database.get_architecture()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../core/api.html#SSD.core.database.Database.get_fields"><code class="docutils literal notranslate"><span class="pre">Database.get_fields()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../core/api.html#SSD.core.database.Database.get_line"><code class="docutils literal notranslate"><span class="pre">Database.get_line()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../core/api.html#SSD.core.database.Database.get_lines"><code class="docutils literal notranslate"><span class="pre">Database.get_lines()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../core/api.html#SSD.core.database.Database.get_path"><code class="docutils literal notranslate"><span class="pre">Database.get_path()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../core/api.html#SSD.core.database.Database.get_tables"><code class="docutils literal notranslate"><span class="pre">Database.get_tables()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../core/api.html#SSD.core.database.Database.load"><code class="docutils literal notranslate"><span class="pre">Database.load()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../core/api.html#SSD.core.database.Database.make_name"><code class="docutils literal notranslate"><span class="pre">Database.make_name()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../core/api.html#SSD.core.database.Database.memory_size"><code class="docutils literal notranslate"><span class="pre">Database.memory_size</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../core/api.html#SSD.core.database.Database.nb_lines"><code class="docutils literal notranslate"><span class="pre">Database.nb_lines()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../core/api.html#SSD.core.database.Database.new"><code class="docutils literal notranslate"><span class="pre">Database.new()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../core/api.html#SSD.core.database.Database.print_architecture"><code class="docutils literal notranslate"><span class="pre">Database.print_architecture()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../core/api.html#SSD.core.database.Database.register_post_save_signal"><code class="docutils literal notranslate"><span class="pre">Database.register_post_save_signal()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../core/api.html#SSD.core.database.Database.register_pre_save_signal"><code class="docutils literal notranslate"><span class="pre">Database.register_pre_save_signal()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../core/api.html#SSD.core.database.Database.remove_field"><code class="docutils literal notranslate"><span class="pre">Database.remove_field()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../core/api.html#SSD.core.database.Database.remove_table"><code class="docutils literal notranslate"><span class="pre">Database.remove_table()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../core/api.html#SSD.core.database.Database.rename_field"><code class="docutils literal notranslate"><span class="pre">Database.rename_field()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../core/api.html#SSD.core.database.Database.rename_table"><code class="docutils literal notranslate"><span class="pre">Database.rename_table()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../core/api.html#SSD.core.database.Database.update"><code class="docutils literal notranslate"><span class="pre">Database.update()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../core/api.html#module-SSD.core.utils">Utils</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../core/api.html#SSD.core.utils.export"><code class="docutils literal notranslate"><span class="pre">export()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../core/api.html#SSD.core.utils.merge"><code class="docutils literal notranslate"><span class="pre">merge()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../core/api.html#SSD.core.utils.remove_field"><code class="docutils literal notranslate"><span class="pre">remove_field()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../core/api.html#SSD.core.utils.remove_table"><code class="docutils literal notranslate"><span class="pre">remove_table()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../core/api.html#SSD.core.utils.rename_fields"><code class="docutils literal notranslate"><span class="pre">rename_fields()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../core/api.html#SSD.core.utils.rename_tables"><code class="docutils literal notranslate"><span class="pre">rename_tables()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">SOFA</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../sofa/storage.html">Storage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../sofa/storage.html#specificity">Specificity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../sofa/storage.html#record-data-fields">Record Data fields</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../sofa/api.html">API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../sofa/api.html#storage">Storage</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../sofa/api.html#SSD.sofa.database.Database"><code class="docutils literal notranslate"><span class="pre">Database</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../sofa/api.html#SSD.sofa.database.Database.__init__"><code class="docutils literal notranslate"><span class="pre">Database.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../sofa/api.html#SSD.sofa.database.Database.add_callback"><code class="docutils literal notranslate"><span class="pre">Database.add_callback()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../sofa/api.html#SSD.sofa.database.Database.add_data"><code class="docutils literal notranslate"><span class="pre">Database.add_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../sofa/api.html#SSD.sofa.database.Database.onAnimateBeginEvent"><code class="docutils literal notranslate"><span class="pre">Database.onAnimateBeginEvent()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../sofa/api.html#SSD.sofa.database.Database.onAnimateEndEvent"><code class="docutils literal notranslate"><span class="pre">Database.onAnimateEndEvent()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../sofa/api.html#SSD.sofa.database.Database.print_architecture"><code class="docutils literal notranslate"><span class="pre">Database.print_architecture()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">SimulationSimpleDatabase</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">SSD.core.database</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for SSD.core.database</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span>
+<span class="kn">from</span> <span class="nn">os</span> <span class="kn">import</span> <span class="n">remove</span><span class="p">,</span> <span class="n">mkdir</span>
+<span class="kn">from</span> <span class="nn">os.path</span> <span class="kn">import</span> <span class="n">exists</span><span class="p">,</span> <span class="n">join</span><span class="p">,</span> <span class="n">sep</span><span class="p">,</span> <span class="n">getsize</span>
+<span class="kn">from</span> <span class="nn">inspect</span> <span class="kn">import</span> <span class="n">getmembers</span>
+<span class="kn">from</span> <span class="nn">peewee</span> <span class="kn">import</span> <span class="n">ForeignKeyField</span>
+<span class="kn">from</span> <span class="nn">playhouse.migrate</span> <span class="kn">import</span> <span class="n">SqliteDatabase</span>
+<span class="kn">from</span> <span class="nn">playhouse.signals</span> <span class="kn">import</span> <span class="n">Signal</span><span class="p">,</span> <span class="n">pre_save</span><span class="p">,</span> <span class="n">post_save</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">unique</span>
+
+<span class="kn">from</span> <span class="nn">SSD.core.adaptive_table</span> <span class="kn">import</span> <span class="n">AdaptiveTable</span><span class="p">,</span> <span class="n">StoringTable</span><span class="p">,</span> <span class="n">ExchangeTable</span>
+<span class="kn">from</span> <span class="nn">SSD.core.peewee_extension</span> <span class="kn">import</span> <span class="n">generate_models</span>
+<span class="kn">from</span> <span class="nn">SSD.core.exporter</span> <span class="kn">import</span> <span class="n">Exporter</span>
+
+<span class="n">FieldType</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Type</span><span class="p">],</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span>
+
+
+<div class="viewcode-block" id="Database">
+<a class="viewcode-back" href="../../../core/api.html#SSD.core.database.Database">[docs]</a>
+<span class="k">class</span> <span class="nc">Database</span><span class="p">:</span>
+
+<div class="viewcode-block" id="Database.__init__">
+<a class="viewcode-back" href="../../../core/api.html#SSD.core.database.Database.__init__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">database_dir</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                 <span class="n">database_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;database&#39;</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Manage the creation and loading of Tables in the Database.</span>
+<span class="sd">        User interface to dynamically add, get and update entries.</span>
+<span class="sd">        </span>
+<span class="sd">        :param database_dir: Directory which contains the Database file.</span>
+<span class="sd">        :param database_name: Name of the Database file.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Eventually remove extension from the database name</span>
+        <span class="n">database_name</span> <span class="o">=</span> <span class="n">database_name</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">database_name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">))</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">database_name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__database_dir</span> <span class="o">=</span> <span class="n">database_dir</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__database_name</span> <span class="o">=</span> <span class="n">database_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__database</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">SqliteDatabase</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__tables</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">AdaptiveTable</span><span class="p">)]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__fk</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__signals</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Signal</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span></div>
+
+
+<div class="viewcode-block" id="Database.make_name">
+<a class="viewcode-back" href="../../../core/api.html#SSD.core.database.Database.make_name">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">make_name</span><span class="p">(</span><span class="n">table_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Harmonize the Table names.</span>
+
+<span class="sd">        :param table_name: Name of the Table.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="n">table_name</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">+</span> <span class="n">table_name</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">table_name</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">table_name</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Database.new">
+<a class="viewcode-back" href="../../../core/api.html#SSD.core.database.Database.new">[docs]</a>
+    <span class="k">def</span> <span class="nf">new</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">remove_existing</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Database&#39;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a new Database file.</span>
+
+<span class="sd">        :param remove_existing: If True, Database file will be overwritten.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Create directory if not exists</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__database_dir</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">__database_dir</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+            <span class="n">mkdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__database_dir</span><span class="p">)</span>
+
+        <span class="c1"># Check for existing similar files</span>
+        <span class="k">if</span> <span class="n">exists</span><span class="p">(</span><span class="n">database_path</span> <span class="o">:=</span> <span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__database_dir</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__database_name</span><span class="si">}</span><span class="s1">.db&#39;</span><span class="p">)):</span>
+            <span class="c1"># Option 1: Overwriting file</span>
+            <span class="k">if</span> <span class="n">remove_existing</span><span class="p">:</span>
+                <span class="n">remove</span><span class="p">(</span><span class="n">database_path</span><span class="p">)</span>
+            <span class="c1"># Option 2: Indexing file name</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">index</span> <span class="o">=</span> <span class="mi">1</span>
+                <span class="k">while</span> <span class="n">exists</span><span class="p">(</span><span class="n">database_path</span> <span class="o">:=</span> <span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__database_dir</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__database_name</span><span class="si">}</span><span class="s1">(</span><span class="si">{</span><span class="n">index</span><span class="si">}</span><span class="s1">).db&#39;</span><span class="p">)):</span>
+                    <span class="n">index</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__database_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__database_name</span><span class="si">}</span><span class="s1">(</span><span class="si">{</span><span class="n">index</span><span class="si">}</span><span class="s1">)&#39;</span>
+
+        <span class="c1"># Create the Database</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__database</span> <span class="o">=</span> <span class="n">SqliteDatabase</span><span class="p">(</span><span class="n">database_path</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+<div class="viewcode-block" id="Database.load">
+<a class="viewcode-back" href="../../../core/api.html#SSD.core.database.Database.load">[docs]</a>
+    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">show_architecture</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Database&#39;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Load an existing Database file.</span>
+
+<span class="sd">        :param show_architecture: If True, the loaded models will be printed.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Check file existence</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">exists</span><span class="p">(</span><span class="n">database_path</span> <span class="o">:=</span> <span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__database_dir</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__database_name</span><span class="si">}</span><span class="s1">.db&#39;</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;WARNING: the following Database does not exist (</span><span class="si">{</span><span class="n">database_path</span><span class="si">}</span><span class="s2">).&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Load the Database</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__database</span> <span class="o">=</span> <span class="n">SqliteDatabase</span><span class="p">(</span><span class="n">database_path</span><span class="p">)</span>
+        <span class="n">models</span><span class="p">,</span> <span class="n">database_descr</span> <span class="o">=</span> <span class="n">generate_models</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__database</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">table_name</span><span class="p">,</span> <span class="n">model</span> <span class="ow">in</span> <span class="n">models</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="c1"># Loading removes the &#39;_&#39; symbol in desc.model_names</span>
+            <span class="n">table_name_parts</span> <span class="o">=</span> <span class="n">table_name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">)</span>
+            <span class="n">loaded_name</span> <span class="o">=</span> <span class="n">database_descr</span><span class="o">.</span><span class="n">model_names</span><span class="p">[</span><span class="n">table_name</span><span class="p">]</span>
+            <span class="n">real_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">table_name_part</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">table_name_parts</span><span class="p">):</span>
+                <span class="n">real_name</span> <span class="o">+=</span> <span class="n">loaded_name</span><span class="p">[:</span><span class="nb">len</span><span class="p">(</span><span class="n">table_name_part</span><span class="p">)]</span> <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="sa">f</span><span class="s1">&#39;_</span><span class="si">{</span><span class="n">loaded_name</span><span class="p">[:</span><span class="nb">len</span><span class="p">(</span><span class="n">table_name_part</span><span class="p">)]</span><span class="si">}</span><span class="s1">&#39;</span>
+                <span class="n">loaded_name</span> <span class="o">=</span> <span class="n">loaded_name</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">table_name_part</span><span class="p">):]</span>
+            <span class="c1"># Register name</span>
+            <span class="n">table_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_name</span><span class="p">(</span><span class="n">real_name</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__tables</span><span class="p">[</span><span class="n">table_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">model</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__tables</span><span class="p">[</span><span class="n">table_name</span><span class="p">]</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">table_name</span>
+
+        <span class="c1"># Register FK</span>
+        <span class="k">for</span> <span class="n">table_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__tables</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__fk</span><span class="p">[</span><span class="n">table_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">field_name</span><span class="p">,</span> <span class="n">field</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__tables</span><span class="p">[</span><span class="n">table_name</span><span class="p">]</span><span class="o">.</span><span class="n">fields</span><span class="p">(</span><span class="n">only_names</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">field</span><span class="p">)</span> <span class="o">==</span> <span class="n">ForeignKeyField</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">__fk</span><span class="p">[</span><span class="n">table_name</span><span class="p">][</span><span class="n">field_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="o">.</span><span class="n">rel_model</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">name</span>
+
+        <span class="c1"># Show resulting architecture</span>
+        <span class="k">if</span> <span class="n">show_architecture</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">print_architecture</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+<div class="viewcode-block" id="Database.get_path">
+<a class="viewcode-back" href="../../../core/api.html#SSD.core.database.Database.get_path">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_path</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Access the Database file path.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__database_dir</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__database_name</span></div>
+
+
+<div class="viewcode-block" id="Database.print_architecture">
+<a class="viewcode-back" href="../../../core/api.html#SSD.core.database.Database.print_architecture">[docs]</a>
+    <span class="k">def</span> <span class="nf">print_architecture</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Print the content of the Database with Table(s) and their Field(s).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">DATABASE </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__database_name</span><span class="si">}</span><span class="s1">.db&#39;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">table</span><span class="o">.</span><span class="n">description</span><span class="p">(</span><span class="n">indent</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">table</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__tables</span><span class="o">.</span><span class="n">items</span><span class="p">()]))</span></div>
+
+
+<div class="viewcode-block" id="Database.get_architecture">
+<a class="viewcode-back" href="../../../core/api.html#SSD.core.database.Database.get_architecture">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_architecture</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the content of the Database with Table(s) and their Field(s).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">architecture</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">table_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__tables</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">description</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__tables</span><span class="p">[</span><span class="n">table_name</span><span class="p">]</span><span class="o">.</span><span class="n">description</span><span class="p">()</span>
+            <span class="n">fields</span> <span class="o">=</span> <span class="n">description</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;  - &#39;</span><span class="p">)</span>
+            <span class="n">architecture</span><span class="p">[</span><span class="n">table_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">field</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">[</span><span class="mi">1</span><span class="p">:]]</span>
+        <span class="k">return</span> <span class="n">architecture</span></div>
+
+
+<div class="viewcode-block" id="Database.get_tables">
+<a class="viewcode-back" href="../../../core/api.html#SSD.core.database.Database.get_tables">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_tables</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                   <span class="n">only_names</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the names of created Tables in the Database.</span>
+
+<span class="sd">        :param only_names: If True, only the names of the Tables will be returned in a List, otherwise the Tables</span>
+<span class="sd">                           themselves are returned in a Dict.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">only_names</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__tables</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__tables</span></div>
+
+
+<div class="viewcode-block" id="Database.get_fields">
+<a class="viewcode-back" href="../../../core/api.html#SSD.core.database.Database.get_fields">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_fields</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                   <span class="n">table_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                   <span class="n">only_names</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the names of the Field(s) of a Tables of the Database.</span>
+
+<span class="sd">        :param table_name: Name of the Table.</span>
+<span class="sd">        :param only_names: If False, returns a dict containing {&#39;table_name&#39;: Table}.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">table_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_name</span><span class="p">(</span><span class="n">table_name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">table_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__tables</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown table with name </span><span class="si">{</span><span class="n">table_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__tables</span><span class="p">[</span><span class="n">table_name</span><span class="p">]</span><span class="o">.</span><span class="n">fields</span><span class="p">(</span><span class="n">only_names</span><span class="o">=</span><span class="n">only_names</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Database.create_table">
+<a class="viewcode-back" href="../../../core/api.html#SSD.core.database.Database.create_table">[docs]</a>
+    <span class="k">def</span> <span class="nf">create_table</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                     <span class="n">table_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                     <span class="n">storing_table</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                     <span class="n">fields</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">FieldType</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">FieldType</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add a new Table to the Database with customizable Fields.</span>
+
+<span class="sd">        :param table_name: Name of the Table to add to the Database.</span>
+<span class="sd">        :param storing_table: Specify whether the Table must be a storing or an exchange Table.</span>
+<span class="sd">        :param fields: Name(s), type(s) and default value(s) of the Field(s) to add to the Table.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">table_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_name</span><span class="p">(</span><span class="n">table_name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__create</span><span class="p">(</span><span class="n">table_name</span><span class="o">=</span><span class="n">table_name</span><span class="p">,</span>
+                      <span class="n">existing_table</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                      <span class="n">storing_table</span><span class="o">=</span><span class="n">storing_table</span><span class="p">,</span>
+                      <span class="n">fields</span><span class="o">=</span><span class="n">fields</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Database.create_fields">
+<a class="viewcode-back" href="../../../core/api.html#SSD.core.database.Database.create_fields">[docs]</a>
+    <span class="k">def</span> <span class="nf">create_fields</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                      <span class="n">table_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                      <span class="n">fields</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">FieldType</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">FieldType</span><span class="p">]]):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add new Fields to a Table.</span>
+
+<span class="sd">        :param table_name: Name of the Table on which to add the new Fields.</span>
+<span class="sd">        :param fields: Name(s), type(s) and default value(s) of the Field(s) to add to the Table.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">table_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_name</span><span class="p">(</span><span class="n">table_name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__create</span><span class="p">(</span><span class="n">table_name</span><span class="o">=</span><span class="n">table_name</span><span class="p">,</span>
+                      <span class="n">existing_table</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                      <span class="n">fields</span><span class="o">=</span><span class="n">fields</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span> <span class="nf">__create</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">table_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                 <span class="n">existing_table</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+                 <span class="n">storing_table</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                 <span class="n">fields</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">FieldType</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">FieldType</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+
+        <span class="c1"># Create the table</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">existing_table</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__new_table</span><span class="p">(</span><span class="n">table_name</span><span class="o">=</span><span class="n">table_name</span><span class="p">,</span>
+                             <span class="n">storing_table</span><span class="o">=</span><span class="n">storing_table</span><span class="p">)</span>
+
+        <span class="c1"># Extend the fields</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span><span class="n">fields</span><span class="p">]</span> <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">fields</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">list</span> <span class="ow">and</span> <span class="n">fields</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">fields</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__new_fields</span><span class="p">(</span><span class="n">table_name</span><span class="o">=</span><span class="n">table_name</span><span class="p">,</span>
+                          <span class="n">fields</span><span class="o">=</span><span class="n">fields</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__new_table</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                    <span class="n">table_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                    <span class="n">storing_table</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="n">table_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__tables</span><span class="p">:</span>
+
+            <span class="c1"># Create the new Table</span>
+            <span class="n">table_class</span> <span class="o">=</span> <span class="n">StoringTable</span> <span class="k">if</span> <span class="n">storing_table</span> <span class="k">else</span> <span class="n">ExchangeTable</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__tables</span><span class="p">[</span><span class="n">table_name</span><span class="p">]</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">table_name</span><span class="p">,</span> <span class="p">(</span><span class="n">table_class</span><span class="p">,),</span> <span class="nb">dict</span><span class="p">(</span><span class="n">table_class</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__tables</span><span class="p">[</span><span class="n">table_name</span><span class="p">]</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">table_name</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__fk</span><span class="p">[</span><span class="n">table_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+            <span class="c1"># Connect the Table the Database</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__tables</span><span class="p">[</span><span class="n">table_name</span><span class="p">]</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__database</span><span class="p">)</span>
+
+            <span class="c1"># Add a DateTimeField to exchange tables</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">storing_table</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__new_fields</span><span class="p">(</span><span class="n">table_name</span><span class="o">=</span><span class="n">table_name</span><span class="p">,</span>
+                                  <span class="n">fields</span><span class="o">=</span><span class="p">[(</span><span class="s1">&#39;_dt_&#39;</span><span class="p">,</span> <span class="n">datetime</span><span class="p">)])</span>
+
+    <span class="k">def</span> <span class="nf">__new_fields</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                     <span class="n">table_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                     <span class="n">fields</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">FieldType</span><span class="p">]):</span>
+
+        <span class="k">if</span> <span class="n">fields</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">table</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__tables</span><span class="p">[</span><span class="n">table_name</span><span class="p">]</span>
+
+            <span class="c1"># Add each Field to the Table</span>
+            <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">:</span>
+
+                <span class="c1"># Define name, type and default value</span>
+                <span class="n">field_name</span><span class="p">,</span> <span class="n">field_type</span> <span class="o">=</span> <span class="n">field</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">field</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">field_default</span> <span class="o">=</span> <span class="s1">&#39;_null_&#39;</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">field</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span> <span class="k">else</span> <span class="n">field</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+
+                <span class="c1"># Extend the Table</span>
+                <span class="k">if</span> <span class="n">field_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">table</span><span class="o">.</span><span class="n">fields</span><span class="p">():</span>
+
+                    <span class="c1"># As peewee.Model creates a new attribute named field_name, check that this attribute does not exist</span>
+                    <span class="k">if</span> <span class="n">field_name</span> <span class="ow">in</span> <span class="p">[</span><span class="n">m</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">getmembers</span><span class="p">(</span><span class="n">table</span><span class="p">)]:</span>
+                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Tried to create a field &#39;</span><span class="si">{</span><span class="n">field_name</span><span class="si">}</span><span class="s2">&#39; in the Table &#39;</span><span class="si">{</span><span class="n">table_name</span><span class="si">}</span><span class="s2">&#39;. &quot;</span>
+                                         <span class="sa">f</span><span class="s2">&quot;You are not allowed to create a field with this name, please rename it.&quot;</span><span class="p">)</span>
+
+                    <span class="c1"># FK</span>
+                    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">field_type</span><span class="p">)</span> <span class="o">==</span> <span class="nb">str</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="p">(</span><span class="n">fk_table_name</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_name</span><span class="p">(</span><span class="n">field_type</span><span class="p">))</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__tables</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot create the ForeignKey &#39;</span><span class="si">{</span><span class="n">fk_table_name</span><span class="si">}</span><span class="s2">&#39; since this Table does not&quot;</span>
+                                             <span class="sa">f</span><span class="s2">&quot;exists. Created Tables so far: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__tables</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                        <span class="n">table</span><span class="o">.</span><span class="n">extend_fk</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__tables</span><span class="p">[</span><span class="n">fk_table_name</span><span class="p">],</span> <span class="n">field_name</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">__fk</span><span class="p">[</span><span class="n">table_name</span><span class="p">][</span><span class="n">field_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">fk_table_name</span>
+
+                    <span class="c1"># Standard field</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">table</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">field_name</span><span class="p">,</span> <span class="n">field_type</span><span class="p">,</span> <span class="n">field_default</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Database.register_pre_save_signal">
+<a class="viewcode-back" href="../../../core/api.html#SSD.core.database.Database.register_pre_save_signal">[docs]</a>
+    <span class="k">def</span> <span class="nf">register_pre_save_signal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                                 <span class="n">table_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                                 <span class="n">handler</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span>
+                                 <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Connect a pre_save signal from a Table to a handler.</span>
+
+<span class="sd">        :param table_name: Name of the Table that will be sender.</span>
+<span class="sd">        :param handler: Executable code.</span>
+<span class="sd">        :param name: Name of the signal.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">table_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_name</span><span class="p">(</span><span class="n">table_name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__signals</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s1">&#39;pre_save&#39;</span><span class="p">,</span> <span class="n">pre_save</span><span class="p">,</span> <span class="n">table_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__on_save_signal</span><span class="p">(</span><span class="n">handler</span><span class="p">),</span> <span class="n">name</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="Database.register_post_save_signal">
+<a class="viewcode-back" href="../../../core/api.html#SSD.core.database.Database.register_post_save_signal">[docs]</a>
+    <span class="k">def</span> <span class="nf">register_post_save_signal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                                  <span class="n">table_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                                  <span class="n">handler</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span>
+                                  <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Connect a post_save signal from a Table to a handler.</span>
+
+<span class="sd">        :param table_name: Name of the Table that will be sender.</span>
+<span class="sd">        :param handler: Executable code.</span>
+<span class="sd">        :param name: Name of the signal.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">table_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_name</span><span class="p">(</span><span class="n">table_name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__signals</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s1">&#39;post_save&#39;</span><span class="p">,</span> <span class="n">post_save</span><span class="p">,</span> <span class="n">table_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__on_save_signal</span><span class="p">(</span><span class="n">handler</span><span class="p">),</span> <span class="n">name</span><span class="p">))</span></div>
+
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">__on_save_signal</span><span class="p">(</span><span class="n">handler</span><span class="p">:</span> <span class="n">Callable</span><span class="p">):</span>
+
+        <span class="k">def</span> <span class="nf">signal_handler</span><span class="p">(</span><span class="n">sender</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+            <span class="c1"># Convert received information into Table name and data</span>
+            <span class="n">table_name</span> <span class="o">=</span> <span class="n">sender</span><span class="o">.</span><span class="n">get_name</span><span class="p">()</span>
+            <span class="n">handler</span><span class="p">(</span><span class="n">table_name</span><span class="p">,</span> <span class="n">instance</span><span class="o">.</span><span class="n">__data__</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">signal_handler</span>
+
+<div class="viewcode-block" id="Database.connect_signals">
+<a class="viewcode-back" href="../../../core/api.html#SSD.core.database.Database.connect_signals">[docs]</a>
+    <span class="k">def</span> <span class="nf">connect_signals</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Connect the registered signals between Tables and handlers.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">for</span> <span class="n">signal</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__signals</span><span class="p">:</span>
+
+            <span class="c1"># Get the information of registered signals</span>
+            <span class="n">signal_type</span><span class="p">,</span> <span class="n">signal_class</span><span class="p">,</span> <span class="n">table_name</span><span class="p">,</span> <span class="n">handler</span><span class="p">,</span> <span class="n">name</span> <span class="o">=</span> <span class="n">signal</span>
+
+            <span class="c1"># Check if the Table has been created</span>
+            <span class="k">if</span> <span class="n">table_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__tables</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;WARNING: Signal &#39;</span><span class="si">{</span><span class="n">signal_type</span><span class="si">}</span><span class="s2">&#39; was not connected with Table &#39;</span><span class="si">{</span><span class="n">table_name</span><span class="si">}</span><span class="s2">&#39; as sender since &quot;</span>
+                      <span class="sa">f</span><span class="s2">&quot;it was not created.&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">signal_class</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">receiver</span><span class="o">=</span><span class="n">handler</span><span class="p">,</span>
+                                     <span class="n">sender</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__tables</span><span class="p">[</span><span class="n">table_name</span><span class="p">],</span>
+                                     <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__signals</span> <span class="o">=</span> <span class="p">[]</span></div>
+
+
+<div class="viewcode-block" id="Database.add_data">
+<a class="viewcode-back" href="../../../core/api.html#SSD.core.database.Database.add_data">[docs]</a>
+    <span class="k">def</span> <span class="nf">add_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">table_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                 <span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Execute a line insert query. Return the index of the new line in the Table.</span>
+
+<span class="sd">        :param table_name: Name of the Table.</span>
+<span class="sd">        :param data: New line of the Table.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">table_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_name</span><span class="p">(</span><span class="n">table_name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__add_data</span><span class="p">(</span><span class="n">table_name</span><span class="o">=</span><span class="n">table_name</span><span class="p">,</span>
+                               <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Database.add_batch">
+<a class="viewcode-back" href="../../../core/api.html#SSD.core.database.Database.add_batch">[docs]</a>
+    <span class="k">def</span> <span class="nf">add_batch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                  <span class="n">table_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                  <span class="n">batch</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">]]):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Execute a batch insert query. Return the indices of the new lines in the Table.</span>
+
+<span class="sd">        :param table_name: Name of the Table.</span>
+<span class="sd">        :param batch: New lines of the Table.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">table_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_name</span><span class="p">(</span><span class="n">table_name</span><span class="p">)</span>
+        <span class="c1"># Check that the batch is well-formed</span>
+        <span class="k">if</span> <span class="n">table_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__fk</span><span class="p">:</span>
+            <span class="n">batch_values</span> <span class="o">=</span> <span class="p">[</span><span class="n">batch</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">(</span><span class="n">batch</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__fk</span><span class="p">[</span><span class="n">table_name</span><span class="p">])]</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">unique</span><span class="p">(</span><span class="n">samples</span> <span class="o">:=</span> <span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">)</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">batch_values</span><span class="p">]))</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The number of samples per batch must be the same for all fields. Number of samples &quot;</span>
+                                 <span class="sa">f</span><span class="s2">&quot;received per field: </span><span class="si">{</span><span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">batch</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span><span class="w"> </span><span class="n">samples</span><span class="p">))</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__add_data</span><span class="p">(</span><span class="n">table_name</span><span class="o">=</span><span class="n">table_name</span><span class="p">,</span>
+                               <span class="n">data</span><span class="o">=</span><span class="n">batch</span><span class="p">,</span>
+                               <span class="n">batched</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span> <span class="nf">__add_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                   <span class="n">table_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                   <span class="n">data</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">]]],</span>
+                   <span class="n">batched</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+
+        <span class="c1"># Unpack kwargs</span>
+        <span class="n">fields_names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="n">fields_values</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+        <span class="n">fields_types</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">fields_names</span><span class="p">,</span> <span class="n">fields_values</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">table_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__fk</span> <span class="ow">and</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__fk</span><span class="p">[</span><span class="n">table_name</span><span class="p">]:</span>
+                <span class="n">fields_types</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__fk</span><span class="p">[</span><span class="n">table_name</span><span class="p">][</span><span class="n">name</span><span class="p">])</span>
+            <span class="k">elif</span> <span class="n">batched</span><span class="p">:</span>
+                <span class="n">fields_types</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">fields_types</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+
+        <span class="c1"># Check table existence</span>
+        <span class="k">if</span> <span class="n">table_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__tables</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">create_table</span><span class="p">(</span><span class="n">table_name</span><span class="o">=</span><span class="n">table_name</span><span class="p">,</span> <span class="n">fields</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">fields_names</span><span class="p">,</span> <span class="n">fields_types</span><span class="p">)))</span>
+        <span class="n">table</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__tables</span><span class="p">[</span><span class="n">table_name</span><span class="p">]</span>
+
+        <span class="c1"># Check fields existence</span>
+        <span class="n">undefined_fields</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">fields_names</span><span class="p">)</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">table</span><span class="o">.</span><span class="n">fields</span><span class="p">())</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">undefined_fields</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c1"># Empty table: add fields on the fly</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">table</span><span class="o">.</span><span class="n">select</span><span class="p">())</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">create_fields</span><span class="p">(</span><span class="n">table_name</span><span class="o">=</span><span class="n">table_name</span><span class="p">,</span>
+                                   <span class="n">fields</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">fields_names</span><span class="p">,</span> <span class="n">fields_types</span><span class="p">)))</span>
+            <span class="c1"># Non-empty table</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">]  Some fields where not defined in table </span><span class="si">{</span><span class="n">table</span><span class="si">}</span><span class="s2">.&quot;</span>
+                                 <span class="sa">f</span><span class="s2">&quot; As table </span><span class="si">{</span><span class="n">table</span><span class="si">}</span><span class="s2"> is non-empty, please define first the following fields :&quot;</span>
+                                 <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">undefined_fields</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Check FK data</span>
+        <span class="n">fk_fields</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">fields_names</span><span class="p">)</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__fk</span><span class="p">[</span><span class="n">table_name</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+        <span class="k">for</span> <span class="n">fk_field</span> <span class="ow">in</span> <span class="n">fk_fields</span><span class="p">:</span>
+            <span class="n">idx</span> <span class="o">=</span> <span class="n">fields_names</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">fk_field</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">fields_values</span><span class="p">[</span><span class="n">idx</span><span class="p">])</span> <span class="o">==</span> <span class="nb">dict</span><span class="p">:</span>
+                <span class="n">fk_table_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__fk</span><span class="p">[</span><span class="n">table_name</span><span class="p">][</span><span class="n">fk_field</span><span class="p">]</span>
+                <span class="n">line</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__add_data</span><span class="p">(</span><span class="n">table_name</span><span class="o">=</span><span class="n">fk_table_name</span><span class="p">,</span>
+                                       <span class="n">data</span><span class="o">=</span><span class="n">fields_values</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span>
+                                       <span class="n">batched</span><span class="o">=</span><span class="n">batched</span><span class="p">)</span>
+                <span class="n">fields_values</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">line</span>
+
+        <span class="c1"># Add the data to Table</span>
+        <span class="k">return</span> <span class="n">table</span><span class="o">.</span><span class="n">add_data</span><span class="p">(</span><span class="n">fields_names</span><span class="o">=</span><span class="n">fields_names</span><span class="p">,</span>
+                              <span class="n">fields_values</span><span class="o">=</span><span class="n">fields_values</span><span class="p">,</span>
+                              <span class="n">batched</span><span class="o">=</span><span class="n">batched</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Database.update">
+<a class="viewcode-back" href="../../../core/api.html#SSD.core.database.Database.update">[docs]</a>
+    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+               <span class="n">table_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+               <span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+               <span class="n">line_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update a line of a Table.</span>
+
+<span class="sd">        :param table_name: Name of the Table on which to perform the query.</span>
+<span class="sd">        :param data: Updated data of the line.</span>
+<span class="sd">        :param line_id: Index of the line to update.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Check table existence</span>
+        <span class="n">table_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_name</span><span class="p">(</span><span class="n">table_name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">table_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__tables</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown table with name </span><span class="si">{</span><span class="n">table_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">table</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__tables</span><span class="p">[</span><span class="n">table_name</span><span class="p">]</span>
+
+        <span class="c1"># Unpack data</span>
+        <span class="n">fields_names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="n">fields_values</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+
+        <span class="c1"># Define the line index</span>
+        <span class="n">nb_line</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nb_lines</span><span class="p">(</span><span class="n">table_name</span><span class="o">=</span><span class="n">table_name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">line_id</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">line_id</span> <span class="o">+=</span> <span class="n">nb_line</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="k">elif</span> <span class="n">line_id</span> <span class="o">&gt;</span> <span class="n">nb_line</span><span class="p">:</span>
+            <span class="n">line_id</span> <span class="o">=</span> <span class="n">nb_line</span>
+
+        <span class="c1"># Check fields existence</span>
+        <span class="n">undefined_fields</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">fields_names</span><span class="p">)</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">table</span><span class="o">.</span><span class="n">fields</span><span class="p">())</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">undefined_fields</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">]  Some fields where not defined in table </span><span class="si">{</span><span class="n">table</span><span class="si">}</span><span class="s2">.&quot;</span>
+                             <span class="sa">f</span><span class="s2">&quot; As table </span><span class="si">{</span><span class="n">table</span><span class="si">}</span><span class="s2"> is non-empty, please define first the following fields :&quot;</span>
+                             <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">undefined_fields</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Check FK data</span>
+        <span class="n">fk_fields</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">fields_names</span><span class="p">)</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__fk</span><span class="p">[</span><span class="n">table_name</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+        <span class="k">for</span> <span class="n">fk_field</span> <span class="ow">in</span> <span class="n">fk_fields</span><span class="p">:</span>
+            <span class="n">idx</span> <span class="o">=</span> <span class="n">fields_names</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">fk_field</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">fields_values</span><span class="p">[</span><span class="n">idx</span><span class="p">])</span> <span class="o">==</span> <span class="nb">dict</span><span class="p">:</span>
+                <span class="n">fk_table_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__fk</span><span class="p">[</span><span class="n">table_name</span><span class="p">][</span><span class="n">fk_field</span><span class="p">]</span>
+                <span class="n">fk_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_line</span><span class="p">(</span><span class="n">table_name</span><span class="o">=</span><span class="n">table_name</span><span class="p">,</span>
+                                      <span class="n">fields</span><span class="o">=</span><span class="n">fk_field</span><span class="p">,</span>
+                                      <span class="n">line_id</span><span class="o">=</span><span class="n">line_id</span><span class="p">)[</span><span class="n">fk_field</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">table_name</span><span class="o">=</span><span class="n">fk_table_name</span><span class="p">,</span>
+                            <span class="n">data</span><span class="o">=</span><span class="n">fields_values</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span>
+                            <span class="n">line_id</span><span class="o">=</span><span class="n">fk_id</span><span class="p">)</span>
+            <span class="k">del</span> <span class="n">fields_names</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+            <span class="k">del</span> <span class="n">fields_values</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+
+        <span class="c1"># Update query</span>
+        <span class="n">table</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">fields_names</span><span class="p">,</span> <span class="n">fields_values</span><span class="p">)))</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">table</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">line_id</span><span class="p">)</span><span class="o">.</span><span class="n">execute</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Database.get_line">
+<a class="viewcode-back" href="../../../core/api.html#SSD.core.database.Database.get_line">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_line</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">table_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                 <span class="n">fields</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">line_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+                 <span class="n">joins</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get a line of a Table.</span>
+
+<span class="sd">        :param table_name: Name of the Table on which to perform the query.</span>
+<span class="sd">        :param fields: Name(s) of the Field(s) to request.</span>
+<span class="sd">        :param line_id: Index of the line to get.</span>
+<span class="sd">        :param joins: Name(s) of Table(s) to join to the selection.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Check the Table existence</span>
+        <span class="n">table_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_name</span><span class="p">(</span><span class="n">table_name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">table_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__tables</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown table with name </span><span class="si">{</span><span class="n">table_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">table</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__tables</span><span class="p">[</span><span class="n">table_name</span><span class="p">]</span>
+
+        <span class="c1"># Define the fields to select</span>
+        <span class="n">fields_selection</span> <span class="o">=</span> <span class="p">()</span>
+        <span class="k">if</span> <span class="n">fields</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">fields_selection</span> <span class="o">+=</span> <span class="p">(</span><span class="n">table</span><span class="o">.</span><span class="n">id</span><span class="p">,)</span>
+            <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span><span class="n">fields</span><span class="p">]</span> <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">fields</span><span class="p">)</span> <span class="o">==</span> <span class="nb">str</span> <span class="k">else</span> <span class="n">fields</span>
+            <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">table</span><span class="o">.</span><span class="n">fields</span><span class="p">():</span>
+                    <span class="n">fields_selection</span> <span class="o">+=</span> <span class="p">(</span><span class="n">table</span><span class="o">.</span><span class="n">fields</span><span class="p">(</span><span class="n">only_names</span><span class="o">=</span><span class="kc">False</span><span class="p">)[</span><span class="n">field</span><span class="p">],)</span>
+            <span class="k">if</span> <span class="n">joins</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">joins</span> <span class="o">=</span> <span class="p">[</span><span class="n">joins</span><span class="p">]</span> <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">joins</span><span class="p">)</span> <span class="o">==</span> <span class="nb">str</span> <span class="k">else</span> <span class="n">joins</span>
+                <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">joins</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">j</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__fk</span><span class="p">[</span><span class="n">table_name</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="ow">and</span> <span class="n">j</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">:</span>
+                        <span class="n">field_name</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__fk</span><span class="p">[</span><span class="n">table_name</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">())[</span>
+                            <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__fk</span><span class="p">[</span><span class="n">table_name</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">())</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">j</span><span class="p">)]</span>
+                        <span class="n">fields_selection</span> <span class="o">+=</span> <span class="p">(</span><span class="n">table</span><span class="o">.</span><span class="n">fields</span><span class="p">(</span><span class="n">only_names</span><span class="o">=</span><span class="kc">False</span><span class="p">)[</span><span class="n">field_name</span><span class="p">],)</span>
+
+        <span class="c1"># Define the index of the line to select</span>
+        <span class="n">nb_line</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nb_lines</span><span class="p">(</span><span class="n">table_name</span><span class="o">=</span><span class="n">table_name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">line_id</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">line_id</span> <span class="o">+=</span> <span class="n">nb_line</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="k">elif</span> <span class="n">line_id</span> <span class="o">&gt;</span> <span class="n">nb_line</span><span class="p">:</span>
+            <span class="n">line_id</span> <span class="o">=</span> <span class="n">nb_line</span>
+
+        <span class="c1"># Selection query</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">table</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="o">*</span><span class="n">fields_selection</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">table</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">line_id</span><span class="p">)</span><span class="o">.</span><span class="n">dicts</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="c1"># Join</span>
+        <span class="k">if</span> <span class="n">joins</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">joins</span> <span class="o">=</span> <span class="p">[</span><span class="n">joins</span><span class="p">]</span> <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">joins</span><span class="p">)</span> <span class="o">==</span> <span class="nb">str</span> <span class="k">else</span> <span class="n">joins</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">joins</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">j</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__fk</span><span class="p">[</span><span class="n">table_name</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+                    <span class="n">field_name</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__fk</span><span class="p">[</span><span class="n">table_name</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">())[</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__fk</span><span class="p">[</span><span class="n">table_name</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">())</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">j</span><span class="p">)]</span>
+                    <span class="k">if</span> <span class="n">field_name</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+                        <span class="n">data</span><span class="p">[</span><span class="n">field_name</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_line</span><span class="p">(</span><span class="n">table_name</span><span class="o">=</span><span class="n">j</span><span class="p">,</span>
+                                                         <span class="n">fields</span><span class="o">=</span><span class="n">fields</span><span class="p">,</span>
+                                                         <span class="n">line_id</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="n">field_name</span><span class="p">],</span>
+                                                         <span class="n">joins</span><span class="o">=</span><span class="n">j</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">data</span></div>
+
+
+<div class="viewcode-block" id="Database.get_lines">
+<a class="viewcode-back" href="../../../core/api.html#SSD.core.database.Database.get_lines">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_lines</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                  <span class="n">table_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                  <span class="n">fields</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                  <span class="n">lines_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                  <span class="n">lines_range</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                  <span class="n">joins</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                  <span class="n">batched</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get a set of lines of a Table.</span>
+
+<span class="sd">        :param table_name: Name of the Table on which to perform the query.</span>
+<span class="sd">        :param fields: Name(s) of the Field(s) to select.</span>
+<span class="sd">        :param lines_id: Indices of the lines to get. If not specified, &#39;lines_range&#39; value will be used.</span>
+<span class="sd">        :param lines_range: Range of indices of the lines to get. If not specified, all lines will be selected.</span>
+<span class="sd">        :param joins: Name(s) of Table(s) to join to the selection.</span>
+<span class="sd">        :param batched: If True, data is returned as one batch per field. Otherwise, data is returned as list of lines.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Check table existence</span>
+        <span class="n">table_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_name</span><span class="p">(</span><span class="n">table_name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">table_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__tables</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown table with name </span><span class="si">{</span><span class="n">table_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">table</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__tables</span><span class="p">[</span><span class="n">table_name</span><span class="p">]</span>
+
+        <span class="c1"># Define the fields to select</span>
+        <span class="n">fields_selection</span> <span class="o">=</span> <span class="p">()</span>
+        <span class="k">if</span> <span class="n">fields</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">fields_selection</span> <span class="o">+=</span> <span class="p">(</span><span class="n">table</span><span class="o">.</span><span class="n">id</span><span class="p">,)</span>
+            <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span><span class="n">fields</span><span class="p">]</span> <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">fields</span><span class="p">)</span> <span class="o">==</span> <span class="nb">str</span> <span class="k">else</span> <span class="n">fields</span>
+            <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">table</span><span class="o">.</span><span class="n">fields</span><span class="p">():</span>
+                    <span class="n">fields_selection</span> <span class="o">+=</span> <span class="p">(</span><span class="n">table</span><span class="o">.</span><span class="n">fields</span><span class="p">(</span><span class="n">only_names</span><span class="o">=</span><span class="kc">False</span><span class="p">)[</span><span class="n">field</span><span class="p">],)</span>
+            <span class="k">if</span> <span class="n">joins</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">joins</span> <span class="o">=</span> <span class="p">[</span><span class="n">joins</span><span class="p">]</span> <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">joins</span><span class="p">)</span> <span class="o">==</span> <span class="nb">str</span> <span class="k">else</span> <span class="n">joins</span>
+                <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">joins</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">j</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__fk</span><span class="p">[</span><span class="n">table_name</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="ow">and</span> <span class="n">j</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">:</span>
+                        <span class="n">field_name</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__fk</span><span class="p">[</span><span class="n">table_name</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">())[</span>
+                            <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__fk</span><span class="p">[</span><span class="n">table_name</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">())</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">j</span><span class="p">)]</span>
+                        <span class="n">fields_selection</span> <span class="o">+=</span> <span class="p">(</span><span class="n">table</span><span class="o">.</span><span class="n">fields</span><span class="p">(</span><span class="n">only_names</span><span class="o">=</span><span class="kc">False</span><span class="p">)[</span><span class="n">field_name</span><span class="p">],)</span>
+
+        <span class="c1"># Define the indices of lines to select</span>
+        <span class="k">if</span> <span class="n">lines_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">lines_range</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">lines_range</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The range of lines must contains the first and the last line indices.&quot;</span><span class="p">)</span>
+            <span class="n">nb_line</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nb_lines</span><span class="p">(</span><span class="n">table_name</span><span class="o">=</span><span class="n">table_name</span><span class="p">)</span>
+            <span class="n">first_line_id</span> <span class="o">=</span> <span class="n">lines_range</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">lines_range</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="mi">1</span>
+            <span class="n">last_line_id</span> <span class="o">=</span> <span class="n">lines_range</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="n">lines_range</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">nb_line</span>
+            <span class="n">_slice</span> <span class="o">=</span> <span class="p">[</span><span class="n">first_line_id</span><span class="p">,</span> <span class="n">last_line_id</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">_slice</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">idx</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">_slice</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="n">nb_line</span> <span class="o">+</span> <span class="mi">1</span>
+                <span class="k">elif</span> <span class="n">idx</span> <span class="o">&gt;</span> <span class="n">nb_line</span><span class="p">:</span>
+                    <span class="n">_slice</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">nb_line</span>
+            <span class="n">_slice</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">_slice</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">_slice</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">_slice</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">else</span> <span class="n">_slice</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="n">lines_id</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="o">*</span><span class="n">_slice</span><span class="p">)</span>
+
+        <span class="c1"># Selection query</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="n">table</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="o">*</span><span class="n">fields_selection</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">table</span><span class="o">.</span><span class="n">id</span> <span class="o">&lt;&lt;</span> <span class="n">lines_id</span><span class="p">)</span><span class="o">.</span><span class="n">dicts</span><span class="p">()</span>
+
+        <span class="c1"># Return the lines as batch or as list of lines</span>
+        <span class="n">lines</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">]],</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]]</span>
+        <span class="k">if</span> <span class="n">batched</span><span class="p">:</span>
+            <span class="n">lines</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">query</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span>
+                             <span class="p">[[</span><span class="n">query</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">key</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">query</span><span class="p">))]</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">query</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">()]))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">lines</span> <span class="o">=</span> <span class="p">[</span><span class="n">line</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">query</span><span class="p">]</span>
+
+        <span class="c1"># Join</span>
+        <span class="k">if</span> <span class="n">joins</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">joins</span> <span class="o">=</span> <span class="p">[</span><span class="n">joins</span><span class="p">]</span> <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">joins</span><span class="p">)</span> <span class="o">==</span> <span class="nb">str</span> <span class="k">else</span> <span class="n">joins</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">joins</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">j</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__fk</span><span class="p">[</span><span class="n">table_name</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+                    <span class="n">field_name</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__fk</span><span class="p">[</span><span class="n">table_name</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">())[</span>
+                        <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__fk</span><span class="p">[</span><span class="n">table_name</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">())</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">j</span><span class="p">)]</span>
+                    <span class="n">dict_keys</span> <span class="o">=</span> <span class="n">lines</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">if</span> <span class="n">batched</span> <span class="k">else</span> <span class="n">lines</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+                    <span class="k">if</span> <span class="n">field_name</span> <span class="ow">in</span> <span class="n">dict_keys</span><span class="p">:</span>
+                        <span class="n">lines_id</span> <span class="o">=</span> <span class="n">lines</span><span class="p">[</span><span class="n">field_name</span><span class="p">]</span> <span class="k">if</span> <span class="n">batched</span> <span class="k">else</span> <span class="p">[</span><span class="n">line</span><span class="p">[</span><span class="n">field_name</span><span class="p">]</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">]</span>
+                        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_lines</span><span class="p">(</span><span class="n">table_name</span><span class="o">=</span><span class="n">j</span><span class="p">,</span>
+                                              <span class="n">fields</span><span class="o">=</span><span class="n">fields</span><span class="p">,</span>
+                                              <span class="n">lines_id</span><span class="o">=</span><span class="n">lines_id</span><span class="p">,</span>
+                                              <span class="n">joins</span><span class="o">=</span><span class="n">joins</span><span class="p">,</span>
+                                              <span class="n">batched</span><span class="o">=</span><span class="n">batched</span><span class="p">)</span>
+
+                        <span class="k">if</span> <span class="n">batched</span><span class="p">:</span>
+                            <span class="n">lines</span><span class="p">[</span><span class="n">field_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">l</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+                                <span class="n">lines</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">field_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">l</span>
+
+        <span class="k">return</span> <span class="n">lines</span></div>
+
+
+<div class="viewcode-block" id="Database.nb_lines">
+<a class="viewcode-back" href="../../../core/api.html#SSD.core.database.Database.nb_lines">[docs]</a>
+    <span class="k">def</span> <span class="nf">nb_lines</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">table_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the number of entries on a Table.</span>
+
+<span class="sd">        :param table_name: Name of the Table.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Check the Table existence</span>
+        <span class="n">table_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_name</span><span class="p">(</span><span class="n">table_name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">table_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__tables</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown table with name </span><span class="si">{</span><span class="n">table_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Get the number of entries</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__tables</span><span class="p">[</span><span class="n">table_name</span><span class="p">]</span><span class="o">.</span><span class="n">select</span><span class="p">()</span><span class="o">.</span><span class="n">count</span><span class="p">()</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">memory_size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the Database file memory size in bytes.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="n">getsize</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__database_dir</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__database_name</span><span class="si">}</span><span class="s1">.db&#39;</span><span class="p">))</span>
+
+<div class="viewcode-block" id="Database.close">
+<a class="viewcode-back" href="../../../core/api.html#SSD.core.database.Database.close">[docs]</a>
+    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">erase_file</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Close the Database.</span>
+
+<span class="sd">        :param erase_file: If True, the Database file will be erased.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__database</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">erase_file</span> <span class="ow">and</span> <span class="n">exists</span><span class="p">(</span><span class="n">database_path</span> <span class="o">:=</span> <span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__database_dir</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__database_name</span><span class="si">}</span><span class="s1">.db&#39;</span><span class="p">)):</span>
+            <span class="n">remove</span><span class="p">(</span><span class="n">database_path</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Database.rename_table">
+<a class="viewcode-back" href="../../../core/api.html#SSD.core.database.Database.rename_table">[docs]</a>
+    <span class="k">def</span> <span class="nf">rename_table</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                     <span class="n">table_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                     <span class="n">new_table_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Rename a Table of the Database.</span>
+
+<span class="sd">        :param table_name: Current name of the Table to rename.</span>
+<span class="sd">        :param new_table_name: New name of the Table.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Check the Table existence</span>
+        <span class="n">table_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_name</span><span class="p">(</span><span class="n">table_name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">table_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__tables</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown table with name </span><span class="si">{</span><span class="n">table_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Renaming</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__tables</span><span class="p">[</span><span class="n">new_table_name</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__tables</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">table_name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__tables</span><span class="p">[</span><span class="n">new_table_name</span><span class="p">]</span><span class="o">.</span><span class="n">rename_table</span><span class="p">(</span><span class="n">table_name</span><span class="p">,</span> <span class="n">new_table_name</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Database.rename_field">
+<a class="viewcode-back" href="../../../core/api.html#SSD.core.database.Database.rename_field">[docs]</a>
+    <span class="k">def</span> <span class="nf">rename_field</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                     <span class="n">table_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                     <span class="n">field_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                     <span class="n">new_field_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Rename a Field of a Table of the Database.</span>
+
+<span class="sd">        :param table_name: Name of the Table.</span>
+<span class="sd">        :param field_name: Current name of the Field to rename.</span>
+<span class="sd">        :param new_field_name: New name of the Field.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Check the Table existence</span>
+        <span class="n">table_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_name</span><span class="p">(</span><span class="n">table_name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">table_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__tables</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown Table with name &#39;</span><span class="si">{</span><span class="n">table_name</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Check the field existence</span>
+        <span class="k">if</span> <span class="n">field_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__tables</span><span class="p">[</span><span class="n">table_name</span><span class="p">]</span><span class="o">.</span><span class="n">fields</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown Field with name &#39;</span><span class="si">{</span><span class="n">field_name</span><span class="si">}</span><span class="s2">&#39; for Table &#39;</span><span class="si">{</span><span class="n">table_name</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Renaming</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__tables</span><span class="p">[</span><span class="n">table_name</span><span class="p">]</span><span class="o">.</span><span class="n">rename_field</span><span class="p">(</span><span class="n">field_name</span><span class="p">,</span> <span class="n">new_field_name</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Database.remove_table">
+<a class="viewcode-back" href="../../../core/api.html#SSD.core.database.Database.remove_table">[docs]</a>
+    <span class="k">def</span> <span class="nf">remove_table</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                     <span class="n">table_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Remove a Table from the Database.</span>
+
+<span class="sd">        :param table_name: Name of the Table.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Check the table existence</span>
+        <span class="n">table_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_name</span><span class="p">(</span><span class="n">table_name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">table_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__tables</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown Table with name &#39;</span><span class="si">{</span><span class="n">table_name</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Remove the Table</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__database</span><span class="o">.</span><span class="n">drop_tables</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__tables</span><span class="p">[</span><span class="n">table_name</span><span class="p">])</span>
+        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">__tables</span><span class="p">[</span><span class="n">table_name</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="Database.remove_field">
+<a class="viewcode-back" href="../../../core/api.html#SSD.core.database.Database.remove_field">[docs]</a>
+    <span class="k">def</span> <span class="nf">remove_field</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                     <span class="n">table_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                     <span class="n">field_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Remove a Field of a Table of the Database.</span>
+
+<span class="sd">        :param table_name: Name of the Table.</span>
+<span class="sd">        :param field_name: Current name of the Field to remove.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Check the Table existence</span>
+        <span class="n">table_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_name</span><span class="p">(</span><span class="n">table_name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">table_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__tables</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown Table with name &#39;</span><span class="si">{</span><span class="n">table_name</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Check the field existence</span>
+        <span class="k">if</span> <span class="n">field_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__tables</span><span class="p">[</span><span class="n">table_name</span><span class="p">]</span><span class="o">.</span><span class="n">fields</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown Field with name &#39;</span><span class="si">{</span><span class="n">field_name</span><span class="si">}</span><span class="s2">&#39; for Table &#39;</span><span class="si">{</span><span class="n">table_name</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Renaming</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__tables</span><span class="p">[</span><span class="n">table_name</span><span class="p">]</span><span class="o">.</span><span class="n">remove_field</span><span class="p">(</span><span class="n">field_name</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Database.export">
+<a class="viewcode-back" href="../../../core/api.html#SSD.core.database.Database.export">[docs]</a>
+    <span class="k">def</span> <span class="nf">export</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+               <span class="n">exporter</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+               <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+               <span class="n">tables</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Export the Database to a CSV or JSON file.</span>
+
+<span class="sd">        :param exporter: Exporter type (&#39;json&#39; or &#39;csv&#39;).</span>
+<span class="sd">        :param filename: Exported filename.</span>
+<span class="sd">        :param tables: Tables to export.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Check exporter format</span>
+        <span class="n">exporter</span> <span class="o">=</span> <span class="n">exporter</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">exporter</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;json&#39;</span><span class="p">,</span> <span class="s1">&#39;csv&#39;</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown exporter with name </span><span class="si">{</span><span class="n">exporter</span><span class="si">}</span><span class="s2">. Available exporters are [&#39;json&#39;, &#39;csv&#39;].&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Set good file extension</span>
+        <span class="n">file_path</span> <span class="o">=</span> <span class="n">filename</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">sep</span><span class="p">)</span>
+        <span class="n">file_name</span> <span class="o">=</span> <span class="n">file_path</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">file_name</span> <span class="o">=</span> <span class="n">file_name</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">file_name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">))</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">file_name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="n">join</span><span class="p">(</span><span class="o">*</span><span class="n">file_path</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">file_name</span><span class="p">)</span>
+
+        <span class="c1"># Get the tables to export</span>
+        <span class="n">tables</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_tables</span><span class="p">()</span> <span class="k">if</span> <span class="n">tables</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">tables</span>
+        <span class="n">tables</span> <span class="o">=</span> <span class="p">[</span><span class="n">tables</span><span class="p">]</span> <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">tables</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">list</span> <span class="k">else</span> <span class="n">tables</span>
+        <span class="k">for</span> <span class="n">table</span> <span class="ow">in</span> <span class="n">tables</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">table</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_tables</span><span class="p">():</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The following Table does not exist: </span><span class="si">{</span><span class="n">table</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Export each table</span>
+        <span class="c1"># Todo: see &#39;at once&#39; version</span>
+        <span class="k">for</span> <span class="n">table</span> <span class="ow">in</span> <span class="n">tables</span><span class="p">:</span>
+            <span class="n">_filename</span> <span class="o">=</span> <span class="n">filename</span> <span class="o">+</span> <span class="sa">f</span><span class="s1">&#39;_</span><span class="si">{</span><span class="n">table</span><span class="si">}</span><span class="s1">.</span><span class="si">{</span><span class="n">exporter</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="k">if</span> <span class="n">exporter</span> <span class="o">==</span> <span class="s1">&#39;json&#39;</span><span class="p">:</span>
+                <span class="n">query</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_lines</span><span class="p">(</span><span class="n">table_name</span><span class="o">=</span><span class="n">table</span><span class="p">,</span> <span class="n">batched</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="n">Exporter</span><span class="o">.</span><span class="n">export_json</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="n">_filename</span><span class="p">,</span> <span class="n">query</span><span class="o">=</span><span class="n">query</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">query</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__tables</span><span class="p">[</span><span class="n">table</span><span class="p">]</span><span class="o">.</span><span class="n">select</span><span class="p">()</span><span class="o">.</span><span class="n">tuples</span><span class="p">()</span>
+                <span class="n">Exporter</span><span class="o">.</span><span class="n">export_csv</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="n">_filename</span><span class="p">,</span> <span class="n">query</span><span class="o">=</span><span class="n">query</span><span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Mimesis, Inria.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
