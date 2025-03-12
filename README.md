@@ -32,7 +32,7 @@ $ pip install git+https://github.com/mimesis-inria/SimulationSimpleDatabase.git
 
 # Option 2 (DEVS): install as editable
 $ git clone https://github.com/mimesis-inria/SimulationSimpleDatabase.git
-$ cd SimRender
+$ cd SimulationSimpleDatabase
 $ pip install -e .
 ```
 

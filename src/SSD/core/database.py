@@ -253,13 +253,14 @@ class Database:
                 field_name, field_type = field[0], field[1]
                 field_default = '_null_' if len(field) == 2 else field[2]
 
-                # As peewee.Model creates a new attribute named field_name, check that this attribute does not exist
-                if field_name in [m[0] for m in getmembers(table)]:
-                    raise ValueError(f"Tried to create a field '{field_name}' in the Table '{table_name}'. "
-                                     f"You are not allowed to create a field with this name, please rename it.")
-
                 # Extend the Table
                 if field_name not in table.fields():
+
+                    # As peewee.Model creates a new attribute named field_name, check that this attribute does not exist
+                    if field_name in [m[0] for m in getmembers(table)]:
+                        raise ValueError(f"Tried to create a field '{field_name}' in the Table '{table_name}'. "
+                                         f"You are not allowed to create a field with this name, please rename it.")
+
                     # FK
                     if type(field_type) == str:
                         if (fk_table_name := self.make_name(field_type)) not in self.__tables.keys():
@@ -267,6 +268,8 @@ class Database:
                                              f"exists. Created Tables so far: {self.__tables.keys()}")
                         table.extend_fk(self.__tables[fk_table_name], field_name)
                         self.__fk[table_name][field_name] = fk_table_name
+
+                    # Standard field
                     else:
                         table.extend(field_name, field_type, field_default)
 
